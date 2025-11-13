@@ -42,6 +42,7 @@ public class Turret implements Subsystem {
     public static double redGoalX  = 132;
     public static double redGoalY  = 130;
 
+    // Configuração do Servo (Rotação Contínua)
     private CRServoEx servo = new CRServoEx("turret_servo");
 
     // Instância da Torreta

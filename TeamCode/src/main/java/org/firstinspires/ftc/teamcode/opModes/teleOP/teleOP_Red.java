@@ -83,7 +83,7 @@ public class teleOP_Red extends NextFTCOpMode {
         }
 
         // Telemetry
-/*
+
         telemetry.addData("Limelight", "------------------");
         telemetry.addData("Distance", LimelightSubsystem.INSTANCE.distance);
         telemetry.addData("TX", LimelightSubsystem.INSTANCE.tx);
@@ -98,17 +98,6 @@ public class teleOP_Red extends NextFTCOpMode {
         telemetry.addData("Target Shooter", Shooter.INSTANCE.velocity);
         telemetry.addData("Current Shooter", Shooter.INSTANCE.currentVelocity);
 
-        telemetry.addData("Turret", "------------------");
-        telemetry.addData("Current Encoder", Turret.INSTANCE.encoderValue);
-
-        telemetry.addData("Odometria", "------------------");
-        telemetry.addData("X", follower().getPose().getX());
-        telemetry.addData("Y", follower().getPose().getY());
-        telemetry.addData("Heading", follower().getPose().getHeading());
-        */
- 
-
-       // telemetry.update();
         BindingManager.update();
     }
 
