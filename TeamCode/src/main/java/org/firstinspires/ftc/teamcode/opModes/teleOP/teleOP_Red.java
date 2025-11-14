@@ -97,7 +97,7 @@ public class teleOP_Red extends NextFTCOpMode {
         telemetry.addData("Shooter", "------------------");
         telemetry.addData("Target Shooter", Shooter.INSTANCE.velocity);
         telemetry.addData("Current Shooter", Shooter.INSTANCE.currentVelocity);
-
+        telemetry.update();
         BindingManager.update();
     }
 

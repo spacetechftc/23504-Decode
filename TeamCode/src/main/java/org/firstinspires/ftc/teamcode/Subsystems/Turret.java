@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Subsystems;
 
 import com.bylazar.configurables.annotations.Configurable;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 import dev.nextftc.core.subsystems.Subsystem;
@@ -13,9 +14,10 @@ public class Turret implements Subsystem {
 
     DcMotorEx turretEncoder;
     public int currentTicks;
+    public int targetTicks;
 
     // Configuração do PID -- Limelight
-    public static double kP = 0.023;
+    public static double kP = 0.02;
     public static double kD = 0;
     public static double kI = 0;
     private double integralSum = 0.0;
@@ -34,10 +36,10 @@ public class Turret implements Subsystem {
 
     // LIMITES DO ENCODER
     private double LEFT_LIMIT = 5800;
-    private double RIGHT_LIMIT = -5800;
+    private double RIGHT_LIMIT = -5500;
 
     // GOALS
-    public static double blueGoalX = 16;
+    public static double blueGoalX = 12;
     public static double blueGoalY = 130;
     public static double redGoalX  = 132;
     public static double redGoalY  = 130;
@@ -71,10 +73,13 @@ public class Turret implements Subsystem {
         }
 
         LASTERROR = error;
+        ActiveOpMode.telemetry().addData("Turret", "------------------");
+        ActiveOpMode.telemetry().addData("CurrentTicks", currentTicks);
+        ActiveOpMode.telemetry().update();
         return power;
     }
 
-    public double alignTurretWith0dometry(double x, double y, double heading, int currentTicks) {
+    public double alignTurretWithOdometry(double x, double y, double heading, int currentTicks) {
         double headingDeg = Math.toDegrees(heading);
 
         double goalX = redGoalX;
@@ -84,7 +89,7 @@ public class Turret implements Subsystem {
 
         double turretAngle = angleToGoal + headingDeg - 16;
 
-        int targetTicks = degreesToTicks(turretAngle);
+        targetTicks = degreesToTicks(turretAngle);
         int error = currentTicks - targetTicks;
         double derivative = error - LASTERROR;
         double power = (KP * error) + (KD * derivative);
@@ -136,34 +141,29 @@ public class Turret implements Subsystem {
         ActiveOpMode.telemetry().addData("X", PedroComponent.follower().getPose().getX());
         ActiveOpMode.telemetry().addData("Y", PedroComponent.follower().getPose().getY());
         ActiveOpMode.telemetry().addData("Heading", PedroComponent.follower().getPose().getHeading());
+        ActiveOpMode.telemetry().addData("Turret", "------------------");
+        ActiveOpMode.telemetry().addData("CurrentTicks", currentTicks);
+        ActiveOpMode.telemetry().addData("TargetTicks", targetTicks);
 
-        double power = 0;
+        double power;
 
         // Controle com Limelight
         if (LimelightSubsystem.INSTANCE.track) {
-            power = Turret.INSTANCE.alignTurretWithLimelight();
+            power = alignTurretWithLimelight();
         } else {
-            power = alignTurretWith0dometry(x, y, heading, currentTicks);
+            power = alignTurretWithOdometry(x, y, heading, currentTicks);
         }
 
         // ----- Limites Fisicos -----
         // Bloqueia para a esquerda
         if (currentTicks >= LEFT_LIMIT && power < 0) {
             power = 0;
-            ActiveOpMode.telemetry().addData("Travada:", "Sim");
-        } else {
-            ActiveOpMode.telemetry().addData("Travada:", "Não");
         }
 
         // Bloqueia para a direita
         if (currentTicks <= RIGHT_LIMIT && power > 0) {
             power = 0;
-            ActiveOpMode.telemetry().addData("Travada:", "Sim");
-        } else {
-            ActiveOpMode.telemetry().addData("Travada:", "Não");
         }
-        ActiveOpMode.telemetry().update();
-
         servo.setPower(power);
 
     }

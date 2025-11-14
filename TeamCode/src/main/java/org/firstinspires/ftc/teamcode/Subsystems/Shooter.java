@@ -88,7 +88,7 @@ public class Shooter implements Subsystem {
         speedCalculation = controlVelocity(9.81, limelight.distance, 65, 0.6);
         velocity = velocityToTPS(speedCalculation);
         if (velocity > 1600) {
-            velocity = 1650;
+            velocity = 1600;
         }
 
         if (enabled) {
