@@ -140,7 +140,7 @@ public class Turret implements Subsystem {
         ActiveOpMode.telemetry().addData("Odometria", "------------------");
         ActiveOpMode.telemetry().addData("X", PedroComponent.follower().getPose().getX());
         ActiveOpMode.telemetry().addData("Y", PedroComponent.follower().getPose().getY());
-        ActiveOpMode.telemetry().addData("Heading", PedroComponent.follower().getPose().getHeading());
+        ActiveOpMode.telemetry().addData("Heading", Math.toDegrees(PedroComponent.follower().getPose().getHeading()));
         ActiveOpMode.telemetry().addData("Turret", "------------------");
         ActiveOpMode.telemetry().addData("CurrentTicks", currentTicks);
         ActiveOpMode.telemetry().addData("TargetTicks", targetTicks);
@@ -165,6 +165,7 @@ public class Turret implements Subsystem {
             power = 0;
         }
         servo.setPower(power);
+        PedroComponent.follower().update();
 
     }
 }
