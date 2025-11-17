@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.opModes.teleOP;
 
 import com.bylazar.telemetry.PanelsTelemetry;
 import com.bylazar.telemetry.TelemetryManager;
+import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.Mecanismos.MecanumDrive;
@@ -9,6 +10,7 @@ import org.firstinspires.ftc.teamcode.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.Subsystems.LimelightSubsystem;
 import org.firstinspires.ftc.teamcode.Subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.Subsystems.Turret;
+import org.firstinspires.ftc.teamcode.opModes.Autonomous.Autonomous_Red;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 import dev.nextftc.bindings.BindingManager;
@@ -30,12 +32,15 @@ public class teleOP_Red extends NextFTCOpMode {
         );
     }
     MecanumDrive mecanumDrive = new MecanumDrive();
+    Autonomous_Red autonomous = new Autonomous_Red();
     private boolean shooterToggle = false;
     private boolean lastButtonState = false;
-    private TelemetryManager telemetryM;
+
+    private final Pose startPose = new Pose(130.206, -60.121, Math.toRadians(270));
 
     @Override
     public void onInit() {
+        PedroComponent.follower().setStartingPose(startPose);
         new InstantCommand(() -> {
             LimelightSubsystem.INSTANCE.switchIndexRed.invoke();
         });
@@ -43,7 +48,7 @@ public class teleOP_Red extends NextFTCOpMode {
 
     @Override
     public void onWaitForStart() {
-        telemetryM = PanelsTelemetry.INSTANCE.getTelemetry();
+        PedroComponent.follower().setStartingPose(startPose);
         LimelightSubsystem.INSTANCE.switchIndexRed.invoke();
         telemetry.addData("READY", "LET'S GO SPACETECH!");
         telemetry.update();
@@ -57,7 +62,7 @@ public class teleOP_Red extends NextFTCOpMode {
 
     @Override
     public void onUpdate() {
-        boolean currentButtonState = gamepad1.right_bumper; // escolhe o botão que quiser (A, B, X, Y...)
+        boolean currentButtonState = gamepad1.right_bumper;
 
         // Detecta a transição de "solto" -> "pressionado"
         if (currentButtonState && !lastButtonState) {

@@ -7,6 +7,7 @@ import dev.nextftc.control.KineticState;
 import dev.nextftc.control.feedback.PIDCoefficients;
 import dev.nextftc.control.feedforward.BasicFeedforwardParameters;
 import dev.nextftc.core.commands.Command;
+import dev.nextftc.core.commands.utility.LambdaCommand;
 import dev.nextftc.core.subsystems.Subsystem;
 import dev.nextftc.hardware.controllable.MotorGroup;
 import dev.nextftc.hardware.controllable.RunToVelocity;
@@ -18,7 +19,7 @@ public class Shooter implements Subsystem {
     public static double velocityz = 1200;
 
     // Coeficientes do Shooter
-    private static PIDCoefficients coefficientsShooter = new PIDCoefficients(0.02, 0, 0);
+    private static PIDCoefficients coefficientsShooter = new PIDCoefficients(0.023, 0, 0);
     private static BasicFeedforwardParameters feedforwardShooter = new BasicFeedforwardParameters(0.0005, 0, 0);
 
     // Instância da Limelight
@@ -63,7 +64,28 @@ public class Shooter implements Subsystem {
         double raio = 0.0044;
         return (((velocity / raio) / (2 * Math.PI)) * 28) * 0.24;
     }
+    // Comandos Autonomo
+    public Command shooterAutoOn() {
+        enabled = true;
+        return new LambdaCommand()
+                .setStart(() -> controlShooter.setGoal(new KineticState(0, 1150, 0)))
+                .setIsDone(() -> true);
+    }
 
+    public Command shooterAutoNegative() {
+        enabled = true;
+        return new LambdaCommand()
+                .setStart(() -> controlShooter.setGoal(new KineticState(0, -1200, 0)))
+                .setIsDone(() -> true);
+    }
+
+    public Command stopAuto() {
+        return new LambdaCommand()
+                .setStart(() -> shooterMotor.setPower(0))
+                .setIsDone(() -> true);
+    }
+
+    // Comandos Teleop
     public Command shooterOn() {
         enabled = true;
         return new RunToVelocity(controlShooter, velocity, new KineticState(0, velocity, Double.POSITIVE_INFINITY))
@@ -78,6 +100,11 @@ public class Shooter implements Subsystem {
     }
 
     public void stop() {
+        enabled = false;
+    }
+
+    @Override
+    public void initialize() {
         enabled = false;
     }
 

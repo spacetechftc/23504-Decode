@@ -3,9 +3,11 @@ package org.firstinspires.ftc.teamcode.Subsystems;
 import com.bylazar.configurables.annotations.Configurable;
 
 import dev.nextftc.control.ControlSystem;
+import dev.nextftc.control.KineticState;
 import dev.nextftc.control.feedback.PIDCoefficients;
 import dev.nextftc.control.feedforward.BasicFeedforwardParameters;
 import dev.nextftc.core.commands.Command;
+import dev.nextftc.core.commands.utility.LambdaCommand;
 import dev.nextftc.core.subsystems.Subsystem;
 import dev.nextftc.hardware.controllable.RunToVelocity;
 import dev.nextftc.hardware.impl.MotorEx;
@@ -35,16 +37,36 @@ public class Intake implements Subsystem {
             .build();
 
     // Comandos do Subsistema
+    // Comandos Autonomo
+    public Command coletAutoOn() {
+        enabled = true;
+        return new LambdaCommand()
+                .setStart(() -> controlSystem.setGoal(new KineticState(0, velocity, 0)))
+                .setIsDone(() -> true);
+
+    }
+    public Command stopAuto() {
+        return new LambdaCommand()
+                .setStart(() -> controlSystem.setGoal(new KineticState(0, 0 ,0)))
+                .setIsDone(() -> true);
+    }
+
+    // Comandos Teleop
     public Command colet() {
         enabled = true;
         return new RunToVelocity(controlSystem, velocity).requires(this);
     }
-
     public void stop() {
         enabled = false;
     }
 
     // Roda em looping infinito assim que a programação iniciar
+
+    @Override
+    public void initialize() {
+        enabled = false;
+    }
+
     @Override
     public void periodic() {
         if (enabled) {

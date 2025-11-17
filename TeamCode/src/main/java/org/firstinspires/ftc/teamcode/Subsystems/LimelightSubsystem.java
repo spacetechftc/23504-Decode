@@ -4,8 +4,6 @@ import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 
-import org.firstinspires.ftc.teamcode.Mecanismos.AutoSelect;
-
 import java.util.Arrays;
 import java.util.List;
 
@@ -22,32 +20,6 @@ public class LimelightSubsystem implements Subsystem {
     public int id;
     public String verify;
     public boolean track;
-    AutoSelect autoSelect = new AutoSelect();
-
-    // Detecção do MOTIF
-    public Command detectionID = new LambdaCommand()
-            .setStart(() -> {
-                limelight.pipelineSwitch(0);
-                LLResult result = limelight.getLatestResult();
-                List<LLResultTypes.FiducialResult> fiducials = result.getFiducialResults();
-                for (LLResultTypes.FiducialResult fiducial : fiducials) {
-                    id = fiducial.getFiducialId();
-                    switch (id) {
-                        case 21:
-                            autoSelect.Pattern[0] = 'V'; autoSelect.Pattern[1] = 'R'; autoSelect.Pattern[2] = 'R';
-                            verify = Arrays.toString(autoSelect.Pattern);
-                            break;
-                        case 22:
-                            autoSelect.Pattern[0] = 'R'; autoSelect.Pattern[1] = 'V'; autoSelect.Pattern[2] = 'R';
-                            verify = Arrays.toString(autoSelect.Pattern);
-                            break;
-                        case 23:
-                            autoSelect.Pattern[0] = 'R'; autoSelect.Pattern[1] = 'R'; autoSelect.Pattern[2] = 'V';
-                            verify = Arrays.toString(autoSelect.Pattern);
-                            break;
-                    }
-                }
-            });
 
     // Reset do ID inicial (Usar em autônomo)
     public Command reset = new LambdaCommand()
