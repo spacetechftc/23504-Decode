@@ -44,15 +44,15 @@ public class Autonomous_Red extends NextFTCOpMode {
     // Definição das coordenadas
     private final Pose startPose = new Pose(131.215, 118.654, Math.toRadians(36));
     private final Pose scorePose = new Pose(105.888, 85.682, Math.toRadians(45));
-    private final Pose initGate = new Pose(136, 64, Math.toRadians(95));
-    private final Pose openGate = new Pose(142, 64, Math.toRadians(95));
+    private final Pose initGate = new Pose(136, 63, Math.toRadians(96));
+    private final Pose openGate = new Pose(142.5, 63, Math.toRadians(96));
     private final Pose intakeBalls_1 = new Pose(110.888, 76.682, Math.toRadians(0));
     private final Pose intakeBalls_2 = new Pose(110.888,  53, Math.toRadians(0));
     private final Pose intakeBalls_3 = new Pose(110.888, 30, Math.toRadians(0));
-    private final Pose takeBalls_1 = new Pose(137, 74.682, Math.toRadians(0));
+    private final Pose takeBalls_1 = new Pose(140, 74.682, Math.toRadians(0));
     private final Pose takeBalls_2 = new Pose(145, 51, Math.toRadians(0));
-    private final Pose goBack = new Pose(142, 51, Math.toRadians(0));
-    private final Pose takeBalls_3 = new Pose(145, 29, Math.toRadians(0));
+    private final Pose goBack = new Pose(141, 51, Math.toRadians(0));
+    private final Pose takeBalls_3 = new Pose(145, 30, Math.toRadians(0));
     private final Pose endPose = new Pose(130.206, 60.121, Math.toRadians(270));
 
     private Follower follower;
@@ -99,11 +99,11 @@ public class Autonomous_Red extends NextFTCOpMode {
                 Intake.INSTANCE.stopAuto(), // Lançou as primeiras bolas
                 new FollowPath(pathOneTwo),
                 new ParallelGroup(new FollowPath(pathTwo), Intake.INSTANCE.coletAutoOn(), Shooter.INSTANCE.shooterAutoNegative()), // Pegou a primeira fileira
-                new Delay(0.3),
+                new Delay(0.4),
                 new ParallelGroup(new FollowPath(pathInitGate), Intake.INSTANCE.stopAuto()), // Indo abrir o gate
                 new FollowPath(pathInitGate, false, 0.02),
                 new FollowPath(pathOpenGate), // Abriu o gate
-                new Delay(1.2), // Espera o gate
+                new Delay(1.45), // Espera o gate
                 Shooter.INSTANCE.shooterAutoOn(),
                 new FollowPath(pathThree), // Indo pro scorePose
                 new Delay(0.3), // Limelight se alinhando
@@ -124,11 +124,11 @@ public class Autonomous_Red extends NextFTCOpMode {
                 new FollowPath(pathSeven),
                 new Delay(0.15), // Aguentando o supapo
                 new ParallelGroup(new FollowPath(pathEight), Intake.INSTANCE.coletAutoOn(), Shooter.INSTANCE.shooterAutoNegative()), // Pegou a terceira fileira
-                new Delay(0.3),
+                new Delay(0.4),
                 Intake.INSTANCE.stopAuto(),
                 Shooter.INSTANCE.shooterAutoOn(),
                 new FollowPath(pathNine), // Indo pro scorePose
-                new Delay(0.3), // Limelight se alinhando
+                new Delay(0.4), // Limelight se alinhando
                 Intake.INSTANCE.coletAutoOn(),
                 new Delay(1.3),
                 Intake.INSTANCE.stopAuto(),

@@ -68,7 +68,7 @@ public class Shooter implements Subsystem {
     public Command shooterAutoOn() {
         enabled = true;
         return new LambdaCommand()
-                .setStart(() -> controlShooter.setGoal(new KineticState(0, 1100, 0)))
+                .setStart(() -> controlShooter.setGoal(new KineticState(0, 1080, 0)))
                 .setIsDone(() -> true);
     }
 
