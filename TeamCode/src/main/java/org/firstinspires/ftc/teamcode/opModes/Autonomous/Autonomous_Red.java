@@ -49,7 +49,7 @@ public class Autonomous_Red extends NextFTCOpMode {
     private final Pose intakeBalls_1 = new Pose(110.888, 76.682, Math.toRadians(0));
     private final Pose intakeBalls_2 = new Pose(110.888,  53, Math.toRadians(0));
     private final Pose intakeBalls_3 = new Pose(110.888, 30, Math.toRadians(0));
-    private final Pose takeBalls_1 = new Pose(140, 74.682, Math.toRadians(0));
+    private final Pose takeBalls_1 = new Pose(139, 74.682, Math.toRadians(0));
     private final Pose takeBalls_2 = new Pose(145, 51, Math.toRadians(0));
     private final Pose goBack = new Pose(141, 51, Math.toRadians(0));
     private final Pose takeBalls_3 = new Pose(145, 30, Math.toRadians(0));
