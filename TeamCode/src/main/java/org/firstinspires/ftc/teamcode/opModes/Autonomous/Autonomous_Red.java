@@ -114,6 +114,7 @@ public class Autonomous_Red extends NextFTCOpMode {
                 new ParallelGroup(new FollowPath(pathFive), Intake.INSTANCE.coletAutoOn(), Shooter.INSTANCE.shooterAutoNegative()), // Pegou a segunda fileira
                 new Delay(0.3),
                 new FollowPath(pathBack),
+                new Delay(0.1),
                 Intake.INSTANCE.stopAuto(),
                 Shooter.INSTANCE.shooterAutoOn(),
                 new FollowPath(pathSix), // Indo pro scorePose
@@ -142,6 +143,9 @@ public class Autonomous_Red extends NextFTCOpMode {
         panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
         follower = Constants.createFollower(hardwareMap);
         new InstantCommand(() -> {
+           Turret.INSTANCE.resetEncoder.invoke();
+        });
+        new InstantCommand(() -> {
             LimelightSubsystem.INSTANCE.switchIndexRed.invoke();
         });
         follower.setStartingPose(startPose);
@@ -155,6 +159,9 @@ public class Autonomous_Red extends NextFTCOpMode {
     public void onWaitForStart() {
         new InstantCommand(() -> {
             LimelightSubsystem.INSTANCE.switchIndexRed.invoke();
+        });
+        new InstantCommand(() -> {
+            Turret.INSTANCE.resetEncoder.invoke();
         });
         LimelightSubsystem.INSTANCE.switchIndexRed.invoke();
     }
@@ -170,6 +177,7 @@ public class Autonomous_Red extends NextFTCOpMode {
         panelsTelemetry.debug("Y", follower.getPose().getY());
         panelsTelemetry.debug("Heading", Math.toDegrees(follower.getPose().getHeading()));
         panelsTelemetry.update(telemetry);
+        telemetry.update();
         follower.update();
     }
 

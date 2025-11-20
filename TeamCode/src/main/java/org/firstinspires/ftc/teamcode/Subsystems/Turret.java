@@ -20,7 +20,7 @@ public class Turret implements Subsystem {
     public int targetTicks;
 
     // Configuração do PID -- Limelight
-    public static double kP = 0.015;
+    public static double kP = 0.022;
     public static double kD = 0;
     public static double kI = 0;
     private double integralSum = 0.0;
@@ -38,14 +38,14 @@ public class Turret implements Subsystem {
 
 
     // LIMITES DO ENCODER
-    private double LEFT_LIMIT = 5800;
-    private double RIGHT_LIMIT = -5500;
+    private double LEFT_LIMIT = 5000;
+    private double RIGHT_LIMIT = -5000;
 
     // GOALS
     public static double blueGoalX = 12;
     public static double blueGoalY = 130;
-    public static double redGoalX  = 132;
-    public static double redGoalY  = 130;
+    public static double redGoalX  = 138;
+    public static double redGoalY  = 115;
 
     // Configuração do Servo (Rotação Contínua)
     private CRServoEx servo = new CRServoEx("turret_servo");
@@ -88,12 +88,23 @@ public class Turret implements Subsystem {
 
         double angleToGoal = Math.toDegrees(Math.atan2(goalY - y, goalX - x));
 
-        double turretAngle = angleToGoal + headingDeg - 16;
+        double turretAngle = headingDeg - angleToGoal;
 
         targetTicks = degreesToTicks(turretAngle);
         int error = currentTicks - targetTicks;
         double derivative = error - LASTERROR;
         double power = (KP * error) + (KD * derivative);
+
+        // ----- Limites Fisicos -----
+        // Bloqueia para a esquerda
+        if (currentTicks >= LEFT_LIMIT && power < 0) {
+            power = 0;
+        }
+
+        // Bloqueia para a direita
+        if (currentTicks <= RIGHT_LIMIT && power > 0) {
+            power = 0;
+        }
 
         LASTERROR = error;
         return power;
@@ -122,11 +133,16 @@ public class Turret implements Subsystem {
         return output;
     }
 
+    public Command resetEncoder = new LambdaCommand()
+            .setUpdate(() -> {
+                turretEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            });
+
+
     @Override
     public void initialize() {
         turretEncoder = ActiveOpMode.hardwareMap().get(DcMotorEx.class,"back_left");
-        turretEncoder.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        turretEncoder.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+        turretEncoder.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
     }
 
     @Override
@@ -142,11 +158,12 @@ public class Turret implements Subsystem {
         ActiveOpMode.telemetry().addData("X", x);
         ActiveOpMode.telemetry().addData("Y", y);
         ActiveOpMode.telemetry().addData("Heading", Math.toDegrees(heading));
+
         // Controle com Limelight
         if (LimelightSubsystem.INSTANCE.track) {
             power = alignTurretWithLimelight();
         } else {
-            power = 0;
+            power = alignTurretWithOdometry(x, y, heading, currentTicks);
         }
 
         // ----- Limites Fisicos -----

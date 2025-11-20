@@ -21,9 +21,9 @@ import dev.nextftc.extensions.pedro.PedroComponent;
 import dev.nextftc.ftc.NextFTCOpMode;
 import dev.nextftc.ftc.components.BulkReadComponent;
 
-@TeleOp(name="TeleOp - Red")
-public class teleOP_Red extends NextFTCOpMode {
-    public teleOP_Red() {
+@TeleOp(name="TeleOp - Test")
+public class teleOP_Test extends NextFTCOpMode {
+    public teleOP_Test() {
         addComponents(
                 new SubsystemComponent(Intake.INSTANCE, Shooter.INSTANCE, LimelightSubsystem.INSTANCE, Turret.INSTANCE),
                 BulkReadComponent.INSTANCE,
@@ -35,7 +35,7 @@ public class teleOP_Red extends NextFTCOpMode {
     Autonomous_Red autonomous = new Autonomous_Red();
     private boolean shooterToggle = false;
     private boolean lastButtonState = false;
-    private final Pose startPose = new Pose(130.206, 60.121, Math.toRadians(270));
+    private final Pose startPose = new Pose(33, -5, Math.toRadians(0));
 
     @Override
     public void onInit() {
