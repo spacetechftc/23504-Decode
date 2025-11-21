@@ -56,6 +56,12 @@ public class Intake implements Subsystem {
         enabled = true;
         return new RunToVelocity(controlSystem, velocity).requires(this);
     }
+
+    public Command eject() {
+        enabled = true;
+        return new RunToVelocity(controlSystem, -2000).requires(this);
+    }
+
     public void stop() {
         enabled = false;
     }

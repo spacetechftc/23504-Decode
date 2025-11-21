@@ -18,9 +18,9 @@ import dev.nextftc.extensions.pedro.PedroComponent;
 import dev.nextftc.ftc.NextFTCOpMode;
 import dev.nextftc.ftc.components.BulkReadComponent;
 
-@TeleOp(name="TeleOp - Red", group = "Official")
-public class teleOP_Red extends NextFTCOpMode {
-    public teleOP_Red() {
+@TeleOp(name="TeleOp - Blue", group = "Official")
+public class teleOP_Blue extends NextFTCOpMode {
+    public teleOP_Blue() {
         addComponents(
                 new SubsystemComponent(Intake.INSTANCE, Shooter.INSTANCE, LimelightSubsystem.INSTANCE, Turret.INSTANCE),
                 BulkReadComponent.INSTANCE,
@@ -38,13 +38,13 @@ public class teleOP_Red extends NextFTCOpMode {
         PedroComponent.follower().setStartingPose(startPose);
         PedroComponent.follower().updatePose();
         new InstantCommand(() -> {
-            LimelightSubsystem.INSTANCE.switchIndexRed.invoke();
+            LimelightSubsystem.INSTANCE.switchIndexBlue.invoke();
         });
     }
 
     @Override
     public void onWaitForStart() {
-        LimelightSubsystem.INSTANCE.switchIndexRed.invoke();
+        LimelightSubsystem.INSTANCE.switchIndexBlue.invoke();
         telemetry.addData("READY", "LET'S GO SPACETECH!");
         telemetry.update();
     }
@@ -91,7 +91,7 @@ public class teleOP_Red extends NextFTCOpMode {
             Shooter.INSTANCE.stop();
         }
 
-        Turret.INSTANCE.alignTurret(x, y, heading, Turret.INSTANCE.currentTicks, false); // Torreta automática
+        Turret.INSTANCE.alignTurret(x, y, heading, Turret.INSTANCE.currentTicks, true); // Torreta automática
 
         // Telemetry
         telemetry.addData("Limelight", "------------------");
