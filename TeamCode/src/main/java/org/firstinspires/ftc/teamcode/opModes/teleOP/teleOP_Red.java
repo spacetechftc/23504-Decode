@@ -32,7 +32,6 @@ public class teleOP_Red extends NextFTCOpMode {
         );
     }
     MecanumDrive mecanumDrive = new MecanumDrive();
-    Autonomous_Red autonomous = new Autonomous_Red();
     private boolean shooterToggle = false;
     private boolean lastButtonState = false;
     private final Pose startPose = new Pose(130.206, 60.121, Math.toRadians(270));
@@ -61,6 +60,9 @@ public class teleOP_Red extends NextFTCOpMode {
 
     @Override
     public void onUpdate() {
+        double x = PedroComponent.follower().getPose().getX();
+        double y = PedroComponent.follower().getPose().getY();
+        double heading = PedroComponent.follower().getPose().getHeading();
         boolean currentButtonState = gamepad1.right_bumper;
 
         // Detecta a transição de "solto" -> "pressionado"
@@ -86,6 +88,7 @@ public class teleOP_Red extends NextFTCOpMode {
             Shooter.INSTANCE.stop();
         }
 
+        Turret.INSTANCE.alignTurret(x, y, heading, Turret.INSTANCE.currentTicks, false);
         // Telemetry
 
         telemetry.addData("Limelight", "------------------");

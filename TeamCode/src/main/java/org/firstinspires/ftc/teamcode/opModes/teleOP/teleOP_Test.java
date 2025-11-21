@@ -32,7 +32,6 @@ public class teleOP_Test extends NextFTCOpMode {
         );
     }
     MecanumDrive mecanumDrive = new MecanumDrive();
-    Autonomous_Red autonomous = new Autonomous_Red();
     private boolean shooterToggle = false;
     private boolean lastButtonState = false;
     private final Pose startPose = new Pose(33, -5, Math.toRadians(0));
@@ -56,7 +55,6 @@ public class teleOP_Test extends NextFTCOpMode {
     @Override
     public void onStartButtonPressed() {
         mecanumDrive.start();
-
     }
 
     @Override

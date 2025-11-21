@@ -20,7 +20,7 @@ public class Turret implements Subsystem {
     public int targetTicks;
 
     // Configuração do PID -- Limelight
-    public static double kP = 0.022;
+    public static double kP = 0.019;
     public static double kD = 0;
     public static double kI = 0;
     private double integralSum = 0.0;
@@ -43,7 +43,7 @@ public class Turret implements Subsystem {
 
     // GOALS
     public static double blueGoalX = 12;
-    public static double blueGoalY = 130;
+    public static double blueGoalY = 115;
     public static double redGoalX  = 138;
     public static double redGoalY  = 115;
 
@@ -80,11 +80,11 @@ public class Turret implements Subsystem {
         servo.setPower(power);
     }
 
-    public double alignTurretWithOdometry(double x, double y, double heading, int currentTicks) {
+    public double alignTurretWithOdometry(double x, double y, double heading, int currentTicks, boolean blue) {
         double headingDeg = Math.toDegrees(heading);
 
-        double goalX = redGoalX;
-        double goalY = redGoalY;
+        double goalX = blue ? blueGoalX : redGoalX;
+        double goalY = blue ? blueGoalY : redGoalY;
 
         double angleToGoal = Math.toDegrees(Math.atan2(goalY - y, goalX - x));
 
@@ -133,40 +133,12 @@ public class Turret implements Subsystem {
         return output;
     }
 
-    public Command resetEncoder = new LambdaCommand()
-            .setUpdate(() -> {
-                turretEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            });
-
-
-    @Override
-    public void initialize() {
-        turretEncoder = ActiveOpMode.hardwareMap().get(DcMotorEx.class,"back_left");
-        turretEncoder.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-    }
-
-    @Override
-    public void periodic() {
-        double x = PedroComponent.follower().getPose().getX();
-        double y = PedroComponent.follower().getPose().getY();
-        double heading = PedroComponent.follower().getPose().getHeading();
-        currentTicks = turretEncoder.getCurrentPosition();
-        ActiveOpMode.telemetry().addData("Turret", "------------------");
-        ActiveOpMode.telemetry().addData("CurrentTicks", currentTicks);
-        ActiveOpMode.telemetry().addData("TargetTicks", targetTicks);
-        ActiveOpMode.telemetry().addData("Odometria", "------------------");
-        ActiveOpMode.telemetry().addData("X", x);
-        ActiveOpMode.telemetry().addData("Y", y);
-        ActiveOpMode.telemetry().addData("Heading", Math.toDegrees(heading));
-
-        // Controle com Limelight
+    public void alignTurret(double x, double y, double heading, int currentTicks, boolean blue) {
         if (LimelightSubsystem.INSTANCE.track) {
             power = alignTurretWithLimelight();
         } else {
-            power = alignTurretWithOdometry(x, y, heading, currentTicks);
+            power = alignTurretWithOdometry(x, y, heading, currentTicks, blue);
         }
-
-        // ----- Limites Fisicos -----
         // Bloqueia para a esquerda
         if (currentTicks >= LEFT_LIMIT && power < 0) {
             power = 0;
@@ -176,7 +148,30 @@ public class Turret implements Subsystem {
         if (currentTicks <= RIGHT_LIMIT && power > 0) {
             power = 0;
         }
+
         servo.setPower(power);
+    }
+
+
+    public Command resetEncoder = new LambdaCommand()
+            .setUpdate(() -> {
+                turretEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            });
+
+
+    @Override
+    public void initialize() {
+        turretEncoder = ActiveOpMode.hardwareMap().get(DcMotorEx.class,"back_left");
+        turretEncoder.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+    }
+
+    @Override
+    public void periodic() {
+        currentTicks = turretEncoder.getCurrentPosition();
+        ActiveOpMode.telemetry().addData("Turret", "------------------");
+        ActiveOpMode.telemetry().addData("CurrentTicks", currentTicks);
+        ActiveOpMode.telemetry().addData("TargetTicks", targetTicks);
+
         PedroComponent.follower().update();
     }
 }

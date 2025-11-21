@@ -176,6 +176,7 @@ public class Autonomous_Red extends NextFTCOpMode {
         panelsTelemetry.debug("X", follower.getPose().getX());
         panelsTelemetry.debug("Y", follower.getPose().getY());
         panelsTelemetry.debug("Heading", Math.toDegrees(follower.getPose().getHeading()));
+        Turret.INSTANCE.alignTurret(follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading(), Turret.INSTANCE.currentTicks, false);
         panelsTelemetry.update(telemetry);
         telemetry.update();
         follower.update();
