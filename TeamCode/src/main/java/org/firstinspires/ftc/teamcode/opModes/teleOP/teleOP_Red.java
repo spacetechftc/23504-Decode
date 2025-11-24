@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.opModes.teleOP;
 
+import static org.firstinspires.ftc.teamcode.opModes.Autonomous.Autonomous_Red_Close.autoEndPose;
+
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -31,11 +33,10 @@ public class teleOP_Red extends NextFTCOpMode {
     MecanumDrive mecanumDrive = new MecanumDrive();
     private boolean shooterToggle = false;
     private boolean lastButtonState = false;
-    private final Pose startPose = new Pose(130.206, 60.121, Math.toRadians(270));
 
     @Override
     public void onInit() {
-        PedroComponent.follower().setStartingPose(startPose);
+        PedroComponent.follower().setStartingPose(autoEndPose == null ? new Pose() : autoEndPose);
         PedroComponent.follower().updatePose();
         new InstantCommand(() -> {
             LimelightSubsystem.INSTANCE.switchIndexRed.invoke();
@@ -94,6 +95,11 @@ public class teleOP_Red extends NextFTCOpMode {
         Turret.INSTANCE.alignTurret(x, y, heading, Turret.INSTANCE.currentTicks, false); // Torreta automática
 
         // Telemetry
+        telemetry.addData("Odometria", "------------------");
+        telemetry.addData("X", x);
+        telemetry.addData("Y", y);
+        telemetry.addData("Heading", Math.toDegrees(heading));
+
         telemetry.addData("Limelight", "------------------");
         telemetry.addData("Distance", LimelightSubsystem.INSTANCE.distance);
         telemetry.addData("TX", LimelightSubsystem.INSTANCE.tx);
@@ -113,6 +119,7 @@ public class teleOP_Red extends NextFTCOpMode {
 
     @Override
     public void onStop() {
+        autoEndPose = PedroComponent.follower().getPose();
         BindingManager.reset();
     }
 }

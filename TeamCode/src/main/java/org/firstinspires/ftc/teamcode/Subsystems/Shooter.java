@@ -112,12 +112,16 @@ public class Shooter implements Subsystem {
     @Override
     public void periodic() {
         // Controle da velocidade Ideal
-        speedCalculation = controlVelocity(9.81, limelight.distance, 65, 0.6);
-        velocity = velocityToTPS(speedCalculation);
-        if (velocity > 1600) {
-            velocity = 1600;
-        } else if (velocity < 1000) {
-            velocity = 1100;
+        if (limelight.track) {
+            speedCalculation = controlVelocity(9.81, limelight.distance, 65, 0.6);
+            velocity = velocityToTPS(speedCalculation);
+            if (velocity > 1600) {
+                velocity = 1600;
+            } else if (velocity < 1000) {
+                velocity = 1100;
+            }
+        } else {
+            velocity = 1250;
         }
 
         if (enabled) {

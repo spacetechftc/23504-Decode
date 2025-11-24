@@ -4,8 +4,6 @@ import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
-import org.firstinspires.ftc.teamcode.opModes.Autonomous.Autonomous_Red;
-
 import dev.nextftc.core.commands.Command;
 import dev.nextftc.core.commands.utility.LambdaCommand;
 import dev.nextftc.core.subsystems.Subsystem;
@@ -45,7 +43,7 @@ public class Turret implements Subsystem {
     public static double blueGoalX = 12;
     public static double blueGoalY = 115;
     public static double redGoalX  = 138;
-    public static double redGoalY  = 115;
+    public static double redGoalY  = 113;
 
     // Configuração do Servo (Rotação Contínua)
     private CRServoEx servo = new CRServoEx("turret_servo");

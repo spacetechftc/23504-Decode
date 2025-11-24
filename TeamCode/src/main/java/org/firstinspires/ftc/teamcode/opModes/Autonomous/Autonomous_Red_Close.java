@@ -29,10 +29,10 @@ import dev.nextftc.extensions.pedro.TurnTo;
 import dev.nextftc.ftc.NextFTCOpMode;
 import dev.nextftc.ftc.components.BulkReadComponent;
 
-@Autonomous(name="12 Ball Red Side Classifier Auto")
+@Autonomous(name="12 Ball - Red Close")
 @Configurable
-public class Autonomous_Red extends NextFTCOpMode {
-    public Autonomous_Red() {
+public class Autonomous_Red_Close extends NextFTCOpMode {
+    public Autonomous_Red_Close() {
         addComponents(
                 new SubsystemComponent(Intake.INSTANCE, Shooter.INSTANCE, Turret.INSTANCE, LimelightSubsystem.INSTANCE),
                 new PedroComponent(Constants::createFollower),
@@ -40,6 +40,7 @@ public class Autonomous_Red extends NextFTCOpMode {
         );
     }
     private TelemetryManager panelsTelemetry;
+    public static Pose autoEndPose;
 
     // Definição das coordenadas
     private final Pose startPose = new Pose(131.215, 118.654, Math.toRadians(36));
@@ -182,5 +183,9 @@ public class Autonomous_Red extends NextFTCOpMode {
         follower.update();
     }
 
+    @Override
+    public void onStop() {
+        autoEndPose = follower.getPose();
+    }
 }
 
