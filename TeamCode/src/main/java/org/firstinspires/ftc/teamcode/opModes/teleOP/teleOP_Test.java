@@ -18,7 +18,7 @@ import dev.nextftc.extensions.pedro.PedroComponent;
 import dev.nextftc.ftc.NextFTCOpMode;
 import dev.nextftc.ftc.components.BulkReadComponent;
 
-@TeleOp(name="TeleOp - Test", group = "Tests")
+@TeleOp(name="TeleOp - Test", group = "OpModes Tests")
 public class teleOP_Test extends NextFTCOpMode {
     public teleOP_Test() {
         addComponents(

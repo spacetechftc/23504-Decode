@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
-@TeleOp(name = "Turret Encoder Test", group = "Tests")
+@TeleOp(name = "Turret Encoder Test", group = "OpModes Tests")
 public class TurretEncoderTest extends LinearOpMode {
 
     @Override
