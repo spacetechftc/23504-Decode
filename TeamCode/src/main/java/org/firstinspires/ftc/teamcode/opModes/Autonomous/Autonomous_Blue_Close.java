@@ -29,10 +29,10 @@ import dev.nextftc.extensions.pedro.TurnTo;
 import dev.nextftc.ftc.NextFTCOpMode;
 import dev.nextftc.ftc.components.BulkReadComponent;
 
-@Autonomous(name="12 Ball - Red Close")
+@Autonomous(name="12 Ball - Blue Close")
 @Configurable
-public class Autonomous_Red_Close extends NextFTCOpMode {
-    public Autonomous_Red_Close() {
+public class Autonomous_Blue_Close extends NextFTCOpMode {
+    public Autonomous_Blue_Close() {
         addComponents(
                 new SubsystemComponent(Intake.INSTANCE, Shooter.INSTANCE, Turret.INSTANCE, LimelightSubsystem.INSTANCE),
                 new PedroComponent(Constants::createFollower),
@@ -43,18 +43,18 @@ public class Autonomous_Red_Close extends NextFTCOpMode {
     public static Pose autoEndPose;
 
     // Definição das coordenadas
-    private final Pose startPose = new Pose(131.215, 118.654, Math.toRadians(36));
-    private final Pose scorePose = new Pose(105.888, 85.682, Math.toRadians(45));
-    private final Pose initGate = new Pose(136, 63, Math.toRadians(96));
-    private final Pose openGate = new Pose(142, 63, Math.toRadians(96));
-    private final Pose intakeBalls_1 = new Pose(110.888, 76.682, Math.toRadians(0));
-    private final Pose intakeBalls_2 = new Pose(110.888,  53, Math.toRadians(0));
-    private final Pose intakeBalls_3 = new Pose(110.888, 30, Math.toRadians(0));
-    private final Pose takeBalls_1 = new Pose(139, 74.682, Math.toRadians(0));
-    private final Pose takeBalls_2 = new Pose(146, 51, Math.toRadians(0));
-    private final Pose goBack = new Pose(138, 51, Math.toRadians(0));
-    private final Pose takeBalls_3 = new Pose(146, 30, Math.toRadians(0));
-    private final Pose endPose = new Pose(130.206, 60.121, Math.toRadians(270));
+    private final Pose startPose = new Pose(131.215, 118.654, Math.toRadians(36)).mirror();
+    private final Pose scorePose = new Pose(105.888, 85.682, Math.toRadians(45)).mirror();
+    private final Pose initGate = new Pose(136, 63, Math.toRadians(96)).mirror();
+    private final Pose openGate = new Pose(142, 63, Math.toRadians(96)).mirror();
+    private final Pose intakeBalls_1 = new Pose(110.888, 76.682, Math.toRadians(0)).mirror();
+    private final Pose intakeBalls_2 = new Pose(110.888,  53, Math.toRadians(0)).mirror();
+    private final Pose intakeBalls_3 = new Pose(110.888, 30, Math.toRadians(0)).mirror();
+    private final Pose takeBalls_1 = new Pose(138, 74.682, Math.toRadians(0)).mirror();
+    private final Pose takeBalls_2 = new Pose(145, 51, Math.toRadians(0)).mirror();
+    private final Pose goBack = new Pose(138, 51, Math.toRadians(0)).mirror();
+    private final Pose takeBalls_3 = new Pose(145, 30, Math.toRadians(0)).mirror();
+    private final Pose endPose = new Pose(130.206, 60.121, Math.toRadians(270)).mirror();
 
     private Follower follower;
     private Path pathOne, pathOneTwo, pathTwo, pathThree, pathFour, pathFive, pathBack, pathSix, pathSeven, pathEight, pathNine, pathTen, pathInitGate ,pathOpenGate;
@@ -94,19 +94,20 @@ public class Autonomous_Red_Close extends NextFTCOpMode {
         return new SequentialGroup(
                 Shooter.INSTANCE.shooterAutoOn(),
                 new FollowPath(pathOne), // Indo pro scorePose
+                new Delay(0.3), // Limelight se alinhando
                 Intake.INSTANCE.coletAutoOn(),
-                new Delay(1.3),
+                new Delay(1.2),
                 Intake.INSTANCE.stopAuto(), // Lançou as primeiras bolas
                 new FollowPath(pathOneTwo),
                 new ParallelGroup(new FollowPath(pathTwo), Intake.INSTANCE.coletAutoOn(), Shooter.INSTANCE.shooterAutoNegative()), // Pegou a primeira fileira
                 new Delay(0.4),
                 new ParallelGroup(new FollowPath(pathInitGate), Intake.INSTANCE.stopAuto()), // Indo abrir o gate
-                new FollowPath(pathInitGate, false),
-                new FollowPath(pathOpenGate, false), // Abriu o gate
-                new Delay(1.35), // Espera o gate
+                new FollowPath(pathInitGate, false, 0.02),
+                new FollowPath(pathOpenGate), // Abriu o gate
+                new Delay(1.45), // Espera o gate
                 Shooter.INSTANCE.shooterAutoOn(),
                 new FollowPath(pathThree), // Indo pro scorePose
-                new Delay(0.3), // Limelight se alinhando
+                new Delay(0.4), // Limelight se alinhando
                 Intake.INSTANCE.coletAutoOn(),
                 new Delay(1), // Lançou a primeira fileira
                 Intake.INSTANCE.stopAuto(),
@@ -118,20 +119,20 @@ public class Autonomous_Red_Close extends NextFTCOpMode {
                 Intake.INSTANCE.stopAuto(),
                 Shooter.INSTANCE.shooterAutoOn(),
                 new FollowPath(pathSix), // Indo pro scorePose
-                new Delay(0.5),
+                new Delay(0.3), // Limelight se alinhando
                 Intake.INSTANCE.coletAutoOn(),
-                new Delay(1.3), // Lançou a segunda fileira
+                new Delay(1.2), // Lançou a segunda fileira
                 Intake.INSTANCE.stopAuto(),
                 new FollowPath(pathSeven),
                 new Delay(0.15), // Aguentando o supapo
                 new ParallelGroup(new FollowPath(pathEight), Intake.INSTANCE.coletAutoOn(), Shooter.INSTANCE.shooterAutoNegative()), // Pegou a terceira fileira
-                new Delay(0.3),
+                new Delay(0.4),
                 Intake.INSTANCE.stopAuto(),
                 Shooter.INSTANCE.shooterAutoOn(),
                 new FollowPath(pathNine), // Indo pro scorePose
-                new Delay(0.8), // Limelight se alinhando
+                new Delay(0.4), // Limelight se alinhando
                 Intake.INSTANCE.coletAutoOn(),
-                new Delay(1.3),
+                new Delay(1.2),
                 Intake.INSTANCE.stopAuto(),
                 new FollowPath(pathTen)
 
@@ -143,7 +144,7 @@ public class Autonomous_Red_Close extends NextFTCOpMode {
         panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
         follower = Constants.createFollower(hardwareMap);
         new InstantCommand(() -> {
-           Turret.INSTANCE.resetEncoder.invoke();
+            Turret.INSTANCE.resetEncoder.invoke();
         });
         new InstantCommand(() -> {
             LimelightSubsystem.INSTANCE.switchIndexRed.invoke();
@@ -176,7 +177,7 @@ public class Autonomous_Red_Close extends NextFTCOpMode {
         panelsTelemetry.debug("X", follower.getPose().getX());
         panelsTelemetry.debug("Y", follower.getPose().getY());
         panelsTelemetry.debug("Heading", Math.toDegrees(follower.getPose().getHeading()));
-        Turret.INSTANCE.alignTurret(follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading(), Turret.INSTANCE.currentTicks, false);
+        Turret.INSTANCE.alignTurret(follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading(), Turret.INSTANCE.currentTicks, true);
         panelsTelemetry.update(telemetry);
         telemetry.update();
         follower.update();

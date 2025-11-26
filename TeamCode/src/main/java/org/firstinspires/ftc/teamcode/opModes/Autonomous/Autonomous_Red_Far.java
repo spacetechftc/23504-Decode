@@ -16,6 +16,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 import static org.firstinspires.ftc.teamcode.opModes.Autonomous.Autonomous_Red_Close.autoEndPose;
 import dev.nextftc.core.commands.Command;
+import dev.nextftc.core.commands.delays.Delay;
 import dev.nextftc.core.commands.groups.SequentialGroup;
 import dev.nextftc.core.commands.utility.InstantCommand;
 import dev.nextftc.core.components.SubsystemComponent;
@@ -36,8 +37,8 @@ public class Autonomous_Red_Far extends NextFTCOpMode {
     private TelemetryManager panelsTelemetry;
 
     // Definição das coordenadas
-    private final Pose startPose = new Pose(123.585, -7.654, Math.toRadians(90));
-    private final Pose endPose = new Pose(130.206, -3, Math.toRadians(90));
+    private final Pose startPose = new Pose(110, -5., Math.toRadians(92));
+    private final Pose endPose = new Pose(125.206, 0, Math.toRadians(90));
 
     private Follower follower;
     private Path pathOne;
@@ -47,10 +48,31 @@ public class Autonomous_Red_Far extends NextFTCOpMode {
         pathOne.setConstantHeadingInterpolation(Math.toRadians(90));
     }
 
+    private Command shootBalls() {
+        return new SequentialGroup(
+                Shooter.INSTANCE.shooterAutoOnFar(),
+                new Delay(2.3),
+                Intake.INSTANCE.coletAutoOn(),
+                new Delay(0.2),// Lançou a primeira
+                Intake.INSTANCE.stopAuto(),
+                new Delay(0.8),
+                Intake.INSTANCE.coletAutoOn(),
+                new Delay(0.3), // Lançou a segunda
+                Intake.INSTANCE.stopAuto(),
+                new Delay(1),
+                Intake.INSTANCE.coletAutoOn(),
+                new Delay(0.3), // Lançou a terceira
+                Intake.INSTANCE.stopAuto(),
+                new Delay(0.6),
+                Intake.INSTANCE.coletAutoOn(),
+                new Delay(0.3), // Caso não dê pra lançar a terceira
+                Intake.INSTANCE.stopAuto()
+        );
+    }
     private Command autonomousRoutine() {
         return new SequentialGroup(
-            new FollowPath(pathOne)
-
+            shootBalls(),
+                new FollowPath(pathOne)
         );
     }
 

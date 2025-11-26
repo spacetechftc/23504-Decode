@@ -17,7 +17,7 @@ public class Intake implements Subsystem {
     // Coeficientes do PID
     public static PIDCoefficients coefficients = new PIDCoefficients(0.0003, 0, 0);
     // Coeficientes do FeedForward
-    private static BasicFeedforwardParameters feedforward = new BasicFeedforwardParameters(0.0425, 0, 0);
+    private static BasicFeedforwardParameters feedforward = new BasicFeedforwardParameters(0.1, 0, 0.3);
     public static double velocity = 2000;
     public double currentVelocity;
 

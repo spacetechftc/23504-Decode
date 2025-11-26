@@ -20,7 +20,7 @@ public class Shooter implements Subsystem {
 
     // Coeficientes do Shooter
     private static PIDCoefficients coefficientsShooter = new PIDCoefficients(0.023, 0, 0);
-    private static BasicFeedforwardParameters feedforwardShooter = new BasicFeedforwardParameters(0.0005, 0, 0);
+    private static BasicFeedforwardParameters feedforwardShooter = new BasicFeedforwardParameters(0.00047, 0, 0.1);
 
     // Instância da Limelight
     private LimelightSubsystem limelight = LimelightSubsystem.INSTANCE;
@@ -62,13 +62,20 @@ public class Shooter implements Subsystem {
         // Conversor de M/S para TPS
     public double velocityToTPS(double velocity) {
         double raio = 0.0044;
-        return (((velocity / raio) / (2 * Math.PI)) * 28) * 0.228;
+        return (((velocity / raio) / (2 * Math.PI)) * 28) * 0.24;
     }
     // Comandos Autonomo
     public Command shooterAutoOn() {
         enabled = true;
         return new LambdaCommand()
-                .setStart(() -> controlShooter.setGoal(new KineticState(0, 1080, 0)))
+                .setStart(() -> controlShooter.setGoal(new KineticState(0, 1150, 0)))
+                .setIsDone(() -> true);
+    }
+
+    public Command shooterAutoOnFar() {
+        enabled = true;
+        return new LambdaCommand()
+                .setStart(() -> controlShooter.setGoal(new KineticState(0, 1540, 0)))
                 .setIsDone(() -> true);
     }
 
@@ -120,8 +127,6 @@ public class Shooter implements Subsystem {
             } else if (velocity < 1000) {
                 velocity = 1100;
             }
-        } else {
-            velocity = 1250;
         }
 
         if (enabled) {
