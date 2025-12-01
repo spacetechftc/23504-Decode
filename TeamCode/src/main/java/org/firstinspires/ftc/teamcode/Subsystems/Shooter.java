@@ -62,7 +62,7 @@ public class Shooter implements Subsystem {
         // Conversor de M/S para TPS
     public double velocityToTPS(double velocity) {
         double raio = 0.0044;
-        return (((velocity / raio) / (2 * Math.PI)) * 28) * 0.24;
+        return (((velocity / raio) / (2 * Math.PI)) * 28) * 0.235;
     }
     // Comandos Autonomo
     public Command shooterAutoOn() {
@@ -75,7 +75,7 @@ public class Shooter implements Subsystem {
     public Command shooterAutoOnFar() {
         enabled = true;
         return new LambdaCommand()
-                .setStart(() -> controlShooter.setGoal(new KineticState(0, 1540, 0)))
+                .setStart(() -> controlShooter.setGoal(new KineticState(0, 1600, 0)))
                 .setIsDone(() -> true);
     }
 

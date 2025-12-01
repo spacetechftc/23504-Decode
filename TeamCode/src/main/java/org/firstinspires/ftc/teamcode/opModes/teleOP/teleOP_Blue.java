@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.opModes.teleOP;
 
+import static org.firstinspires.ftc.teamcode.opModes.Autonomous.Autonomous_Blue_Close.autoEndPose;
+
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -31,11 +33,13 @@ public class teleOP_Blue extends NextFTCOpMode {
     MecanumDrive mecanumDrive = new MecanumDrive();
     private boolean shooterToggle = false;
     private boolean lastButtonState = false;
-    private final Pose startPose = new Pose(130.206, 60.121, Math.toRadians(270));
+
+    private boolean turretMidToggle = false;
+    private boolean turretLastButtonState = false;
 
     @Override
     public void onInit() {
-        PedroComponent.follower().setStartingPose(startPose);
+        PedroComponent.follower().setStartingPose(autoEndPose == null ? new Pose() : autoEndPose);
         PedroComponent.follower().updatePose();
         new InstantCommand(() -> {
             LimelightSubsystem.INSTANCE.switchIndexBlue.invoke();
@@ -69,6 +73,8 @@ public class teleOP_Blue extends NextFTCOpMode {
         }
         lastButtonState = currentButtonState;
 
+
+
         // Lógica Intake e Shooter
         if (gamepad1.left_trigger > 0.1 || shooterToggle || gamepad1.b) {
             if (gamepad1.left_trigger > 0.1) {
@@ -94,6 +100,11 @@ public class teleOP_Blue extends NextFTCOpMode {
         Turret.INSTANCE.alignTurret(x, y, heading, Turret.INSTANCE.currentTicks, true); // Torreta automática
 
         // Telemetry
+        telemetry.addData("Odometria", "------------------");
+        telemetry.addData("X", x);
+        telemetry.addData("Y", y);
+        telemetry.addData("Heading", Math.toDegrees(heading));
+
         telemetry.addData("Limelight", "------------------");
         telemetry.addData("Distance", LimelightSubsystem.INSTANCE.distance);
         telemetry.addData("TX", LimelightSubsystem.INSTANCE.tx);
@@ -113,6 +124,7 @@ public class teleOP_Blue extends NextFTCOpMode {
 
     @Override
     public void onStop() {
+        autoEndPose = PedroComponent.follower().getPose();
         BindingManager.reset();
     }
 }

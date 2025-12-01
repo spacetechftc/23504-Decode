@@ -37,8 +37,8 @@ public class Autonomous_Red_Far extends NextFTCOpMode {
     private TelemetryManager panelsTelemetry;
 
     // Definição das coordenadas
-    private final Pose startPose = new Pose(110, -5., Math.toRadians(92));
-    private final Pose endPose = new Pose(125.206, 0, Math.toRadians(90));
+    private final Pose startPose = new Pose(101, -4.707, Math.toRadians(92));
+    private final Pose endPose = new Pose(127.206, 0, Math.toRadians(90));
 
     private Follower follower;
     private Path pathOne;
@@ -57,7 +57,7 @@ public class Autonomous_Red_Far extends NextFTCOpMode {
                 Intake.INSTANCE.stopAuto(),
                 new Delay(0.8),
                 Intake.INSTANCE.coletAutoOn(),
-                new Delay(0.3), // Lançou a segunda
+                new Delay(0.25), // Lançou a segunda
                 Intake.INSTANCE.stopAuto(),
                 new Delay(1),
                 Intake.INSTANCE.coletAutoOn(),

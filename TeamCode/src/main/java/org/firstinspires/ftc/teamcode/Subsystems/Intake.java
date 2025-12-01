@@ -15,10 +15,10 @@ import dev.nextftc.hardware.impl.MotorEx;
 @Configurable
 public class Intake implements Subsystem {
     // Coeficientes do PID
-    public static PIDCoefficients coefficients = new PIDCoefficients(0.0003, 0, 0);
+    public static PIDCoefficients coefficients = new PIDCoefficients(0.001, 0, 0);
     // Coeficientes do FeedForward
-    private static BasicFeedforwardParameters feedforward = new BasicFeedforwardParameters(0.1, 0, 0.3);
-    public static double velocity = 2000;
+    private static BasicFeedforwardParameters feedforward = new BasicFeedforwardParameters(0.00046, 0, 0);
+    public static double velocity = 1800;
     public double currentVelocity;
 
     // Instância do Intake

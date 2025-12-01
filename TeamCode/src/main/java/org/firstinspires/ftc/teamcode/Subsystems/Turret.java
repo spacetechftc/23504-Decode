@@ -18,7 +18,7 @@ public class Turret implements Subsystem {
     public int targetTicks;
 
     // Configuração do PID -- Limelight
-    public static double kP = 0.019;
+    public static double kP = 0.017;
     public static double kD = 0;
     public static double kI = 0;
     private double integralSum = 0.0;
@@ -40,8 +40,8 @@ public class Turret implements Subsystem {
     private double RIGHT_LIMIT = -5000;
 
     // GOALS
-    public static double blueGoalX = 12;
-    public static double blueGoalY = 115;
+    public static double blueGoalX = 0;
+    public static double blueGoalY = 144;
     public static double redGoalX  = 138;
     public static double redGoalY  = 113;
 
@@ -62,8 +62,8 @@ public class Turret implements Subsystem {
         return (ticks / TICKS_PER_TURRET_REV) * 360.0;
     }
 
-    public void turretToPosition(int targetTicks) {
-        int error = currentTicks - targetTicks;
+    public void turretToMid() {
+        int error = currentTicks - 0;
         double derivative = error - LASTERROR;
         double power = (KP * error) + (KD * derivative);
 
@@ -78,6 +78,13 @@ public class Turret implements Subsystem {
         servo.setPower(power);
     }
 
+    private double normalizeAngle(double angle) {
+        angle = angle % 360;
+        if (angle > 180) angle -= 360;
+        if (angle < -180) angle += 360;
+        return angle;
+    }
+
     public double alignTurretWithOdometry(double x, double y, double heading, int currentTicks, boolean blue) {
         double headingDeg = Math.toDegrees(heading);
 
@@ -86,7 +93,7 @@ public class Turret implements Subsystem {
 
         double angleToGoal = Math.toDegrees(Math.atan2(goalY - y, goalX - x));
 
-        double turretAngle = headingDeg - angleToGoal;
+        double turretAngle = blue ? normalizeAngle(headingDeg - angleToGoal) : headingDeg - angleToGoal;
 
         targetTicks = degreesToTicks(turretAngle);
         int error = currentTicks - targetTicks;

@@ -31,7 +31,7 @@ public class teleOP_Test extends NextFTCOpMode {
     MecanumDrive mecanumDrive = new MecanumDrive();
     private boolean shooterToggle = false;
     private boolean lastButtonState = false;
-    private final Pose startPose = new Pose(33, -5, Math.toRadians(0));
+    private final Pose startPose = new Pose(144, 0, Math.toRadians(180));
 
     @Override
     public void onInit() {
@@ -40,11 +40,17 @@ public class teleOP_Test extends NextFTCOpMode {
         new InstantCommand(() -> {
             LimelightSubsystem.INSTANCE.switchIndexRed.invoke();
         });
+        new InstantCommand(() -> {
+            Turret.INSTANCE.resetEncoder.invoke();
+        });
     }
 
     @Override
     public void onWaitForStart() {
         LimelightSubsystem.INSTANCE.switchIndexRed.invoke();
+        new InstantCommand(() -> {
+            Turret.INSTANCE.resetEncoder.invoke();
+        });
         telemetry.addData("READY", "LET'S GO SPACETECH!");
         telemetry.update();
     }
@@ -91,7 +97,7 @@ public class teleOP_Test extends NextFTCOpMode {
             Shooter.INSTANCE.stop();
         }
 
-        Turret.INSTANCE.alignTurret(x, y, heading, Turret.INSTANCE.currentTicks, false); // Torreta automática
+        Turret.INSTANCE.alignTurret(x, y, heading, Turret.INSTANCE.currentTicks, true); // Torreta automática
         // Telemetry
         telemetry.addData("Odometria", "------------------");
         telemetry.addData("X", x);

@@ -34,6 +34,9 @@ public class teleOP_Red extends NextFTCOpMode {
     private boolean shooterToggle = false;
     private boolean lastButtonState = false;
 
+    private boolean turretMidToggle = false;
+    private boolean turretLastButtonState = false;
+
     @Override
     public void onInit() {
         PedroComponent.follower().setStartingPose(autoEndPose == null ? new Pose() : autoEndPose);
@@ -69,6 +72,8 @@ public class teleOP_Red extends NextFTCOpMode {
             shooterToggle = !shooterToggle; // inverte o estado do toggle
         }
         lastButtonState = currentButtonState;
+
+
 
         // Lógica Intake e Shooter
         if (gamepad1.left_trigger > 0.1 || shooterToggle || gamepad1.b) {
