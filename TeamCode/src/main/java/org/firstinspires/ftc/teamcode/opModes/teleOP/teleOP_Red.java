@@ -74,7 +74,15 @@ public class teleOP_Red extends NextFTCOpMode {
             shooterToggle = !shooterToggle; // inverte o estado do toggle
         }
         lastButtonState = currentButtonState;
+//----------------------------------------------------------------------------------------------------
+        // Estado da Torreta no meio
+        boolean currentButtonStateTurret = gamepad1.x;
 
+        // Detecta a transição de "solto" -> "pressionado"
+        if (currentButtonStateTurret && !turretLastButtonState) {
+            turretMidToggle = !turretMidToggle; // inverte o estado do toggle
+        }
+        turretLastButtonState = currentButtonStateTurret;
 
 
         // Lógica Intake e Shooter
@@ -99,7 +107,12 @@ public class teleOP_Red extends NextFTCOpMode {
             Shooter.INSTANCE.stop();
         }
 
-        Turret.INSTANCE.alignTurret(x, y, heading, Turret.INSTANCE.currentTicks, false); // Torreta automática
+        // Se a torreta fica centralizada no meio ou fica se centralizando.
+        if (turretMidToggle) {
+            Turret.INSTANCE.turretToMid();
+        } else {
+            Turret.INSTANCE.alignTurret(x, y, heading, Turret.INSTANCE.currentTicks, false); // Torreta automática
+        }
 
         // Telemetry
         telemetry.addData("Odometria", "------------------");

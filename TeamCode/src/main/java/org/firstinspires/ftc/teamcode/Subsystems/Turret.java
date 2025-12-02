@@ -63,16 +63,10 @@ public class Turret implements Subsystem {
     }
 
     public void turretToMid() {
-        int error = currentTicks - 0;
+        targetTicks = 0;
+        int error = currentTicks - targetTicks;
         double derivative = error - LASTERROR;
         double power = (KP * error) + (KD * derivative);
-
-        if (currentTicks >= LEFT_LIMIT && power < 0) {
-            power = 0;
-        }
-        if (currentTicks <= RIGHT_LIMIT && power > 0) {
-            power = 0;
-        }
 
         LASTERROR = error;
         servo.setPower(power);
