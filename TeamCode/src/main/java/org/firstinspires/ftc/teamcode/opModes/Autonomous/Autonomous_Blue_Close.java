@@ -44,13 +44,20 @@ public class Autonomous_Blue_Close extends NextFTCOpMode {
 
     // Definição das coordenadas
     private final Pose startPose = new Pose(37, 120, Math.toRadians(143));
-    private final Pose scorePose = new Pose(59, 75, Math.toRadians(178));
+    private final Pose scorePose = new Pose(59, 75, Math.toRadians(180));
 
     private final Pose initGate = new Pose(31, 69, Math.toRadians(90));
-    private final Pose openGate = new Pose(20, 69, Math.toRadians(90));
+    private final Pose openGate = new Pose(22, 69, Math.toRadians(90));
 
-    private final Pose intakeBalls_2 = new Pose(54, 48, Math.toRadians(178));
-    private final Pose takeBalls_1 = new Pose(34, 75, Math.toRadians(178));
+    private final Pose takeBalls_1 = new Pose(34, 75, Math.toRadians(180));
+    private final Pose takeBalls_2 = new Pose(28, 52, Math.toRadians(180));
+    private final Pose takeBalls_3 = new Pose(28, 29, Math.toRadians(180));
+
+    private final Pose intakeBalls_2 = new Pose(56, 52, Math.toRadians(180));
+    private final Pose intakeBalls_3 = new Pose(56, 29, Math.toRadians(180));
+
+    private final Pose goBack = new Pose(30, 52, Math.toRadians(180));
+    private final Pose endPose = new Pose(40, 69, Math.toRadians(270));
 
     private Follower follower;
     private Path pathOne, pathTwo, pathThree, pathFour, pathFive, pathBack, pathSix, pathSeven, pathEight, pathNine, pathTen, pathInitGate ,pathOpenGate;
@@ -59,12 +66,29 @@ public class Autonomous_Blue_Close extends NextFTCOpMode {
         pathOne = new Path(new BezierLine(startPose, scorePose));
         pathOne.setLinearHeadingInterpolation(startPose.getHeading(), scorePose.getHeading());
         pathTwo = new Path(new BezierLine(scorePose, takeBalls_1));
+        pathInitGate = new Path(new BezierLine(takeBalls_1, initGate));
+        pathInitGate.setLinearHeadingInterpolation(takeBalls_1.getHeading(), initGate.getHeading());
+        pathOpenGate = new Path(new BezierLine(initGate, openGate));
+        pathOpenGate.setLinearHeadingInterpolation(initGate.getHeading(), openGate.getHeading());
         pathTwo.setLinearHeadingInterpolation(scorePose.getHeading(), takeBalls_1.getHeading());
-        pathThree = new Path(new BezierLine(takeBalls_1, scorePose));
-        pathThree.setLinearHeadingInterpolation(takeBalls_1.getHeading(), scorePose.getHeading());
+        pathThree = new Path(new BezierLine(openGate, scorePose));
+        pathThree.setLinearHeadingInterpolation(openGate.getHeading(), scorePose.getHeading());
         pathFour = new Path(new BezierLine(scorePose, intakeBalls_2));
         pathFour.setLinearHeadingInterpolation(scorePose.getHeading(), intakeBalls_2.getHeading());
-
+        pathFive = new Path(new BezierLine(intakeBalls_2, takeBalls_2));
+        pathFive.setLinearHeadingInterpolation(intakeBalls_2.getHeading(), takeBalls_2.getHeading());
+        pathBack = new Path(new BezierLine(takeBalls_2, goBack));
+        pathBack.setLinearHeadingInterpolation(takeBalls_1.getHeading(), goBack.getHeading());
+        pathSix = new Path(new BezierLine(goBack, scorePose));
+        pathSix.setLinearHeadingInterpolation(goBack.getHeading(), scorePose.getHeading());
+        pathSeven = new Path(new BezierLine(scorePose, intakeBalls_3));
+        pathSeven.setLinearHeadingInterpolation(scorePose.getHeading(), intakeBalls_3.getHeading());
+        pathEight = new Path(new BezierLine(intakeBalls_3, takeBalls_3));
+        pathEight.setLinearHeadingInterpolation(intakeBalls_3.getHeading(), takeBalls_3.getHeading());
+        pathNine = new Path(new BezierLine(takeBalls_3, scorePose));
+        pathNine.setLinearHeadingInterpolation(takeBalls_3.getHeading(), scorePose.getHeading());
+        pathTen = new Path(new BezierLine(scorePose, endPose));
+        pathTen.setLinearHeadingInterpolation(scorePose.getHeading(), endPose.getHeading());
 
     }
 
@@ -72,20 +96,49 @@ public class Autonomous_Blue_Close extends NextFTCOpMode {
         return new SequentialGroup(
                 Shooter.INSTANCE.shooterAutoOn(),
                 new FollowPath(pathOne),  // Indo pro scorePose
+                new Delay(0.2),
                 Intake.INSTANCE.coletAutoOn(),
                 new Delay(1.1),
                 Shooter.INSTANCE.shooterAutoNegative(),
                 new FollowPath(pathTwo),
                 new Delay(0.2),
                 Intake.INSTANCE.stopAuto(),
+                new FollowPath(pathInitGate),
+                new FollowPath(pathOpenGate),
+                new Delay(0.85),
                 Shooter.INSTANCE.shooterAutoOn(),
                 new FollowPath(pathThree),
+                new Delay(0.3),
                 Intake.INSTANCE.coletAutoOn(),
                 new Delay(1.1),
-                Shooter.INSTANCE.shooterAutoNegative(),
                 Intake.INSTANCE.stopAuto(),
-                new FollowPath(pathFour)
-
+                new FollowPath(pathFour),
+                Intake.INSTANCE.coletAutoOn(),
+                Shooter.INSTANCE.shooterAutoNegative(),
+                new FollowPath(pathFive),
+                new Delay(0.2),
+                new FollowPath(pathBack),
+                new Delay(0.1),
+                Intake.INSTANCE.stopAuto(),
+                Shooter.INSTANCE.shooterAutoOn(),
+                new FollowPath(pathSix),
+                new Delay(0.4),
+                Intake.INSTANCE.coletAutoOn(),
+                new Delay(1.1),
+                Intake.INSTANCE.stopAuto(),
+                new FollowPath(pathSeven),
+                Shooter.INSTANCE.shooterAutoNegative(),
+                Intake.INSTANCE.coletAutoOn(),
+                new FollowPath(pathEight),
+                new Delay(0.2),
+                Intake.INSTANCE.stopAuto(),
+                Shooter.INSTANCE.shooterAutoOn(),
+                new FollowPath(pathNine),
+                new Delay(0.4),
+                Intake.INSTANCE.coletAutoOn(),
+                new Delay(1.1),
+                new FollowPath(pathTen),
+                Intake.INSTANCE.stopAuto()
 
         );
     }
@@ -128,7 +181,7 @@ public class Autonomous_Blue_Close extends NextFTCOpMode {
         panelsTelemetry.debug("X", follower.getPose().getX());
         panelsTelemetry.debug("Y", follower.getPose().getY());
         panelsTelemetry.debug("Heading", Math.toDegrees(follower.getPose().getHeading()));
-        //Turret.INSTANCE.alignTurret(follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading(), Turret.INSTANCE.currentTicks, true);
+        Turret.INSTANCE.alignTurret(follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading(), Turret.INSTANCE.currentTicks, true);
         panelsTelemetry.update(telemetry);
         telemetry.update();
         follower.update();

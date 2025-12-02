@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.opModes.teleOP;
 
-import static org.firstinspires.ftc.teamcode.opModes.Autonomous.Autonomous_Red_Close.autoEndPose;
-
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -20,9 +18,9 @@ import dev.nextftc.extensions.pedro.PedroComponent;
 import dev.nextftc.ftc.NextFTCOpMode;
 import dev.nextftc.ftc.components.BulkReadComponent;
 
-@TeleOp(name="TeleOp - Red", group = "Official")
-public class teleOP_Red extends NextFTCOpMode {
-    public teleOP_Red() {
+@TeleOp(name="TeleOp - Test - Blue", group = "OpModes Tests")
+public class teleOP_Test_Blue extends NextFTCOpMode {
+    public teleOP_Test_Blue() {
         addComponents(
                 new SubsystemComponent(Intake.INSTANCE, Shooter.INSTANCE, LimelightSubsystem.INSTANCE, Turret.INSTANCE),
                 BulkReadComponent.INSTANCE,
@@ -33,23 +31,25 @@ public class teleOP_Red extends NextFTCOpMode {
     MecanumDrive mecanumDrive = new MecanumDrive();
     private boolean shooterToggle = false;
     private boolean lastButtonState = false;
-
-    private boolean turretMidToggle = false;
-    private boolean turretLastButtonState = false;
+    private final Pose startPose = new Pose(144, 0, Math.toRadians(180));
 
     @Override
     public void onInit() {
-        PedroComponent.follower().setStartingPose(autoEndPose == null ? new Pose() : autoEndPose);
+        PedroComponent.follower().setStartingPose(startPose);
         PedroComponent.follower().updatePose();
         new InstantCommand(() -> {
-            LimelightSubsystem.INSTANCE.switchIndexRed.invoke();
+            LimelightSubsystem.INSTANCE.switchIndexBlue.invoke();
+        });
+        new InstantCommand(() -> {
+            Turret.INSTANCE.resetEncoder.invoke();
         });
     }
 
     @Override
     public void onWaitForStart() {
+        LimelightSubsystem.INSTANCE.switchIndexBlue.invoke();
         new InstantCommand(() -> {
-            LimelightSubsystem.INSTANCE.switchIndexRed.invoke();
+            Turret.INSTANCE.resetEncoder.invoke();
         });
         telemetry.addData("READY", "LET'S GO SPACETECH!");
         telemetry.update();
@@ -75,8 +75,6 @@ public class teleOP_Red extends NextFTCOpMode {
         }
         lastButtonState = currentButtonState;
 
-
-
         // Lógica Intake e Shooter
         if (gamepad1.left_trigger > 0.1 || shooterToggle || gamepad1.b) {
             if (gamepad1.left_trigger > 0.1) {
@@ -99,8 +97,7 @@ public class teleOP_Red extends NextFTCOpMode {
             Shooter.INSTANCE.stop();
         }
 
-        Turret.INSTANCE.alignTurret(x, y, heading, Turret.INSTANCE.currentTicks, false); // Torreta automática
-
+        Turret.INSTANCE.alignTurret(x, y, heading, Turret.INSTANCE.currentTicks, true); // Torreta automática
         // Telemetry
         telemetry.addData("Odometria", "------------------");
         telemetry.addData("X", x);
@@ -126,7 +123,6 @@ public class teleOP_Red extends NextFTCOpMode {
 
     @Override
     public void onStop() {
-        autoEndPose = PedroComponent.follower().getPose();
         BindingManager.reset();
     }
 }

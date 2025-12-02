@@ -18,9 +18,9 @@ import dev.nextftc.extensions.pedro.PedroComponent;
 import dev.nextftc.ftc.NextFTCOpMode;
 import dev.nextftc.ftc.components.BulkReadComponent;
 
-@TeleOp(name="TeleOp - Test", group = "OpModes Tests")
-public class teleOP_Test extends NextFTCOpMode {
-    public teleOP_Test() {
+@TeleOp(name="TeleOp - Test - Red", group = "OpModes Tests")
+public class teleOP_Test_Red extends NextFTCOpMode {
+    public teleOP_Test_Red() {
         addComponents(
                 new SubsystemComponent(Intake.INSTANCE, Shooter.INSTANCE, LimelightSubsystem.INSTANCE, Turret.INSTANCE),
                 BulkReadComponent.INSTANCE,
@@ -31,7 +31,7 @@ public class teleOP_Test extends NextFTCOpMode {
     MecanumDrive mecanumDrive = new MecanumDrive();
     private boolean shooterToggle = false;
     private boolean lastButtonState = false;
-    private final Pose startPose = new Pose(144, 0, Math.toRadians(180));
+    private final Pose startPose = new Pose(33, -5, Math.toRadians(0));
 
     @Override
     public void onInit() {
@@ -47,7 +47,9 @@ public class teleOP_Test extends NextFTCOpMode {
 
     @Override
     public void onWaitForStart() {
-        LimelightSubsystem.INSTANCE.switchIndexRed.invoke();
+        new InstantCommand(() -> {
+            LimelightSubsystem.INSTANCE.switchIndexRed.invoke();
+        });
         new InstantCommand(() -> {
             Turret.INSTANCE.resetEncoder.invoke();
         });
@@ -97,7 +99,7 @@ public class teleOP_Test extends NextFTCOpMode {
             Shooter.INSTANCE.stop();
         }
 
-        Turret.INSTANCE.alignTurret(x, y, heading, Turret.INSTANCE.currentTicks, true); // Torreta automática
+        Turret.INSTANCE.alignTurret(x, y, heading, Turret.INSTANCE.currentTicks, false); // Torreta automática
         // Telemetry
         telemetry.addData("Odometria", "------------------");
         telemetry.addData("X", x);

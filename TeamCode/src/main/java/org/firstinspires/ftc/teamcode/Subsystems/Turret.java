@@ -18,7 +18,7 @@ public class Turret implements Subsystem {
     public int targetTicks;
 
     // Configuração do PID -- Limelight
-    public static double kP = 0.017;
+    public static double kP = 0.016;
     public static double kD = 0;
     public static double kI = 0;
     private double integralSum = 0.0;
