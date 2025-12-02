@@ -51,7 +51,7 @@ public class Autonomous_Red_Far extends NextFTCOpMode {
     private Command shootBalls() {
         return new SequentialGroup(
                 Shooter.INSTANCE.shooterAutoOnFar(),
-                new Delay(2.3),
+                new Delay(3),
                 Intake.INSTANCE.coletAutoOn(),
                 new Delay(0.2),// Lançou a primeira
                 Intake.INSTANCE.stopAuto(),

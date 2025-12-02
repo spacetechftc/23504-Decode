@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.Subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.Subsystems.Turret;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
-import static org.firstinspires.ftc.teamcode.opModes.Autonomous.Autonomous_Red_Close.autoEndPose;
+import static org.firstinspires.ftc.teamcode.opModes.Autonomous.Autonomous_Blue_Close.autoEndPose;
 import dev.nextftc.core.commands.Command;
 import dev.nextftc.core.commands.delays.Delay;
 import dev.nextftc.core.commands.groups.SequentialGroup;
@@ -37,8 +37,8 @@ public class Autonomous_Blue_Far extends NextFTCOpMode {
     private TelemetryManager panelsTelemetry;
 
     // Definição das coordenadas
-    private final Pose startPose = new Pose(101, -4.707, Math.toRadians(92));
-    private final Pose endPose = new Pose(127.206, 0, Math.toRadians(90));
+    private final Pose startPose = new Pose(67.6786, 0.5, Math.toRadians(90));
+    private final Pose endPose = new Pose(40, 5, Math.toRadians(90));
 
     private Follower follower;
     private Path pathOne;
@@ -51,7 +51,7 @@ public class Autonomous_Blue_Far extends NextFTCOpMode {
     private Command shootBalls() {
         return new SequentialGroup(
                 Shooter.INSTANCE.shooterAutoOnFar(),
-                new Delay(2.3),
+                new Delay(3),
                 Intake.INSTANCE.coletAutoOn(),
                 new Delay(0.2),// Lançou a primeira
                 Intake.INSTANCE.stopAuto(),
