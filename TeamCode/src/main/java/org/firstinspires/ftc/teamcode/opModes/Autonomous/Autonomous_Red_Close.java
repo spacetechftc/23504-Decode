@@ -50,7 +50,6 @@ public class Autonomous_Red_Close extends NextFTCOpMode {
 
     private final Pose initGate = new Pose(136, 63, Math.toRadians(96));
     private final Pose openGate = new Pose(142, 63, Math.toRadians(96));
-    private final Pose intakeBalls_1 = new Pose(110.888, 76.682, Math.toRadians(0));
     private final Pose intakeBalls_2 = new Pose(110.888,  53, Math.toRadians(0));
     private final Pose intakeBalls_3 = new Pose(110.888, 30, Math.toRadians(0));
     private final Pose takeBalls_1 = new Pose(139, 74.682, Math.toRadians(0));
@@ -60,13 +59,11 @@ public class Autonomous_Red_Close extends NextFTCOpMode {
     private final Pose endPose = new Pose(130.206, 60.121, Math.toRadians(270));
 
     private Follower follower;
-    private Path pathOne, pathOneTwo, pathTwo, pathThree, pathFour, pathFive, pathBack, pathSix, pathSeven, pathEight, pathNine, pathTen, pathInitGate ,pathOpenGate;
+    private Path pathOne, pathTwo, pathThree, pathFour, pathFive, pathBack, pathSix, pathSeven, pathEight, pathNine, pathTen, pathInitGate ,pathOpenGate;
 
     public void buildPaths() {
         pathOne = new Path(new BezierLine(startPose, scorePose));
         pathOne.setLinearHeadingInterpolation(startPose.getHeading(), scorePose.getHeading());
-        pathOneTwo = new Path(new BezierLine(scorePose, intakeBalls_1));
-        pathOneTwo.setLinearHeadingInterpolation(scorePose.getHeading(), intakeBalls_1.getHeading());
         pathTwo = new Path(new BezierLine(scorePose, takeBalls_1));
         pathTwo.setConstantHeadingInterpolation(0);
         pathThree = new Path(new BezierLine(openGate, scorePose));
@@ -93,57 +90,11 @@ public class Autonomous_Red_Close extends NextFTCOpMode {
         pathBack.setConstantHeadingInterpolation(0);
     }
 
-    /*private Command autonomousRoutine() {
-        return new SequentialGroup(
-                Shooter.INSTANCE.shooterAutoOn(),
-                new FollowPath(pathOne), // Indo pro scorePose
-                Intake.INSTANCE.coletAutoOn(),
-                new Delay(1.1),
-                Intake.INSTANCE.stopAuto(), // Lançou as primeiras bolas
-                new FollowPath(pathOneTwo),
-                new ParallelGroup(new FollowPath(pathTwo), Intake.INSTANCE.coletAutoOn(), Shooter.INSTANCE.shooterAutoNegative()), // Pegou a primeira fileira
-                new Delay(0.2),
-                new ParallelGroup(new FollowPath(pathInitGate), Intake.INSTANCE.stopAuto()), // Indo abrir o gate
-                new FollowPath(pathInitGate, false),
-                new FollowPath(pathOpenGate, false), // Abriu o gate
-                new Delay(0.85), // Espera o gate
-                Shooter.INSTANCE.shooterAutoOn(),
-                new FollowPath(pathThree), // Indo pro scorePose
-                new Delay(0.05), // Limelight se alinhando
-                Intake.INSTANCE.coletAutoOn(),
-                new Delay(1.1), // Lançou a primeira fileira
-                Intake.INSTANCE.stopAuto(),
-                new FollowPath(pathFour),
-                new ParallelGroup(new FollowPath(pathFive), Intake.INSTANCE.coletAutoOn(), Shooter.INSTANCE.shooterAutoNegative()), // Pegou a segunda fileira
-                new Delay(0.3),
-                new FollowPath(pathBack),
-                new Delay(0.1),
-                Intake.INSTANCE.stopAuto(),
-                Shooter.INSTANCE.shooterAutoOn(),
-                new FollowPath(pathSix), // Indo pro scorePose
-                new Delay(0.8),
-                Intake.INSTANCE.coletAutoOn(),
-                new Delay(1), // Lançou a segunda fileira
-                Intake.INSTANCE.stopAuto(),
-                new FollowPath(pathSeven),
-                new ParallelGroup(new FollowPath(pathEight), Intake.INSTANCE.coletAutoOn(), Shooter.INSTANCE.shooterAutoNegative()), // Pegou a terceira fileira
-                new Delay(0.3),
-                Intake.INSTANCE.stopAuto(),
-                Shooter.INSTANCE.shooterAutoOn(),
-                new FollowPath(pathNine), // Indo pro scorePose
-                new Delay(0.7), // Limelight se alinhando
-                Intake.INSTANCE.coletAutoOn(),
-                new Delay(1),
-                new FollowPath(pathTen)
-
-        );
-    }
-
-     */
     private Command autonomousRoutine() {
         return new SequentialGroup(
                 Shooter.INSTANCE.shooterAutoOn(),
                 new FollowPath(pathOne), // Indo pro scorePose
+                new Delay(0.2),
                 Intake.INSTANCE.coletAutoOn(),
                 new Delay(1.1),// Lançou as primeiras bolas
                 new ParallelGroup(new FollowPath(pathTwo), Shooter.INSTANCE.shooterAutoNegative()), // Pegou a primeira fileira

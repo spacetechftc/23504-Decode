@@ -62,7 +62,7 @@ public class Shooter implements Subsystem {
         // Conversor de M/S para TPS
     public double velocityToTPS(double velocity) {
         double raio = 0.0044;
-        return (((velocity / raio) / (2 * Math.PI)) * 28) * 0.235;
+        return (((velocity / raio) / (2 * Math.PI)) * 28) * 0.2332;
     }
     // Comandos Autonomo
     public Command shooterAutoOn() {

@@ -60,7 +60,7 @@ public class Autonomous_Blue_Close extends NextFTCOpMode {
     private final Pose endPose = new Pose(40, 69, Math.toRadians(270));
 
     private Follower follower;
-    private Path pathOne, pathTwo, pathThree, pathFour, pathFive, pathBack, pathSix, pathSeven, pathEight, pathNine, pathTen, pathInitGate ,pathOpenGate;
+    private Path pathOne, pathTwo, pathThree, pathFour, pathFive, pathBack, pathSix, pathSeven, pathEight, pathNine, pathTen, pathInitGate, pathOpenGate;
 
     public void buildPaths() {
         pathOne = new Path(new BezierLine(startPose, scorePose));
