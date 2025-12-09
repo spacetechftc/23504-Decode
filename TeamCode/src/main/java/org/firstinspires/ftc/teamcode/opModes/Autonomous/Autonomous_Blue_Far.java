@@ -25,7 +25,7 @@ import dev.nextftc.extensions.pedro.PedroComponent;
 import dev.nextftc.ftc.NextFTCOpMode;
 import dev.nextftc.ftc.components.BulkReadComponent;
 
-@Autonomous(name="Auto Blue - Far")
+@Autonomous(name="Auto Blue - Far", preselectTeleOp = "TeleOp - Blue")
 public class Autonomous_Blue_Far extends NextFTCOpMode {
     public Autonomous_Blue_Far() {
         addComponents(
@@ -95,9 +95,6 @@ public class Autonomous_Blue_Far extends NextFTCOpMode {
 
     @Override
     public void onWaitForStart() {
-        new InstantCommand(() -> {
-            LimelightSubsystem.INSTANCE.switchIndexBlue.invoke();
-        });
         new InstantCommand(() -> {
             Turret.INSTANCE.resetEncoder.invoke();
         });

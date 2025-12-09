@@ -95,7 +95,11 @@ public class teleOP_Test_Blue extends NextFTCOpMode {
                 Intake.INSTANCE.stop();
             }
             if (shooterToggle) {
-                Shooter.INSTANCE.shooterOn().invoke();
+                if (turretMidToggle) {
+                    Shooter.INSTANCE.fixedVelocity().invoke();
+                } else {
+                    Shooter.INSTANCE.shooterOn().invoke();
+                }
             } else {
                 Shooter.INSTANCE.shooterNegative().invoke();
             }

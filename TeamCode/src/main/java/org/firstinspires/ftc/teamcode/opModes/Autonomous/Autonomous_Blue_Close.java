@@ -29,7 +29,7 @@ import dev.nextftc.extensions.pedro.TurnTo;
 import dev.nextftc.ftc.NextFTCOpMode;
 import dev.nextftc.ftc.components.BulkReadComponent;
 
-@Autonomous(name="12 Ball - Blue Close")
+@Autonomous(name="12 Ball - Blue Close", preselectTeleOp = "TeleOp - Blue")
 @Configurable
 public class Autonomous_Blue_Close extends NextFTCOpMode {
     public Autonomous_Blue_Close() {
@@ -162,9 +162,6 @@ public class Autonomous_Blue_Close extends NextFTCOpMode {
 
     @Override
     public void onWaitForStart() {
-        new InstantCommand(() -> {
-            LimelightSubsystem.INSTANCE.switchIndexBlue.invoke();
-        });
         new InstantCommand(() -> {
             Turret.INSTANCE.resetEncoder.invoke();
         });

@@ -29,7 +29,7 @@ import dev.nextftc.extensions.pedro.TurnTo;
 import dev.nextftc.ftc.NextFTCOpMode;
 import dev.nextftc.ftc.components.BulkReadComponent;
 
-@Autonomous(name="12 Ball - Red Close")
+@Autonomous(name="12 Ball - Red Close", preselectTeleOp = "TeleOp - Red")
 @Configurable
 public class Autonomous_Red_Close extends NextFTCOpMode {
     public Autonomous_Red_Close() {
@@ -48,8 +48,8 @@ public class Autonomous_Red_Close extends NextFTCOpMode {
 
     private final Pose scorePose = new Pose(108.888, 76.682, Math.toRadians(0));
 
-    private final Pose initGate = new Pose(136, 63, Math.toRadians(96));
-    private final Pose openGate = new Pose(142, 63, Math.toRadians(96));
+    private final Pose initGate = new Pose(136, 62, Math.toRadians(96));
+    private final Pose openGate = new Pose(142, 62, Math.toRadians(96));
     private final Pose intakeBalls_2 = new Pose(110.888,  53, Math.toRadians(0));
     private final Pose intakeBalls_3 = new Pose(110.888, 30, Math.toRadians(0));
     private final Pose takeBalls_1 = new Pose(139, 74.682, Math.toRadians(0));
@@ -153,9 +153,6 @@ public class Autonomous_Red_Close extends NextFTCOpMode {
 
     @Override
     public void onWaitForStart() {
-        new InstantCommand(() -> {
-            LimelightSubsystem.INSTANCE.switchIndexRed.invoke();
-        });
         new InstantCommand(() -> {
             Turret.INSTANCE.resetEncoder.invoke();
         });

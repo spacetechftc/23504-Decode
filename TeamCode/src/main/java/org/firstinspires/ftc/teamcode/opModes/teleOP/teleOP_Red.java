@@ -48,9 +48,7 @@ public class teleOP_Red extends NextFTCOpMode {
 
     @Override
     public void onWaitForStart() {
-        new InstantCommand(() -> {
-            LimelightSubsystem.INSTANCE.switchIndexRed.invoke();
-        });
+        LimelightSubsystem.INSTANCE.switchIndexRed.invoke();
         telemetry.addData("READY", "LET'S GO SPACETECH!");
         telemetry.update();
     }
@@ -93,7 +91,11 @@ public class teleOP_Red extends NextFTCOpMode {
                 Intake.INSTANCE.stop();
             }
             if (shooterToggle) {
-                Shooter.INSTANCE.shooterOn().invoke();
+                if (turretMidToggle) {
+                    Shooter.INSTANCE.fixedVelocity().invoke();
+                } else {
+                    Shooter.INSTANCE.shooterOn().invoke();
+                }
             } else {
                 Shooter.INSTANCE.shooterNegative().invoke();
             }

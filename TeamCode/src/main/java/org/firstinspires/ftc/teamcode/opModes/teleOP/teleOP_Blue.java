@@ -82,8 +82,6 @@ public class teleOP_Blue extends NextFTCOpMode {
         }
         turretLastButtonState = currentButtonStateTurret;
 
-
-
         // Lógica Intake e Shooter
         if (gamepad1.left_trigger > 0.1 || shooterToggle || gamepad1.b) {
             if (gamepad1.left_trigger > 0.1) {
@@ -92,7 +90,11 @@ public class teleOP_Blue extends NextFTCOpMode {
                 Intake.INSTANCE.stop();
             }
             if (shooterToggle) {
-                Shooter.INSTANCE.shooterOn().invoke();
+                if (turretMidToggle) {
+                    Shooter.INSTANCE.fixedVelocity().invoke();
+                } else {
+                    Shooter.INSTANCE.shooterOn().invoke();
+                }
             } else {
                 Shooter.INSTANCE.shooterNegative().invoke();
             }
