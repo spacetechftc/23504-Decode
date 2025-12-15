@@ -9,6 +9,7 @@ import dev.nextftc.control.feedforward.BasicFeedforwardParameters;
 import dev.nextftc.core.commands.Command;
 import dev.nextftc.core.commands.utility.LambdaCommand;
 import dev.nextftc.core.subsystems.Subsystem;
+import dev.nextftc.ftc.Gamepads;
 import dev.nextftc.hardware.controllable.MotorGroup;
 import dev.nextftc.hardware.controllable.RunToVelocity;
 import dev.nextftc.hardware.impl.MotorEx;
@@ -133,6 +134,10 @@ public class Shooter implements Subsystem {
             shooterMotor.setPower(controlShooter.calculate(shooterMotor.getState()));
         } else {
             shooterMotor.setPower(0.001);
+        }
+
+        if (currentVelocity >= velocity - 200 && currentVelocity <= velocity + 200) {
+
         }
 
         currentVelocity = shooterMotor.getVelocity();

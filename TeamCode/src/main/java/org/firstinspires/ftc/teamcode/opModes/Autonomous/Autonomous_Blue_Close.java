@@ -43,20 +43,20 @@ public class Autonomous_Blue_Close extends NextFTCOpMode {
     public static Pose autoEndPose;
 
     // Definição das coordenadas
-    private final Pose startPose = new Pose(37, 120, Math.toRadians(143));
-    private final Pose scorePose = new Pose(59, 75, Math.toRadians(180));
+    private final Pose startPose = new Pose(39, 120, Math.toRadians(143));
+    private final Pose scorePose = new Pose(70, 78, Math.toRadians(180));
 
     private final Pose initGate = new Pose(31, 69, Math.toRadians(90));
-    private final Pose openGate = new Pose(22, 69, Math.toRadians(90));
+    private final Pose openGate = new Pose(29, 69, Math.toRadians(90));
 
-    private final Pose takeBalls_1 = new Pose(34, 75, Math.toRadians(180));
-    private final Pose takeBalls_2 = new Pose(28, 52, Math.toRadians(180));
+    private final Pose takeBalls_1 = new Pose(34, 78, Math.toRadians(180));
+    private final Pose takeBalls_2 = new Pose(28, 54, Math.toRadians(180));
     private final Pose takeBalls_3 = new Pose(28, 29, Math.toRadians(180));
 
-    private final Pose intakeBalls_2 = new Pose(56, 52, Math.toRadians(180));
-    private final Pose intakeBalls_3 = new Pose(56, 29, Math.toRadians(180));
+    private final Pose intakeBalls_2 = new Pose(59, 54, Math.toRadians(180));
+    private final Pose intakeBalls_3 = new Pose(59, 29, Math.toRadians(180));
 
-    private final Pose goBack = new Pose(30, 52, Math.toRadians(180));
+    private final Pose goBack = new Pose(32, 52, Math.toRadians(180));
     private final Pose endPose = new Pose(40, 69, Math.toRadians(270));
 
     private Follower follower;

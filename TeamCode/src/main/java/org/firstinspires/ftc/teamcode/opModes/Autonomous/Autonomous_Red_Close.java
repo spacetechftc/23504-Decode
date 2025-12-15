@@ -48,8 +48,8 @@ public class Autonomous_Red_Close extends NextFTCOpMode {
 
     private final Pose scorePose = new Pose(108.888, 76.682, Math.toRadians(0));
 
-    private final Pose initGate = new Pose(136, 62, Math.toRadians(96));
-    private final Pose openGate = new Pose(142, 62, Math.toRadians(96));
+    private final Pose initGate = new Pose(136, 62.7, Math.toRadians(96));
+    private final Pose openGate = new Pose(137.2, 62.7, Math.toRadians(96));
     private final Pose intakeBalls_2 = new Pose(110.888,  53, Math.toRadians(0));
     private final Pose intakeBalls_3 = new Pose(110.888, 30, Math.toRadians(0));
     private final Pose takeBalls_1 = new Pose(139, 74.682, Math.toRadians(0));
@@ -94,7 +94,7 @@ public class Autonomous_Red_Close extends NextFTCOpMode {
         return new SequentialGroup(
                 Shooter.INSTANCE.shooterAutoOn(),
                 new FollowPath(pathOne), // Indo pro scorePose
-                new Delay(0.2),
+                new Delay(0.5),
                 Intake.INSTANCE.coletAutoOn(),
                 new Delay(1.1),// Lançou as primeiras bolas
                 new ParallelGroup(new FollowPath(pathTwo), Shooter.INSTANCE.shooterAutoNegative()), // Pegou a primeira fileira
