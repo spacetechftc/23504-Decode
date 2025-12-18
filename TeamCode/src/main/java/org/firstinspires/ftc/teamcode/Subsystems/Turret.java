@@ -140,6 +140,8 @@ public class Turret implements Subsystem {
         } else {
             power = alignTurretWithOdometry(x, y, heading, currentTicks, blue);
         }
+
+
         // Bloqueia para a esquerda
         if (currentTicks >= LEFT_LIMIT && power < 0) {
             power = 0;
