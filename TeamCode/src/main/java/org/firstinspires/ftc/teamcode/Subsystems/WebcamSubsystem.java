@@ -12,6 +12,8 @@ import org.firstinspires.ftc.vision.opencv.ImageRegion;
 
 import java.util.List;
 
+import dev.nextftc.core.commands.Command;
+import dev.nextftc.core.commands.utility.LambdaCommand;
 import dev.nextftc.core.subsystems.Subsystem;
 import dev.nextftc.ftc.ActiveOpMode;
 
@@ -19,12 +21,20 @@ public class WebcamSubsystem implements Subsystem {
 
     public static WebcamSubsystem INSTANCE = new WebcamSubsystem();
     private WebcamSubsystem() {}
+
+    private ColorBlobLocatorProcessor.Blob bestBlob = null;
+    private double maxRadius = 0;
     private ColorBlobLocatorProcessor Purple;
     private ColorBlobLocatorProcessor Green;
     private VisionPortal portal;
 
     public double x;
     public double y;
+    public double correction;
+
+    public double getCorrection() {
+        return correction = 0.03448*x+0.118;
+    }
 
     @Override
     public void initialize() {
@@ -92,25 +102,35 @@ public class WebcamSubsystem implements Subsystem {
                 ColorBlobLocatorProcessor.BlobCriteria.BY_CIRCULARITY,
                 0.6, 1, Greenblobs);
 
+        bestBlob = null;
+        maxRadius = 0;
+
+// Avalia blobs roxos
         for (ColorBlobLocatorProcessor.Blob b : Purpleblobs) {
-            if(Purpleblobs.isEmpty()){
-                x = 0;
-                y = 0;
+            Circle c = b.getCircle();
+            if (c.getRadius() > maxRadius) {
+                maxRadius = c.getRadius();
+                bestBlob = b;
             }
-            Circle circleFit = b.getCircle();
-            x = b.getCircle().getX() - 160;
-            y = b.getCircle().getY() - 120;
         }
 
+// Avalia blobs verdes
         for (ColorBlobLocatorProcessor.Blob b : Greenblobs) {
-            if(Greenblobs.isEmpty()){
-                x = 0;
-                y = 0;
+            Circle c = b.getCircle();
+            if (c.getRadius() > maxRadius) {
+                maxRadius = c.getRadius();
+                bestBlob = b;
             }
+        }
 
-            Circle circleFit = b.getCircle();
-            x = b.getCircle().getX() - 160;
-            y = b.getCircle().getY() - 120;
+// Publica o melhor alvo
+        if (bestBlob != null) {
+            Circle c = bestBlob.getCircle();
+            x = c.getX() - 160;
+            y = c.getY() - 120;
+        } else {
+            x = 0;
+            y = 0;
         }
 
     }
