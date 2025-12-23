@@ -13,11 +13,12 @@ import dev.nextftc.ftc.Gamepads;
 import dev.nextftc.hardware.controllable.MotorGroup;
 import dev.nextftc.hardware.controllable.RunToVelocity;
 import dev.nextftc.hardware.impl.MotorEx;
+import dev.nextftc.hardware.powerable.SetPower;
 
 @Configurable
 public class Shooter implements Subsystem {
     public double velocity, speedCalculation, currentVelocity;
-    public static double velocityz = 1200;
+    public static double velocityFix = 1220;
 
     // Coeficientes do Shooter
     private static PIDCoefficients coefficientsShooter = new PIDCoefficients(0.023, 0, 0);
@@ -36,10 +37,11 @@ public class Shooter implements Subsystem {
     public boolean enabled = false;
 
     private MotorEx shooterMotor_Left = new MotorEx("shooter_motor_left")
+            .reversed()
             .brakeMode();
     private MotorEx shooterMotor_Right = new MotorEx("shooter_motor_right")
             .brakeMode();
-    private MotorGroup shooterMotor = new MotorGroup(shooterMotor_Left, shooterMotor_Right);
+    private MotorGroup shooterMotor = new MotorGroup(shooterMotor_Right, shooterMotor_Left);
 
     // Sistemas de Controle (Shooter)
     private ControlSystem controlShooter = ControlSystem.builder()
@@ -94,9 +96,14 @@ public class Shooter implements Subsystem {
                 .requires(this);
     }
 
+    public void shooterOAn() {
+        enabled = true;
+        controlShooter.setGoal(new KineticState(0, velocity, 0));
+    }
+
     public Command fixedVelocity() {
         enabled = true;
-        return new RunToVelocity(controlShooter, 1220, new KineticState(0, 1220, Double.POSITIVE_INFINITY))
+        return new RunToVelocity(controlShooter, velocityFix, new KineticState(0, velocityFix, Double.POSITIVE_INFINITY))
                 .requires(this);
     }
 
@@ -119,7 +126,7 @@ public class Shooter implements Subsystem {
     // Rodando em looping assim que a programação iniciar
     @Override
     public void periodic() {
-        // Controle da velocidade Ideal
+        // Controle da velocidade Ideal s
         if (limelight.track) {
             speedCalculation = controlVelocity(9.81, limelight.distance, 65, 0.6);
             velocity = velocityToTPS(speedCalculation);
@@ -134,10 +141,6 @@ public class Shooter implements Subsystem {
             shooterMotor.setPower(controlShooter.calculate(shooterMotor.getState()));
         } else {
             shooterMotor.setPower(0.001);
-        }
-
-        if (currentVelocity >= velocity - 200 && currentVelocity <= velocity + 200) {
-
         }
 
         currentVelocity = shooterMotor.getVelocity();
