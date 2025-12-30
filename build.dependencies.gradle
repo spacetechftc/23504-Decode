@@ -26,5 +26,8 @@ dependencies {
     implementation 'dev.nextftc:control:1.0.0'
     implementation 'dev.nextftc:bindings:1.0.1'
     implementation 'dev.nextftc.extensions:pedro:1.0.0'
+
+    // FTC lib
+    implementation 'org.ftclib.ftclib:core:2.1.1'
 }
 

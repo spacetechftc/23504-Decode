@@ -35,6 +35,11 @@ public class WebcamSubsystem implements Subsystem {
     public double getCorrection() {
         return correction = 0.03448*x+0.118;
     }
+    public double getP() {
+        double error = x - 0;
+        double output = error * 2;
+        return output;
+    }
 
     @Override
     public void initialize() {

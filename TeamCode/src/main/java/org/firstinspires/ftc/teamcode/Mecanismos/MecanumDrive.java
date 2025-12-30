@@ -20,4 +20,13 @@ public class MecanumDrive {
         );
         driverControlled.schedule();
     }
+
+    public void goToBalls(double strafe) {
+        frontLeftMotor.setPower(0 + strafe + 0);
+        backLeftMotor.setPower(0 - strafe + 0);
+        frontRightMotor.setPower(0 - strafe - 0);
+        backRightMotor.setPower(0 + strafe - 0);
+
+    }
+
 }

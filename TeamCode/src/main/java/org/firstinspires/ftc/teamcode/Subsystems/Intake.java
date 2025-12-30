@@ -1,6 +1,10 @@
 package org.firstinspires.ftc.teamcode.Subsystems;
 
 import com.bylazar.configurables.annotations.Configurable;
+import com.qualcomm.robotcore.hardware.ColorRangeSensor;
+import com.qualcomm.robotcore.hardware.ColorSensor;
+
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 import dev.nextftc.control.ControlSystem;
 import dev.nextftc.control.KineticState;
@@ -9,11 +13,14 @@ import dev.nextftc.control.feedforward.BasicFeedforwardParameters;
 import dev.nextftc.core.commands.Command;
 import dev.nextftc.core.commands.utility.LambdaCommand;
 import dev.nextftc.core.subsystems.Subsystem;
+import dev.nextftc.ftc.ActiveOpMode;
 import dev.nextftc.hardware.controllable.RunToVelocity;
 import dev.nextftc.hardware.impl.MotorEx;
 
 @Configurable
 public class Intake implements Subsystem {
+    private ColorRangeSensor sensor;
+    public double distance;
     // Coeficientes do PID
     public static PIDCoefficients coefficients = new PIDCoefficients(0.001, 0, 0);
     // Coeficientes do FeedForward
@@ -70,6 +77,8 @@ public class Intake implements Subsystem {
 
     @Override
     public void initialize() {
+        sensor = ActiveOpMode.hardwareMap().get(ColorRangeSensor.class,"sensor");
+        distance = sensor.getDistance(DistanceUnit.MM);
         enabled = false;
     }
 

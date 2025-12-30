@@ -10,6 +10,7 @@ import com.pedropathing.paths.Path;
 import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
+import org.firstinspires.ftc.teamcode.Mecanismos.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.Subsystems.LimelightSubsystem;
 import org.firstinspires.ftc.teamcode.Subsystems.Shooter;
@@ -31,7 +32,7 @@ import dev.nextftc.extensions.pedro.TurnTo;
 import dev.nextftc.ftc.NextFTCOpMode;
 import dev.nextftc.ftc.components.BulkReadComponent;
 
-@Autonomous(name="Testing Correcton", preselectTeleOp = "TeleOp - Red")
+@Autonomous(name="Testing Correction", preselectTeleOp = "TeleOp - Red")
 @Configurable
 public class testAuto extends NextFTCOpMode {
     public testAuto() {
@@ -41,6 +42,7 @@ public class testAuto extends NextFTCOpMode {
                 BulkReadComponent.INSTANCE
         );
     }
+    MecanumDrive mecanumDrive = new MecanumDrive();
     private TelemetryManager panelsTelemetry;
     public static Pose autoEndPose;
 
@@ -63,50 +65,28 @@ public class testAuto extends NextFTCOpMode {
     private Pose correctionTakeBall1 = new Pose(108.888, 72.682 + WebcamSubsystem.INSTANCE.getCorrection(), Math.toRadians(0));
 
     private Follower follower;
-    private Path pathOne, pathTwo, pathThree, pathFour, pathFive, pathBack, pathSix, pathSeven, pathEight, pathNine, pathTen, pathInitGate ,pathOpenGate;
+    private Path pathOne, patTwo, pathThree, pathFour, pathFive, pathBack, pathSix, pathSeven, pathEight, pathNine, pathTen, pathInitGate ,pathOpenGate;
+    private PathChain pathTwo, goToScorePose;
 
     public void buildPaths() {
-        pathOne = new Path(new BezierLine(startPose, scorePose));
-        pathOne.setLinearHeadingInterpolation(startPose.getHeading(), scorePose.getHeading());
-        pathTwo = new Path(new BezierLine(scorePose, correctionTakeBall1));
-        pathTwo.setLinearHeadingInterpolation(scorePose.getHeading(), correctionTakeBall1.getHeading());
-        /*
-        pathTwo = new Path(new BezierLine(scorePose, correctionTakeBall1));
-        pathTwo.setConstantHeadingInterpolation(0);
-        pathThree = new Path(new BezierLine(openGate, scorePose));
-        pathThree.setLinearHeadingInterpolation(openGate.getHeading(), scorePose.getHeading());
-        pathFour = new Path(new BezierLine(scorePose, intakeBalls_2));
-        pathFour.setConstantHeadingInterpolation(0);
-        pathFive = new Path(new BezierLine(intakeBalls_2, takeBalls_2));
-        pathFive.setConstantHeadingInterpolation(0);
-        pathSix = new Path(new BezierLine(takeBalls_2, scorePose));
-        pathSix.setLinearHeadingInterpolation(takeBalls_2.getHeading(), scorePose.getHeading());
-        pathSeven = new Path(new BezierLine(scorePose, intakeBalls_3));
-        pathSeven.setLinearHeadingInterpolation(scorePose.getHeading(), intakeBalls_3.getHeading());
-        pathEight = new Path(new BezierLine(intakeBalls_3, takeBalls_3));
-        pathEight.setConstantHeadingInterpolation(0);
-        pathNine = new Path(new BezierLine(takeBalls_3, scorePose));
-        pathNine.setLinearHeadingInterpolation(takeBalls_3.getHeading(), scorePose.getHeading());
-        pathTen = new Path(new BezierLine(scorePose, endPose));
-        pathTen.setLinearHeadingInterpolation(scorePose.getHeading(), endPose.getHeading());
-        pathInitGate = new Path(new BezierLine(takeBalls_1, initGate));
-        pathInitGate.setLinearHeadingInterpolation(takeBalls_1.getHeading(), initGate.getHeading());
-        pathOpenGate = new Path(new BezierLine(initGate, openGate));
-        pathOpenGate.setLinearHeadingInterpolation(initGate.getHeading(), openGate.getHeading());
-        pathBack = new Path(new BezierLine(takeBalls_2, goBack));
-        pathBack.setConstantHeadingInterpolation(0);
-
-         */
 
     }
-
 
     private Command autonomousRoutine() {
         return new SequentialGroup(
                 new FollowPath(pathOne), // Indo pro scorePose
                 new Delay(2),
-                new FollowPath(pathTwo)
-
+                new InstantCommand(() -> {
+                    goToScorePose = follower.pathBuilder()
+                            .addPath(new Path(new BezierLine(follower.getPose(), scorePose)))
+                            .setLinearHeadingInterpolation(follower.getHeading(), scorePose.getHeading())
+                            .build();
+                }),
+                new FollowPath(goToScorePose),
+                new InstantCommand(() -> {
+                    mecanumDrive.goToBalls(WebcamSubsystem.INSTANCE.getP());
+                }),
+                new Delay(2)
 
         );
     }
@@ -148,7 +128,6 @@ public class testAuto extends NextFTCOpMode {
         panelsTelemetry.debug("Heading", Math.toDegrees(follower.getPose().getHeading()));
         panelsTelemetry.debug("Pixel X", WebcamSubsystem.INSTANCE.x);
         panelsTelemetry.debug("Delta Y", WebcamSubsystem.INSTANCE.getCorrection());
-        //Turret.INSTANCE.alignTurret(follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading(), Turret.INSTANCE.currentTicks, false);
         panelsTelemetry.update(telemetry);
         telemetry.update();
         follower.update();
