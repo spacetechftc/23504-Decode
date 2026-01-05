@@ -76,6 +76,7 @@ public class testAuto extends NextFTCOpMode {
         return new SequentialGroup(
                 new FollowPath(pathOne), // Indo pro scorePose
                 new Delay(2),
+                mecanumDrive.strafeToBallCommand(),
                 new InstantCommand(() -> {
                     goToScorePose = follower.pathBuilder()
                             .addPath(new Path(new BezierLine(follower.getPose(), scorePose)))
@@ -83,9 +84,6 @@ public class testAuto extends NextFTCOpMode {
                             .build();
                 }),
                 new FollowPath(goToScorePose),
-                new InstantCommand(() -> {
-                    mecanumDrive.goToBalls(WebcamSubsystem.INSTANCE.getP());
-                }),
                 new Delay(2)
 
         );
@@ -120,7 +118,6 @@ public class testAuto extends NextFTCOpMode {
         autonomousRoutine().schedule();
     }
 
-
     @Override
     public void onUpdate() {
         panelsTelemetry.debug("X", follower.getPose().getX());
@@ -131,8 +128,6 @@ public class testAuto extends NextFTCOpMode {
         panelsTelemetry.update(telemetry);
         telemetry.update();
         follower.update();
-
-
     }
 
     @Override

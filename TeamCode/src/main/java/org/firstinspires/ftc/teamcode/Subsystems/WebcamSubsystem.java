@@ -32,12 +32,33 @@ public class WebcamSubsystem implements Subsystem {
     public double y;
     public double correction;
 
+    private static double kP = 0;
+    private static double kI = 0;
+    private static double kD = 0;
+
+    private double integralSum = 0;
+    private double lastError = 0;
+
     public double getCorrection() {
         return correction = 0.03448*x+0.118;
     }
-    public double getP() {
-        double error = x - 0;
-        double output = error * 2;
+    public double getPID() {
+        double error = -x;
+
+        double P = kP * error;
+
+        double derivative = (error - lastError);
+        double D = kD * derivative;
+
+        double output = P + D;
+
+        if (Math.abs(error) < 20) {
+            output = 0;
+            integralSum = 0;
+        }
+
+        lastError = error;
+
         return output;
     }
 
@@ -137,6 +158,5 @@ public class WebcamSubsystem implements Subsystem {
             x = 0;
             y = 0;
         }
-
     }
 }

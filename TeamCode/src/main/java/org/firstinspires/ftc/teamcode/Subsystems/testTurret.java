@@ -4,6 +4,8 @@ import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
+import org.firstinspires.ftc.teamcode.Mecanismos.PIDFController;
+
 import dev.nextftc.core.commands.Command;
 import dev.nextftc.core.commands.utility.LambdaCommand;
 import dev.nextftc.core.subsystems.Subsystem;
@@ -11,7 +13,10 @@ import dev.nextftc.extensions.pedro.PedroComponent;
 import dev.nextftc.ftc.ActiveOpMode;
 
 @Configurable
-public class motorTurret implements Subsystem {
+public class testTurret implements Subsystem {
+
+    PIDFController odometryTicksControl = new PIDFController(KP, 0, KD, 0);
+    PIDFController limelightControl = new PIDFController(kP, 0, kD, 0);
     DcMotorEx turretMotor;
     public int currentTicks;
     public int targetTicks;
@@ -19,20 +24,15 @@ public class motorTurret implements Subsystem {
     // Configuração do PID -- Limelight
     public static double kP = 0.016;
     public static double kD = 0;
-    public static double kI = 0;
-    private double integralSum = 0.0;
-    private double lastError = 0.0;
 
     // Configuração do PID -- Odometria
     public static double KP = 0.00026;
     public static double KD = 0.00001;
-    private double LASTERROR = 0.0;
 
     // Ângulo da Torreta
     public static double GEAR_RATIO = 83.0/27.0; // Your gear ratio
     private static final double ENCODER_CPR = 8192;
     private static final double TICKS_PER_TURRET_REV = ENCODER_CPR * GEAR_RATIO;
-
 
     // LIMITES DO ENCODER
     private double LEFT_LIMIT = 5000;
@@ -46,11 +46,10 @@ public class motorTurret implements Subsystem {
     public double power = 0;
 
     // Instância da Torreta
-    public static final motorTurret INSTANCE = new motorTurret();
-    private motorTurret() {}
+    public static final testTurret INSTANCE = new testTurret();
+    private testTurret() {}
 
     // Controle baseado na odometria
-
     private int degreesToTicks(double degrees) {
         return (int) Math.round((degrees / 360.0) * TICKS_PER_TURRET_REV);
     }
@@ -58,22 +57,10 @@ public class motorTurret implements Subsystem {
         return (ticks / TICKS_PER_TURRET_REV) * 360.0;
     }
 
-    public void turretToMid() {
-        targetTicks = 0;
-        int error = currentTicks - targetTicks;
-        double derivative = error - LASTERROR;
-        double power = (KP * error) + (KD * derivative);
-
-        LASTERROR = error;
-        turretMotor.setPower(power);
-    }
-
-    private double normalizeAngle(double angle) {
-        angle = angle % 360;
-        if (angle > 180) angle -= 360;
-        if (angle < -180) angle += 360;
-        return angle;
-    }
+    public Command resetEncoder = new LambdaCommand()
+            .setUpdate(() -> {
+                turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            });
 
     public double alignTurretWithOdometry(double x, double y, double heading, int currentTicks, boolean blue) {
         double headingDeg = Math.toDegrees(heading);
@@ -83,12 +70,11 @@ public class motorTurret implements Subsystem {
 
         double angleToGoal = Math.toDegrees(Math.atan2(goalY - y, goalX - x));
 
-        double turretAngle = blue ? normalizeAngle(headingDeg - angleToGoal) : headingDeg - angleToGoal;
+        double turretAngle = normalizeAngle(headingDeg - angleToGoal);
 
         targetTicks = degreesToTicks(turretAngle);
-        int error = currentTicks - targetTicks;
-        double derivative = error - LASTERROR;
-        double power = (KP * error) + (KD * derivative);
+        power = odometryTicksControl.calculate(targetTicks, currentTicks);
+        power = Math.max(-1, Math.min(1, power)); // Clamp power to [-1, 1]
 
         // ----- Limites Fisicos -----
         // Bloqueia para a esquerda
@@ -101,29 +87,15 @@ public class motorTurret implements Subsystem {
             power = 0;
         }
 
-        LASTERROR = error;
         return power;
     }
 
     // ----- Controle PID baseado na limelight -----
     public double alignTurretWithLimelight() {
-        double deadband = 0.2; // graus
+        double target = 0; // graus
 
-        // erro = centro (0) - deslocamento da limelight
-        double error = 0 - LimelightSubsystem.INSTANCE.tx;
-
-        if (Math.abs(error) < deadband) {
-            integralSum = 0;
-            return 0;
-        }
-
-        integralSum += error;
-
-        double derivative = error - lastError;
-        lastError = error;
-
-        // PID completo
-        double output = (kP * error) + (kI * integralSum) + (kD * derivative);
+        double output = limelightControl.calculate(target, LimelightSubsystem.INSTANCE.tx);
+        output = Math.max(-1, Math.min(1, output)); // Clamp power to [-1, 1]
 
         return output;
     }
@@ -134,7 +106,6 @@ public class motorTurret implements Subsystem {
         } else {
             power = alignTurretWithOdometry(x, y, heading, currentTicks, blue);
         }
-
 
         // Bloqueia para a esquerda
         if (currentTicks >= LEFT_LIMIT && power < 0) {
@@ -149,11 +120,19 @@ public class motorTurret implements Subsystem {
         turretMotor.setPower(power);
     }
 
-    public Command resetEncoder = new LambdaCommand()
-            .setUpdate(() -> {
-                turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            });
+    public void turretToPosition(int pos) {
+        targetTicks = pos;
+        power = odometryTicksControl.calculate(targetTicks, currentTicks);
+        power = Math.max(-1, Math.min(1, power));
+        turretMotor.setPower(power);
+    }
 
+    private double normalizeAngle(double angle) {
+        angle = angle % 360;
+        if (angle > 180) angle -= 360;
+        if (angle < -180) angle += 360;
+        return angle;
+    }
 
     @Override
     public void initialize() {

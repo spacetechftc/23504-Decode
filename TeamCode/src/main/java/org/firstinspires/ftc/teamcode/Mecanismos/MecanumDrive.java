@@ -1,5 +1,9 @@
 package org.firstinspires.ftc.teamcode.Mecanismos;
 
+import org.firstinspires.ftc.teamcode.Subsystems.WebcamSubsystem;
+
+import dev.nextftc.core.commands.Command;
+import dev.nextftc.core.commands.utility.LambdaCommand;
 import dev.nextftc.extensions.pedro.PedroDriverControlled;
 import dev.nextftc.ftc.Gamepads;
 import dev.nextftc.hardware.driving.DriverControlledCommand;
@@ -19,6 +23,26 @@ public class MecanumDrive {
                 true
         );
         driverControlled.schedule();
+    }
+
+    public Command strafeToBallCommand() {
+        return new LambdaCommand()
+                .setStart(() -> {
+                    // Opcional: zerar algum estado quando começar
+                })
+                .setUpdate(() -> {
+                    if (Math.abs(WebcamSubsystem.INSTANCE.x) < 20) {
+                        goToBalls(0);
+                    } else {
+                        double strafe = WebcamSubsystem.INSTANCE.getPID();
+                        goToBalls(strafe);
+                    }
+                })
+                .setIsDone(() ->
+                        Math.abs(WebcamSubsystem.INSTANCE.x) < 20
+                )
+                .requires(this)
+                .named("StrafeToBall");
     }
 
     public void goToBalls(double strafe) {
