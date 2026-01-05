@@ -18,8 +18,7 @@ public class testTurret implements Subsystem {
     PIDFController odometryTicksControl = new PIDFController(KP, 0, KD, 0);
     PIDFController limelightControl = new PIDFController(kP, 0, kD, 0);
     DcMotorEx turretMotor;
-    public int currentTicks;
-    public int targetTicks;
+    public int currentTicks, targetTicks;
 
     // Configuração do PID -- Limelight
     public static double kP = 0.016;
@@ -118,6 +117,16 @@ public class testTurret implements Subsystem {
         }
 
         turretMotor.setPower(power);
+    }
+
+    public void manualTurret(boolean left, boolean right) {
+        if (left) {
+            turretMotor.setPower(0.6);
+        } else if (right) {
+            turretMotor.setPower(-0.6);
+        } else {
+            turretMotor.setPower(0);
+        }
     }
 
     public void turretToPosition(int pos) {
