@@ -21,7 +21,7 @@ import dev.nextftc.extensions.pedro.PedroComponent;
 import dev.nextftc.ftc.NextFTCOpMode;
 import dev.nextftc.ftc.components.BulkReadComponent;
 
-@TeleOp(name="TeleOp - Red", group = "Official")
+@TeleOp(name="testRed", group = "Official")
 public class testRed extends NextFTCOpMode {
     public testRed() {
         addComponents(

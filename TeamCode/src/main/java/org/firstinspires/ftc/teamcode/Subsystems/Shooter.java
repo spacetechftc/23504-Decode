@@ -41,7 +41,7 @@ public class Shooter implements Subsystem {
             .brakeMode();
     private MotorEx shooterMotor_Right = new MotorEx("shooter_motor_right")
             .brakeMode();
-    private MotorGroup shooterMotor = new MotorGroup(shooterMotor_Right, shooterMotor_Left);
+    private MotorGroup shooterMotor = new MotorGroup(shooterMotor_Left, shooterMotor_Right);
 
     // Sistemas de Controle (Shooter)
     private ControlSystem controlShooter = ControlSystem.builder()

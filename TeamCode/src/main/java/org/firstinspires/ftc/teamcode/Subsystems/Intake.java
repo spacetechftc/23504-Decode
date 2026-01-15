@@ -25,7 +25,7 @@ public class Intake implements Subsystem {
     public static PIDCoefficients coefficients = new PIDCoefficients(0.001, 0, 0);
     // Coeficientes do FeedForward
     private static BasicFeedforwardParameters feedforward = new BasicFeedforwardParameters(0.00046, 0, 0);
-    public static double velocity = 1800;
+    public static double velocity = 2000;
     public double currentVelocity;
 
     // Instância do Intake
@@ -74,7 +74,6 @@ public class Intake implements Subsystem {
     }
 
     // Roda em looping infinito assim que a programação iniciar
-
     @Override
     public void initialize() {
         sensor = ActiveOpMode.hardwareMap().get(ColorRangeSensor.class,"sensor");
@@ -92,5 +91,4 @@ public class Intake implements Subsystem {
         currentVelocity = motor.getVelocity();
 
     }
-
 }
