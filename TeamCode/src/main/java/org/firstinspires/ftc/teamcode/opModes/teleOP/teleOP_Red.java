@@ -5,6 +5,7 @@ import static org.firstinspires.ftc.teamcode.opModes.Autonomous.Autonomous_Red_C
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Mecanismos.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.Subsystems.LimelightSubsystem;
@@ -37,6 +38,8 @@ public class teleOP_Red extends NextFTCOpMode {
     private boolean turretMidToggle = false;
     private boolean turretLastButtonState = false;
 
+    public Pose predictPose;
+
     @Override
     public void onInit() {
         PedroComponent.follower().setStartingPose(autoEndPose == null ? new Pose() : autoEndPose);
@@ -64,6 +67,10 @@ public class teleOP_Red extends NextFTCOpMode {
         double x = PedroComponent.follower().getPose().getX();
         double y = PedroComponent.follower().getPose().getY();
         double heading = PedroComponent.follower().getPose().getHeading();
+        double vx = PedroComponent.follower().getVelocity().getXComponent();
+        double vy = PedroComponent.follower().getVelocity().getYComponent();
+
+
         // Estado do Toggle do shooter
         boolean currentButtonState = gamepad1.right_bumper;
 
@@ -81,7 +88,6 @@ public class teleOP_Red extends NextFTCOpMode {
             turretMidToggle = !turretMidToggle; // inverte o estado do toggle
         }
         turretLastButtonState = currentButtonStateTurret;
-
 
         // Lógica Intake e Shooter
         if (gamepad1.left_trigger > 0.1 || shooterToggle || gamepad1.b) {

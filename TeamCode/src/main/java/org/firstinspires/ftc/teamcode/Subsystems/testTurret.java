@@ -43,6 +43,7 @@ public class testTurret implements Subsystem {
     public static double redGoalX  = 138;
     public static double redGoalY  = 113;
     public double power = 0;
+    public static double w;
 
     // Instância da Torreta
     public static final testTurret INSTANCE = new testTurret();
@@ -56,10 +57,48 @@ public class testTurret implements Subsystem {
         return (ticks / TICKS_PER_TURRET_REV) * 360.0;
     }
 
+    private double flightTime(double distance) {
+        return w;
+    }
+
     public Command resetEncoder = new LambdaCommand()
             .setUpdate(() -> {
                 turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             });
+
+    public double alignTurretWithMotion(double x, double y, double heading, double vx, double vy, int currentTicks, boolean blue) {
+        double headingDeg = Math.toDegrees(heading);
+
+        double goalX = blue ? blueGoalX : redGoalX;
+        double goalY = blue ? blueGoalY : redGoalY;
+
+        double distance = Math.hypot(goalX - x, goalY - y);
+        w = flightTime(distance);
+
+        double predictX = x + (vx * w);
+        double predictY = y + (vy * w);
+
+        double angleToGoal = Math.toDegrees(Math.atan2(goalY - predictY, goalX - predictX));
+
+        double turretAngle = normalizeAngle(headingDeg - angleToGoal);
+
+        targetTicks = degreesToTicks(turretAngle);
+        power = odometryTicksControl.calculate(targetTicks, currentTicks);
+        power = Math.max(-1, Math.min(1, power));
+
+        // ----- Limites Fisicos -----
+        // Bloqueia para a esquerda
+        if (currentTicks >= LEFT_LIMIT && power < 0) {
+            power = 0;
+        }
+
+        // Bloqueia para a direita
+        if (currentTicks <= RIGHT_LIMIT && power > 0) {
+            power = 0;
+        }
+
+        return power;
+    }
 
     public double alignTurretWithOdometry(double x, double y, double heading, int currentTicks, boolean blue) {
         double headingDeg = Math.toDegrees(heading);

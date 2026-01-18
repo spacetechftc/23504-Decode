@@ -1,20 +1,13 @@
-package org.firstinspires.ftc.teamcode.opModes.teleOP;
+package org.firstinspires.ftc.teamcode.opModes.tests;
 
-import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.Mecanismos.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Subsystems.Intake;
-import org.firstinspires.ftc.teamcode.Subsystems.LimelightSubsystem;
 import org.firstinspires.ftc.teamcode.Subsystems.Shooter;
-import org.firstinspires.ftc.teamcode.Subsystems.Turret;
-import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 import dev.nextftc.bindings.BindingManager;
-import dev.nextftc.core.commands.utility.InstantCommand;
 import dev.nextftc.core.components.BindingsComponent;
 import dev.nextftc.core.components.SubsystemComponent;
-import dev.nextftc.extensions.pedro.PedroComponent;
 import dev.nextftc.ftc.NextFTCOpMode;
 import dev.nextftc.ftc.components.BulkReadComponent;
 
