@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.opModes.teleOP;
 import static org.firstinspires.ftc.teamcode.opModes.Autonomous.Autonomous_Red_Close.autoEndPose;
 
 import com.pedropathing.geometry.Pose;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
@@ -22,6 +23,7 @@ import dev.nextftc.ftc.NextFTCOpMode;
 import dev.nextftc.ftc.components.BulkReadComponent;
 
 @TeleOp(name="TeleOp - Red", group = "Official")
+@Disabled
 public class teleOP_Red extends NextFTCOpMode {
     public teleOP_Red() {
         addComponents(
@@ -114,13 +116,15 @@ public class teleOP_Red extends NextFTCOpMode {
             Intake.INSTANCE.stop();
             Shooter.INSTANCE.stop();
         }
-
+/*
         // Se a torreta fica centralizada no meio ou fica se centralizando.
         if (turretMidToggle) {
             Turret.INSTANCE.turretToMid();
         } else {
             Turret.INSTANCE.alignTurret(x, y, heading, Turret.INSTANCE.currentTicks, false); // Torreta automática
         }
+
+ */
 
         // Telemetry
         telemetry.addData("Odometria", "------------------");

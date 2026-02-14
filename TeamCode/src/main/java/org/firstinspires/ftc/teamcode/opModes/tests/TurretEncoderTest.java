@@ -9,7 +9,7 @@ public class TurretEncoderTest extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        DcMotorEx turretEncoder = hardwareMap.get(DcMotorEx.class, "back_left");
+        DcMotorEx turretEncoder = hardwareMap.get(DcMotorEx.class, "turret_motor");
 
         // Resetar para começar do zero
         turretEncoder.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);

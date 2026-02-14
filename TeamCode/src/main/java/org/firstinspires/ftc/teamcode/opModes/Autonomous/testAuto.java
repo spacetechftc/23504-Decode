@@ -51,17 +51,6 @@ public class testAuto extends NextFTCOpMode {
     //private final Pose scorePose = new Pose(105.888, 85.682, Math.toRadians(45));
 
     private final Pose scorePose = new Pose(108.888, 74.682, Math.toRadians(0));
-
-    private final Pose initGate = new Pose(136, 62.7, Math.toRadians(96));
-    private final Pose openGate = new Pose(137.2, 62.7, Math.toRadians(96));
-    private final Pose intakeBalls_2 = new Pose(110.888,  53, Math.toRadians(0));
-    private final Pose intakeBalls_3 = new Pose(110.888, 30, Math.toRadians(0));
-    private final Pose takeBalls_1 = new Pose(139, 74.682, Math.toRadians(0));
-    private final Pose takeBalls_2 = new Pose(144, 51, Math.toRadians(0));
-    private final Pose goBack = new Pose(138, 51, Math.toRadians(0));
-    private final Pose takeBalls_3 = new Pose(145, 30, Math.toRadians(0));
-    private final Pose endPose = new Pose(130.206, 60.121, Math.toRadians(270));
-
     private Pose correctionTakeBall1 = new Pose(108.888, 72.682 + WebcamSubsystem.INSTANCE.getCorrection(), Math.toRadians(0));
 
     private Follower follower;

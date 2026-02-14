@@ -54,11 +54,16 @@ public class testShooter extends NextFTCOpMode {
         } else {
             Intake.INSTANCE.stop();
         }
+
         if (shooterToggle) {
             Shooter.INSTANCE.fixedVelocity().invoke();
         } else {
             Shooter.INSTANCE.stop();
         }
+
+        telemetry.addData("Intake", "------------------");
+        telemetry.addData("Target Intake", Intake.velocity);
+        telemetry.addData("Current Intake", Intake.INSTANCE.currentVelocity);
 
         telemetry.addData("Shooter", "------------------");
         telemetry.addData("Target Shooter", Shooter.INSTANCE.velocity);

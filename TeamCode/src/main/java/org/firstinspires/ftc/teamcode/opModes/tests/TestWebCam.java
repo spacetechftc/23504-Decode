@@ -13,7 +13,7 @@ import dev.nextftc.extensions.pedro.PedroComponent;
 import dev.nextftc.ftc.NextFTCOpMode;
 import dev.nextftc.ftc.components.BulkReadComponent;
 
-@TeleOp(name = "Test-Webcam", group = "Tests")
+@TeleOp(name = "Test-Webcam", group = "OpModes Tests")
 public class TestWebCam extends NextFTCOpMode {
     public TestWebCam() {
         addComponents(

@@ -15,33 +15,31 @@ import dev.nextftc.ftc.ActiveOpMode;
 @Configurable
 public class testTurret implements Subsystem {
 
-    PIDFController odometryTicksControl = new PIDFController(KP, 0, KD, 0);
-    PIDFController limelightControl = new PIDFController(kP, 0, kD, 0);
     DcMotorEx turretMotor;
     public int currentTicks, targetTicks;
+    public double distance, movedDistance;
+
+    PIDFController odometryTicksControl;
+    PIDFController limelightControl;
 
     // Configuração do PID -- Limelight
-    public static double kP = 0.016;
+    public static double kP = 0;
     public static double kD = 0;
 
     // Configuração do PID -- Odometria
-    public static double KP = 0.00026;
-    public static double KD = 0.00001;
+    public static double KP = 0.00088;
+    public static double KD = 0.000015;
 
     // Ângulo da Torreta
-    public static double GEAR_RATIO = 83.0/27.0; // Your gear ratio
+    public static double GEAR_RATIO = 106.0/30.0; // Your gear ratio
     private static final double ENCODER_CPR = 8192;
     private static final double TICKS_PER_TURRET_REV = ENCODER_CPR * GEAR_RATIO;
-
-    // LIMITES DO ENCODER
-    private double LEFT_LIMIT = 5000;
-    private double RIGHT_LIMIT = -5000;
 
     // GOALS
     public static double blueGoalX = 0;
     public static double blueGoalY = 144;
-    public static double redGoalX  = 138;
-    public static double redGoalY  = 113;
+    public static double redGoalX  = 130;
+    public static double redGoalY  = 120;
     public double power = 0;
     public static double w;
 
@@ -61,10 +59,10 @@ public class testTurret implements Subsystem {
         return w;
     }
 
-    public Command resetEncoder = new LambdaCommand()
-            .setUpdate(() -> {
-                turretMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            });
+    public void resetEncoder() {
+        turretMotor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        turretMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+    }
 
     public double alignTurretWithMotion(double x, double y, double heading, double vx, double vy, int currentTicks, boolean blue) {
         double headingDeg = Math.toDegrees(heading);
@@ -72,30 +70,22 @@ public class testTurret implements Subsystem {
         double goalX = blue ? blueGoalX : redGoalX;
         double goalY = blue ? blueGoalY : redGoalY;
 
-        double distance = Math.hypot(goalX - x, goalY - y);
-        w = flightTime(distance);
+        //distance = Math.hypot(goalX - x, goalY - y);
 
-        double predictX = x + (vx * w);
-        double predictY = y + (vy * w);
+        w = 0.15;
 
-        double angleToGoal = Math.toDegrees(Math.atan2(goalY - predictY, goalX - predictX));
+        double movedGoalX = goalX + vx * w;
+        double movedGoalY = goalY + vy * w;
+
+        movedDistance = Math.hypot(movedGoalX - x, movedGoalY - y);
+
+        double angleToGoal = Math.toDegrees(Math.atan2(movedGoalY - y, movedGoalX - x));
 
         double turretAngle = normalizeAngle(headingDeg - angleToGoal);
 
         targetTicks = degreesToTicks(turretAngle);
         power = odometryTicksControl.calculate(targetTicks, currentTicks);
         power = Math.max(-1, Math.min(1, power));
-
-        // ----- Limites Fisicos -----
-        // Bloqueia para a esquerda
-        if (currentTicks >= LEFT_LIMIT && power < 0) {
-            power = 0;
-        }
-
-        // Bloqueia para a direita
-        if (currentTicks <= RIGHT_LIMIT && power > 0) {
-            power = 0;
-        }
 
         return power;
     }
@@ -105,6 +95,7 @@ public class testTurret implements Subsystem {
 
         double goalX = blue ? blueGoalX : redGoalX;
         double goalY = blue ? blueGoalY : redGoalY;
+        distance = Math.hypot(goalX - x, goalY - y);
 
         double angleToGoal = Math.toDegrees(Math.atan2(goalY - y, goalX - x));
 
@@ -112,18 +103,7 @@ public class testTurret implements Subsystem {
 
         targetTicks = degreesToTicks(turretAngle);
         power = odometryTicksControl.calculate(targetTicks, currentTicks);
-        power = Math.max(-1, Math.min(1, power)); // Clamp power to [-1, 1]
-
-        // ----- Limites Fisicos -----
-        // Bloqueia para a esquerda
-        if (currentTicks >= LEFT_LIMIT && power < 0) {
-            power = 0;
-        }
-
-        // Bloqueia para a direita
-        if (currentTicks <= RIGHT_LIMIT && power > 0) {
-            power = 0;
-        }
+        power = Math.max(-1, Math.min(1, power));
 
         return power;
     }
@@ -132,37 +112,24 @@ public class testTurret implements Subsystem {
     public double alignTurretWithLimelight() {
         double target = 0; // graus
 
+
         double output = limelightControl.calculate(target, LimelightSubsystem.INSTANCE.tx);
         output = Math.max(-1, Math.min(1, output)); // Clamp power to [-1, 1]
 
         return output;
     }
 
-    public void alignTurret(double x, double y, double heading, int currentTicks, boolean blue) {
-        if (LimelightSubsystem.INSTANCE.track) {
-            power = alignTurretWithLimelight();
-        } else {
-            power = alignTurretWithOdometry(x, y, heading, currentTicks, blue);
-        }
-
-        // Bloqueia para a esquerda
-        if (currentTicks >= LEFT_LIMIT && power < 0) {
-            power = 0;
-        }
-
-        // Bloqueia para a direita
-        if (currentTicks <= RIGHT_LIMIT && power > 0) {
-            power = 0;
-        }
+    public void alignTurret(double x, double y, double heading, double vx, double vy, int currentTicks, boolean blue) {
+        power = alignTurretWithMotion(x,y,heading,vx,vy,currentTicks,blue);
 
         turretMotor.setPower(power);
     }
 
     public void manualTurret(boolean left, boolean right) {
         if (left) {
-            turretMotor.setPower(0.6);
+            turretMotor.setPower(-1);
         } else if (right) {
-            turretMotor.setPower(-0.6);
+            turretMotor.setPower(1);
         } else {
             turretMotor.setPower(0);
         }
@@ -186,6 +153,8 @@ public class testTurret implements Subsystem {
     public void initialize() {
         turretMotor = ActiveOpMode.hardwareMap().get(DcMotorEx.class, "turret_motor");
         turretMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+
+        odometryTicksControl = new PIDFController(KP, 0, KD, 0);
     }
 
     @Override
@@ -194,7 +163,8 @@ public class testTurret implements Subsystem {
         ActiveOpMode.telemetry().addData("Turret", "------------------");
         ActiveOpMode.telemetry().addData("CurrentTicks", currentTicks);
         ActiveOpMode.telemetry().addData("TargetTicks", targetTicks);
+        ActiveOpMode.telemetry().addData("Degrees", ticksToDegrees(currentTicks));
+        ActiveOpMode.telemetry().addData("Distance", distance);
 
-        PedroComponent.follower().update();
     }
 }

@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.Subsystems;
 import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.robotcore.hardware.ColorRangeSensor;
 import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
@@ -16,16 +17,17 @@ import dev.nextftc.core.subsystems.Subsystem;
 import dev.nextftc.ftc.ActiveOpMode;
 import dev.nextftc.hardware.controllable.RunToVelocity;
 import dev.nextftc.hardware.impl.MotorEx;
+import dev.nextftc.hardware.impl.ServoEx;
+import dev.nextftc.hardware.positionable.SetPosition;
 
 @Configurable
 public class Intake implements Subsystem {
-    private ColorRangeSensor sensor;
-    public double distance;
+
     // Coeficientes do PID
     public static PIDCoefficients coefficients = new PIDCoefficients(0.001, 0, 0);
     // Coeficientes do FeedForward
     private static BasicFeedforwardParameters feedforward = new BasicFeedforwardParameters(0.00046, 0, 0);
-    public static double velocity = 2000;
+    public static double velocity = 3000;
     public double currentVelocity;
 
     // Instância do Intake
@@ -35,8 +37,12 @@ public class Intake implements Subsystem {
     // Configurações
     private boolean enabled = false;
 
-    private MotorEx motor = new MotorEx("intake_motor")
+    private ServoEx lock = new ServoEx("lock_servo"); // Port
+    private MotorEx motor = new MotorEx("intake_motor") // Port
             .floatMode();
+
+   // private DistanceSensor sensor_down;
+   // private DistanceSensor sensor_up;
 
     private ControlSystem controlSystem = ControlSystem.builder()
             .basicFF(feedforward)
@@ -69,6 +75,10 @@ public class Intake implements Subsystem {
         return new RunToVelocity(controlSystem, -2000).requires(this);
     }
 
+    public Command locked = new SetPosition(lock, 0).requires(this);
+
+    public Command unlocked = new SetPosition(lock, 0.7).requires(this);
+
     public void stop() {
         enabled = false;
     }
@@ -76,9 +86,9 @@ public class Intake implements Subsystem {
     // Roda em looping infinito assim que a programação iniciar
     @Override
     public void initialize() {
-        sensor = ActiveOpMode.hardwareMap().get(ColorRangeSensor.class,"sensor");
-        distance = sensor.getDistance(DistanceUnit.MM);
         enabled = false;
+        //sensor_down = ActiveOpMode.hardwareMap().get(DistanceSensor.class, "sensor_down");
+        //sensor_up = ActiveOpMode.hardwareMap().get(DistanceSensor.class, "sensor_up");
     }
 
     @Override
