@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.opModes.Autonomous;
+/*package org.firstinspires.ftc.teamcode.opModes.Autonomous;
 
 import com.bylazar.configurables.annotations.Configurable;
 import com.bylazar.telemetry.PanelsTelemetry;
@@ -189,4 +189,6 @@ public class Autonomous_Blue_Close extends NextFTCOpMode {
         autoEndPose = follower.getPose();
     }
 }
+
+ */
 

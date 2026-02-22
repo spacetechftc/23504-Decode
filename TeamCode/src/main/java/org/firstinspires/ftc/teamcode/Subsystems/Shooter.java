@@ -14,15 +14,16 @@ import dev.nextftc.ftc.ActiveOpMode;
 import dev.nextftc.hardware.controllable.MotorGroup;
 import dev.nextftc.hardware.controllable.RunToVelocity;
 import dev.nextftc.hardware.impl.MotorEx;
+import dev.nextftc.hardware.impl.ServoEx;
 
 @Configurable
 public class Shooter implements Subsystem {
-    public double velocity, currentVelocity, angulation;
+    public double velocity, currentVelocity, velocityAuto;
+    public static double angulation;
     public static double velocityFix = 1220;
-    public Servo hood;
     // Coeficientes do Shooter
-    private static PIDCoefficients coefficientsShooter = new PIDCoefficients(0.023, 0, 0);
-    private static BasicFeedforwardParameters feedforwardShooter = new BasicFeedforwardParameters(0.00051, 0, 0.1);
+    private static PIDCoefficients coefficientsShooter = new PIDCoefficients(0.0001, 0, 0);
+    private static BasicFeedforwardParameters feedforwardShooter = new BasicFeedforwardParameters(0.00023, 0, 0.1);
 
     // Instância da Limelight
     private LimelightSubsystem limelight = LimelightSubsystem.INSTANCE;
@@ -35,13 +36,15 @@ public class Shooter implements Subsystem {
     }
 
     // Configurações
-    public boolean enabled = false;
+    public boolean enabledTeleOp, enabledAuto = false;
 
-    private MotorEx shooterMotor_Left = new MotorEx("shooter_motor_left")
+    private MotorEx shooterMotor_Left = new MotorEx("shooter_motor_left", -1)
             .brakeMode();
-    private MotorEx shooterMotor_Right = new MotorEx("shooter_motor_right")
+    private MotorEx shooterMotor_Right = new MotorEx("shooter_motor_right", -1)
             .brakeMode();
     private MotorGroup shooterMotor = new MotorGroup(shooterMotor_Left, shooterMotor_Right);
+
+    private ServoEx hood = new ServoEx("hood_servo", -1);
 
     // Sistemas de Controle (Shooter)
     private ControlSystem controlShooter = ControlSystem.builder()
@@ -52,56 +55,30 @@ public class Shooter implements Subsystem {
     // Comandos do Subsistemai
     // Comandos Autonomo
     public Command shooterAutoOn() {
-        enabled = true;
+        enabledAuto = true;
         return new LambdaCommand()
-                .setStart(() -> controlShooter.setGoal(new KineticState(0, 1140, 0)))
-                .setIsDone(() -> true);
-    }
-
-    public Command shooterAutoOnFar() {
-        enabled = true;
-        return new LambdaCommand()
-                .setStart(() -> controlShooter.setGoal(new KineticState(0, 1600, 0)))
-                .setIsDone(() -> true);
-    }
-
-    public Command shooterAutoNegative() {
-        enabled = true;
-        return new LambdaCommand()
-                .setStart(() -> controlShooter.setGoal(new KineticState(0, -1200, 0)))
+                .setStart(() -> controlShooter.setGoal(new KineticState(0, velocityAuto, 0)))
                 .setIsDone(() -> true);
     }
 
     // Comandos Teleop
     public Command shooterOn() {
-        enabled = true;
+        enabledTeleOp = true;
         return new RunToVelocity(controlShooter, velocity, new KineticState(0, velocity, Double.POSITIVE_INFINITY))
                 .requires(this);
     }
 
-    public void shooterOAn() {
-        enabled = true;
-        controlShooter.setGoal(new KineticState(0, velocity, 0));
-    }
-
     public Command fixedVelocity() {
-        enabled = true;
+        enabledTeleOp = true;
         return new RunToVelocity(controlShooter, velocityFix, new KineticState(0, velocityFix, Double.POSITIVE_INFINITY))
                 .requires(this);
     }
 
-    public Command shooterNegative() {
-        enabled = true;
-        return new RunToVelocity(controlShooter, -1200, new KineticState(0, -1200, Double.POSITIVE_INFINITY))
-                .requires(this);
-
-    }
-
     private double speedCalculation(double x) {
-        double rpm = (((0.00000347275 * x - 0.00167072) * x
-                + 0.294964) * x
-                - 15.54368) * x
-                + 1388.88034;
+        double rpm = (((-2.86778e-6 * x + 5.02307e-4) * x
+                + 0.0513528) * x
+                - 6.02487) * x
+                + 1280.38268;
 
         if (rpm > 1800.0) {
             rpm = 1800.0;
@@ -112,11 +89,12 @@ public class Shooter implements Subsystem {
         return rpm;
     }
 
+
     private double setHood(double x) {
-        double pos = (((8.53931e-9 * x - 3.28723e-6) * x
-                + 4.28963e-4) * x
-                - 0.0171724) * x
-                + 0.711223;
+        double pos = (((2.23363e-8 * x - 8.28222e-6) * x
+                + 0.00106726) * x
+                - 0.0506413) * x
+                + 1.28864;
 
         if (pos > 1.0) {
             pos = 1.0;
@@ -127,14 +105,30 @@ public class Shooter implements Subsystem {
         return pos;
     }
 
-    public void stop() {
-        enabled = false;
+    public void initMechanisms() {
+        hood.setPosition(angulation);
+    }
+
+    public void switchVelocity(int velocity) {
+        velocityAuto = velocity;
+    }
+
+    public void switchHood(double pos) {
+        hood.setPosition(pos);
+    }
+
+    public void stopTeleOp() {
+        enabledTeleOp = false;
+    }
+
+    public void stopAuto() {
+        enabledAuto = false;
     }
 
     @Override
     public void initialize() {
-        hood = ActiveOpMode.hardwareMap().get(Servo.class, "hood_servo");
-        enabled = false;
+        enabledTeleOp = false;
+        enabledAuto = false;
     }
 
     // Rodando em looping assim que a programação iniciar
@@ -143,13 +137,20 @@ public class Shooter implements Subsystem {
         velocity = speedCalculation(testTurret.INSTANCE.movedDistance);
         angulation = setHood(testTurret.INSTANCE.movedDistance);
 
-        hood.setPosition(angulation);
-
-        if (enabled) {
-            if (currentVelocity < velocity) {
-                shooterMotor.setPower(1);
-            } else {
-                shooterMotor.setPower(controlShooter.calculate(shooterMotor.getState()));
+        if (enabledTeleOp || enabledAuto) {
+            if (enabledTeleOp) {
+                if (currentVelocity < velocity) {
+                    shooterMotor.setPower(1);
+                } else {
+                    shooterMotor.setPower(controlShooter.calculate(shooterMotor.getState()));
+                }
+            }
+            if (enabledAuto) {
+                if (currentVelocity < velocityAuto) {
+                    shooterMotor.setPower(1);
+                } else {
+                    shooterMotor.setPower(controlShooter.calculate(shooterMotor.getState()));
+                }
             }
         } else {
             shooterMotor.setPower(0);
@@ -161,6 +162,7 @@ public class Shooter implements Subsystem {
         } else {
             Led.INSTANCE.setLed_shooter(0);
         }
+
 
     }
 }

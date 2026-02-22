@@ -37,7 +37,7 @@ public class Intake implements Subsystem {
     // Configurações
     private boolean enabled = false;
 
-    private ServoEx lock = new ServoEx("lock_servo"); // Port
+    private ServoEx lock = new ServoEx("lock_servo", -1); // Port
     private MotorEx motor = new MotorEx("intake_motor") // Port
             .floatMode();
 
@@ -58,6 +58,7 @@ public class Intake implements Subsystem {
                 .setIsDone(() -> true);
 
     }
+
     public Command stopAuto() {
         return new LambdaCommand()
                 .setStart(() -> controlSystem.setGoal(new KineticState(0, 0 ,0)))
@@ -77,7 +78,7 @@ public class Intake implements Subsystem {
 
     public Command locked = new SetPosition(lock, 0).requires(this);
 
-    public Command unlocked = new SetPosition(lock, 0.7).requires(this);
+    public Command unlocked = new SetPosition(lock, 0.5).requires(this);
 
     public void stop() {
         enabled = false;

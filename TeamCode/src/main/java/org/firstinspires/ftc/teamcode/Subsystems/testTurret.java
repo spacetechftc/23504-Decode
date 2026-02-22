@@ -27,7 +27,7 @@ public class testTurret implements Subsystem {
     public static double kD = 0;
 
     // Configuração do PID -- Odometria
-    public static double KP = 0.00088;
+    public static double KP = 0.00084;
     public static double KD = 0.000015;
 
     // Ângulo da Torreta
@@ -38,7 +38,7 @@ public class testTurret implements Subsystem {
     // GOALS
     public static double blueGoalX = 0;
     public static double blueGoalY = 144;
-    public static double redGoalX  = 130;
+    public static double redGoalX  = 128;
     public static double redGoalY  = 120;
     public double power = 0;
     public static double w;
@@ -70,12 +70,10 @@ public class testTurret implements Subsystem {
         double goalX = blue ? blueGoalX : redGoalX;
         double goalY = blue ? blueGoalY : redGoalY;
 
-        //distance = Math.hypot(goalX - x, goalY - y);
+        w = 0.6;
 
-        w = 0.15;
-
-        double movedGoalX = goalX + vx * w;
-        double movedGoalY = goalY + vy * w;
+        double movedGoalX = goalX - vx * w;
+        double movedGoalY = goalY - vy * w;
 
         movedDistance = Math.hypot(movedGoalX - x, movedGoalY - y);
 
@@ -119,11 +117,28 @@ public class testTurret implements Subsystem {
         return output;
     }
 
-    public void alignTurret(double x, double y, double heading, double vx, double vy, int currentTicks, boolean blue) {
+
+    public void alignTurretTeleOp(double x, double y, double heading, double vx, double vy, int currentTicks, boolean blue) {
         power = alignTurretWithMotion(x,y,heading,vx,vy,currentTicks,blue);
 
         turretMotor.setPower(power);
     }
+
+    public void alignTurretAuto(double x, double y, double heading, int currentTicks, boolean blue) {
+        power = alignTurretWithOdometry(x, y, heading, currentTicks, blue);
+
+        turretMotor.setPower(power);
+    }
+
+
+    /*
+    public void alignTurret(double x, double y, double heading, int currentTicks, boolean blue) {
+        power = alignTurretWithOdometry(x,y,heading,currentTicks, false);
+
+        turretMotor.setPower(power);
+    }
+
+     */
 
     public void manualTurret(boolean left, boolean right) {
         if (left) {

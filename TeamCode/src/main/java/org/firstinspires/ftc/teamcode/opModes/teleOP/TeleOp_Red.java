@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.opModes.teleOP;
 
+import static org.firstinspires.ftc.teamcode.opModes.Autonomous.Eighteen_Balls_Close_Red.autoEndPoseRed;
+
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -7,21 +9,19 @@ import org.firstinspires.ftc.teamcode.Mecanismos.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.Subsystems.Led;
 import org.firstinspires.ftc.teamcode.Subsystems.Shooter;
-import org.firstinspires.ftc.teamcode.Subsystems.Turret;
 import org.firstinspires.ftc.teamcode.Subsystems.testTurret;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
-import dev.nextftc.core.commands.groups.ParallelGroup;
 import dev.nextftc.core.components.BindingsComponent;
 import dev.nextftc.core.components.SubsystemComponent;
 import dev.nextftc.extensions.pedro.PedroComponent;
 import dev.nextftc.ftc.NextFTCOpMode;
 import dev.nextftc.ftc.components.BulkReadComponent;
 
-@TeleOp(name = "teleOP_Test")
-public class teleOP_Test extends NextFTCOpMode {
+@TeleOp(name = "TeleOp_Red", group = "Official")
+public class TeleOp_Red extends NextFTCOpMode {
 
-    public teleOP_Test() {
+    public TeleOp_Red() {
         addComponents(
                 new SubsystemComponent(Intake.INSTANCE, Shooter.INSTANCE, testTurret.INSTANCE, Led.INSTANCE),
                 BindingsComponent.INSTANCE,
@@ -34,13 +34,12 @@ public class teleOP_Test extends NextFTCOpMode {
 
     private boolean shooterToggle = false;
     private boolean shooterLastButtonState = false;
-    private final Pose startPose = new Pose(0, 0, Math.toRadians(0));
+
+    public static Pose resetPose = new Pose(0,0,Math.toRadians(0));
 
     @Override
     public void onInit() {
-        testTurret.INSTANCE.resetEncoder();
-        Intake.INSTANCE.locked.invoke();
-        PedroComponent.follower().setStartingPose(startPose);
+        PedroComponent.follower().setStartingPose(autoEndPoseRed == null ? new Pose() : autoEndPoseRed);
         PedroComponent.follower().updatePose();
         telemetry.addData("Status:", "inicializado");
         telemetry.update();
@@ -77,10 +76,15 @@ public class teleOP_Test extends NextFTCOpMode {
             Shooter.INSTANCE.shooterOn().invoke();
         } else {
             Intake.INSTANCE.locked.invoke();
-            Shooter.INSTANCE.stop();
+            Shooter.INSTANCE.stopTeleOp();
         }
 
-        testTurret.INSTANCE.alignTurret(x,y,heading,vx,vy, testTurret.INSTANCE.currentTicks, false);
+        if (gamepad1.right_stick_button) {
+            PedroComponent.follower().setPose(resetPose);
+        }
+
+        testTurret.INSTANCE.alignTurretTeleOp(x, y, heading,vx,vy, testTurret.INSTANCE.currentTicks, false);
+        Shooter.INSTANCE.initMechanisms();
 
         telemetry.addData("Odometria", "------------------");
         telemetry.addData("X", x);

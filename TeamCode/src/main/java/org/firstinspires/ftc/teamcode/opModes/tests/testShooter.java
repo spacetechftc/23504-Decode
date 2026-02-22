@@ -58,7 +58,7 @@ public class testShooter extends NextFTCOpMode {
         if (shooterToggle) {
             Shooter.INSTANCE.fixedVelocity().invoke();
         } else {
-            Shooter.INSTANCE.stop();
+            Shooter.INSTANCE.stopTeleOp();
         }
 
         telemetry.addData("Intake", "------------------");
