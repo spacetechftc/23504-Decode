@@ -27,6 +27,7 @@ public class Intake implements Subsystem {
     public static PIDCoefficients coefficients = new PIDCoefficients(0.001, 0, 0);
     // Coeficientes do FeedForward
     private static BasicFeedforwardParameters feedforward = new BasicFeedforwardParameters(0.00046, 0, 0);
+    public static double velocityAuto = 3000;
     public static double velocity = 3000;
     public double currentVelocity;
 
@@ -38,11 +39,12 @@ public class Intake implements Subsystem {
     private boolean enabled = false;
 
     private ServoEx lock = new ServoEx("lock_servo", -1); // Port
-    private MotorEx motor = new MotorEx("intake_motor") // Port
+    private MotorEx motor = new MotorEx("intake_motor", -1) // Port
             .floatMode();
 
-   // private DistanceSensor sensor_down;
-   // private DistanceSensor sensor_up;
+    private DistanceSensor sensor_up;
+
+    private Led led = Led.INSTANCE;
 
     private ControlSystem controlSystem = ControlSystem.builder()
             .basicFF(feedforward)
@@ -54,7 +56,7 @@ public class Intake implements Subsystem {
     public Command coletAutoOn() {
         enabled = true;
         return new LambdaCommand()
-                .setStart(() -> controlSystem.setGoal(new KineticState(0, velocity, 0)))
+                .setStart(() -> controlSystem.setGoal(new KineticState(0, velocityAuto, 0)))
                 .setIsDone(() -> true);
 
     }
@@ -62,7 +64,7 @@ public class Intake implements Subsystem {
     public Command stopAuto() {
         return new LambdaCommand()
                 .setStart(() -> controlSystem.setGoal(new KineticState(0, 0 ,0)))
-                .setIsDone(() -> true);
+                .setIsDone(() -> currentVelocity <= 100);
     }
 
     // Comandos Teleop
@@ -78,7 +80,7 @@ public class Intake implements Subsystem {
 
     public Command locked = new SetPosition(lock, 0).requires(this);
 
-    public Command unlocked = new SetPosition(lock, 0.5).requires(this);
+    public Command unlocked = new SetPosition(lock, 0.5);
 
     public void stop() {
         enabled = false;
@@ -88,8 +90,7 @@ public class Intake implements Subsystem {
     @Override
     public void initialize() {
         enabled = false;
-        //sensor_down = ActiveOpMode.hardwareMap().get(DistanceSensor.class, "sensor_down");
-        //sensor_up = ActiveOpMode.hardwareMap().get(DistanceSensor.class, "sensor_up");
+        sensor_up = ActiveOpMode.hardwareMap().get(DistanceSensor.class, "sensor_up");
     }
 
     @Override
@@ -99,6 +100,16 @@ public class Intake implements Subsystem {
         } else {
             motor.setPower(0);
         }
+
+        double up = sensor_up.getDistance(DistanceUnit.MM);
+        ActiveOpMode.telemetry().addData("Up", up);
+        if (up <= 49.5) {
+            led.setLedBack(0.5);
+        } else {
+            led.setLedBack(0.279);
+        }
+
+
         currentVelocity = motor.getVelocity();
 
     }

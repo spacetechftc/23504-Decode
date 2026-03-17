@@ -74,7 +74,7 @@ public class Shooter implements Subsystem {
                 .requires(this);
     }
 
-    private double speedCalculation(double x) {
+    private double speedCalculationRed(double x) {
         double rpm = (((-2.86778e-6 * x + 5.02307e-4) * x
                 + 0.0513528) * x
                 - 6.02487) * x
@@ -89,8 +89,7 @@ public class Shooter implements Subsystem {
         return rpm;
     }
 
-
-    private double setHood(double x) {
+    private double setHoodRed(double x) {
         double pos = (((2.23363e-8 * x - 8.28222e-6) * x
                 + 0.00106726) * x
                 - 0.0506413) * x
@@ -105,17 +104,58 @@ public class Shooter implements Subsystem {
         return pos;
     }
 
-    public void initMechanisms() {
-        hood.setPosition(angulation);
+    private double setHoodBlue(double x) {
+        double pos = (((1.71986e-8 * x - 6.58702e-6) * x
+                + 0.000868147) * x
+                - 0.040747) * x
+                + 1.10966;
+
+        if (pos > 1.0) {
+            pos = 1.0;
+        } else if (pos < 0.51) {
+            pos = 0.51;
+        }
+
+        return pos;
     }
 
+    private double speedCalculationBlue(double x) {
+        double rpm = (((3.55109e-6 * x - 0.00195722) * x
+                + 0.358762) * x
+                - 20.36076) * x
+                + 1488.38776;
+
+        if (rpm > 1800.0) {
+            rpm = 1800.0;
+        } else if (rpm < 1150.0) {
+            rpm = 1150.0;
+        }
+
+        return rpm;
+    }
+
+    // Comandos Autonomo
     public void switchVelocity(int velocity) {
         velocityAuto = velocity;
     }
-
     public void switchHood(double pos) {
         hood.setPosition(pos);
     }
+    public void initMechanisms(boolean red) {
+        if (red) {
+            velocity = speedCalculationRed(testTurret.INSTANCE.movedDistance);
+            angulation = setHoodRed(testTurret.INSTANCE.movedDistance);
+        } else {
+            velocity = speedCalculationBlue(testTurret.INSTANCE.movedDistance);
+            angulation = setHoodBlue(testTurret.INSTANCE.movedDistance);
+        }
+        hood.setPosition(angulation);
+    }
+
+    public void testHood(double angulation) {
+        hood.setPosition(angulation);
+    }
+
 
     public void stopTeleOp() {
         enabledTeleOp = false;
@@ -134,12 +174,9 @@ public class Shooter implements Subsystem {
     // Rodando em looping assim que a programação iniciar
     @Override
     public void periodic() {
-        velocity = speedCalculation(testTurret.INSTANCE.movedDistance);
-        angulation = setHood(testTurret.INSTANCE.movedDistance);
-
         if (enabledTeleOp || enabledAuto) {
             if (enabledTeleOp) {
-                if (currentVelocity < velocity) {
+                if (currentVelocity < velocityFix) {
                     shooterMotor.setPower(1);
                 } else {
                     shooterMotor.setPower(controlShooter.calculate(shooterMotor.getState()));
@@ -162,7 +199,6 @@ public class Shooter implements Subsystem {
         } else {
             Led.INSTANCE.setLed_shooter(0);
         }
-
 
     }
 }

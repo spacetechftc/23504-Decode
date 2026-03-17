@@ -27,10 +27,10 @@ import dev.nextftc.extensions.pedro.PedroComponent;
 import dev.nextftc.ftc.NextFTCOpMode;
 import dev.nextftc.ftc.components.BulkReadComponent;
 
-@Autonomous(name="18 Balls Close Red", group = "Auto Closes Red", preselectTeleOp = "TeleOp_Red")
+@Autonomous(name="RoboTech Auto", group = "Auto Closes Red", preselectTeleOp = "TeleOp_Red")
 @Configurable
-public class Eighteen_Balls_Close_Red extends NextFTCOpMode {
-    public Eighteen_Balls_Close_Red() {
+public class RoboTech_Auto extends NextFTCOpMode {
+    public RoboTech_Auto() {
         addComponents(
                 new SubsystemComponent(Intake.INSTANCE, Shooter.INSTANCE, testTurret.INSTANCE, Led.INSTANCE),
                 new PedroComponent(Constants::createFollower),
@@ -50,11 +50,13 @@ public class Eighteen_Balls_Close_Red extends NextFTCOpMode {
 
     private final Pose takeBallsUp = new Pose(111, 67.5, Math.toRadians(0));
     private final Pose takeBalls_Mid = new Pose(115, 40.673, Math.toRadians(0));
+    private final Pose openGateOne = new Pose(110, 50.5, Math.toRadians(0));
+    private final Pose openGateTwo = new Pose(115.5, 50.5, Math.toRadians(0));
     private final Pose takeBalls_Down = new Pose(115, 18.5, Math.toRadians(0));
 
-    private final Pose leave = new Pose(86, 69, Math.toRadians(270));
-    private Path pathOne, pathFive, pathSeven, pathLeave, pathScoreOne, pathScoreTwo, pathGate, pathThree;
-    private PathChain pathGoGate, pathTwo, pathFour, pathSix;
+    private final Pose leave = new Pose(92, 69, Math.toRadians(270));
+    private Path pathOne, pathFive, pathSeven, pathLeave, pathScoreOne, pathScoreTwo, pathGate, pathThree, pathOpenGateOne, pathOpenGateTwo;
+    private PathChain pathGoGate, pathTwo, pathFour;
 
     public void buildPaths(Follower follower) {
         pathOne = new Path(new BezierLine(startPose, scorePose));
@@ -92,19 +94,6 @@ public class Eighteen_Balls_Close_Red extends NextFTCOpMode {
         pathFive = new Path(new BezierLine(takeBallsUp, scorePose));
         pathFive.setLinearHeadingInterpolation(takeBallsUp.getHeading(), scorePose.getHeading());
 
-        pathSix = PedroComponent.follower().pathBuilder() // Bola de Baixo
-                .addPath(
-                        new BezierCurve(
-                                new Pose(PedroComponent.follower().getPose().getX(), PedroComponent.follower().getPose().getY()),
-                                new Pose(50.551,18.5),
-                                takeBalls_Down
-                        )
-                )
-                .setConstantHeadingInterpolation(Math.toRadians(0))
-                .addParametricCallback(0.7, ()-> PedroComponent.follower().setMaxPowerScaling(0.75))
-                .addParametricCallback(0.97, ()-> PedroComponent.follower().setMaxPowerScaling(1))
-                .build();
-
         pathSeven = new Path(new BezierLine(takeBalls_Down, scorePose));
         pathSeven.setConstantHeadingInterpolation(Math.toRadians(300));
 
@@ -132,6 +121,11 @@ public class Eighteen_Balls_Close_Red extends NextFTCOpMode {
 
         pathGate = new Path(new BezierLine(frontGatePose, gatePose));
         pathGate.setLinearHeadingInterpolation(frontGatePose.getHeading(), gatePose.getHeading());
+
+        pathOpenGateOne = new Path(new BezierLine(takeBalls_Mid, openGateOne));
+        pathOpenGateOne.setConstantHeadingInterpolation(Math.toRadians(0));
+        pathOpenGateTwo = new Path(new BezierLine(openGateOne, openGateTwo));
+        pathOpenGateTwo.setConstantHeadingInterpolation(Math.toRadians(0));
     }
 
     public Command autonomousRoutine() {
@@ -140,53 +134,46 @@ public class Eighteen_Balls_Close_Red extends NextFTCOpMode {
                     Shooter.INSTANCE.switchHood(0.73); Shooter.INSTANCE.switchVelocity(1220);
                 }),
                 new FollowPath(pathOne, true, 1.0).and(Shooter.INSTANCE.shooterAutoOn()),
-                new Delay(0.015), // Torreta se alinhar na primeira vez
+                new Delay(0.15), // Torreta se alinhar na primeira vez
                 Intake.INSTANCE.coletAutoOn(),
-                new Delay(0.4), // Lançamento
+                new Delay(0.6), // Lançamento
                 new FollowPath(pathTwo, true, 1.0).and(Intake.INSTANCE.locked),
                 new Delay(0.015),
                 Intake.INSTANCE.stopAuto(),
-                new Delay(0.025),
+                new Delay(0.1),
+                new FollowPath(pathOpenGateOne, true, 0.85),
+                new FollowPath(pathOpenGateTwo, true, 0.65),
+                new Delay(1.6),
+                new FollowPath(pathScoreOne, true, 1.0).and(Intake.INSTANCE.unlocked),
+                new FollowPath(pathScoreTwo, true, 0.85),
+                new Delay(0.3), // Torreta se alinhar
+                Intake.INSTANCE.coletAutoOn(),
+                new Delay(0.6),
                 new FollowPath(pathThree, true, 0.9).and(Intake.INSTANCE.unlocked),
-                new Delay(0.02), // Torreta se alinhar na segunda vez
+                new Delay(0.2), // Torreta se alinhar na segunda vez
                 Intake.INSTANCE.coletAutoOn(),
-                new Delay(0.4), // Lançamento
+                new Delay(0.6), // Lançamento
                 new FollowPath(pathGoGate, true, 1.0).and(Intake.INSTANCE.locked),
                 new FollowPath(pathGate, true, 0.65).and(Intake.INSTANCE.locked),
-                new Delay(1), // Espera no gate
+                new Delay(1.7), // Espera no gate
                 Intake.INSTANCE.stopAuto(),
-                new Delay(0.025),
+                new Delay(0.1),
                 new FollowPath(pathScoreOne, true, 1.0).and(Intake.INSTANCE.unlocked),
                 new FollowPath(pathScoreTwo, true, 0.85),
-                new Delay(0.02), // Torreta se alinhar
+                new Delay(0.1), // Torreta se alinhar
                 Intake.INSTANCE.coletAutoOn(),
-                new Delay(0.4),
-                new FollowPath(pathGoGate, true, 1.0).and(Intake.INSTANCE.locked),
-                new FollowPath(pathGate, true, 0.65).and(Intake.INSTANCE.locked),
-                new Delay(1), // Espera no gate
-                Intake.INSTANCE.stopAuto(),
-                new Delay(0.02),
-                new FollowPath(pathScoreOne, true, 1.0).and(Intake.INSTANCE.unlocked),
-                new FollowPath(pathScoreTwo, true, 0.85),
-                new Delay(0.02), // Torreta se alinhar
-                Intake.INSTANCE.coletAutoOn(),
-                new Delay(0.4),
+                new Delay(0.6),
                 new FollowPath(pathFour, true, 1.0).and(Intake.INSTANCE.locked),
                 new Delay(0.1),
                 Intake.INSTANCE.stopAuto(),
-                new Delay(0.02),
-                new FollowPath(pathFive, true, 0.9).and(Intake.INSTANCE.unlocked),
-                new Delay(0.025), // Torreta se alinhar
+                new Delay(0.1),
+                new FollowPath(pathFive, true, 0.8).and(Intake.INSTANCE.unlocked),
+                new Delay(0.3), // Torreta se alinhar
                 Intake.INSTANCE.coletAutoOn(),
-                new Delay(0.4), // Lançamento
-                new FollowPath(pathSix, true, 1.0).and(Intake.INSTANCE.locked),
-                new Delay(0.035),
-                Intake.INSTANCE.stopAuto(),
-                new Delay(0.025),
-                new FollowPath(pathSeven, true, 0.75).and(Intake.INSTANCE.unlocked),
-                new Delay(0.15),
-                Intake.INSTANCE.coletAutoOn(),
-                new Delay(0.45)
+                new Delay(0.6), // Lançamento
+                new FollowPath(pathLeave)
+
+
         );
     }
 

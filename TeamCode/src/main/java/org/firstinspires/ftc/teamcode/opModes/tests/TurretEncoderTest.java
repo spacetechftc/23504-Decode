@@ -1,9 +1,11 @@
 package org.firstinspires.ftc.teamcode.opModes.tests;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
+@Disabled
 @TeleOp(name = "Turret Encoder Test", group = "OpModes Tests")
 public class TurretEncoderTest extends LinearOpMode {
 

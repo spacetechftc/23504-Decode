@@ -19,6 +19,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 import dev.nextftc.core.commands.Command;
 import dev.nextftc.core.commands.delays.Delay;
+import dev.nextftc.core.commands.groups.ParallelDeadlineGroup;
 import dev.nextftc.core.commands.groups.SequentialGroup;
 import dev.nextftc.core.commands.utility.InstantCommand;
 import dev.nextftc.core.components.SubsystemComponent;
@@ -27,10 +28,10 @@ import dev.nextftc.extensions.pedro.PedroComponent;
 import dev.nextftc.ftc.NextFTCOpMode;
 import dev.nextftc.ftc.components.BulkReadComponent;
 
-@Autonomous(name="18 Balls Close Red", group = "Auto Closes Red", preselectTeleOp = "TeleOp_Red")
+@Autonomous(name="18 Balls Close Blue", group = "Auto Closes Blue", preselectTeleOp = "TeleOp_Blue")
 @Configurable
-public class Eighteen_Balls_Close_Red extends NextFTCOpMode {
-    public Eighteen_Balls_Close_Red() {
+public class Eighteen_Balls_Close_Blue extends NextFTCOpMode {
+    public Eighteen_Balls_Close_Blue() {
         addComponents(
                 new SubsystemComponent(Intake.INSTANCE, Shooter.INSTANCE, testTurret.INSTANCE, Led.INSTANCE),
                 new PedroComponent(Constants::createFollower),
@@ -38,22 +39,19 @@ public class Eighteen_Balls_Close_Red extends NextFTCOpMode {
         );
     }
     private TelemetryManager panelsTelemetry;
-    public static Pose autoEndPoseRed;
+    public static Pose autoEndPoseBlue;
 
     // Definição das coordenadas
-    private final Pose startPose = new Pose(111, 114, Math.toRadians(37));
-    private final Pose scorePose = new Pose(85, 74, Math.toRadians(325));
+    private final Pose startPose = new Pose(20, 114, Math.toRadians(139));
+    private final Pose scorePose = new Pose(49.5, 70, Math.toRadians(220));
+    private final Pose curveGate = new Pose(60, 45.5, Math.toRadians(180));
+    private final Pose frontGatePose = new Pose(18, 45.5, Math.toRadians(150));
+    private final Pose gatePose = new Pose(2.5, 45.5, Math.toRadians(150));
+    private final Pose takeBallsUp = new Pose(24, 67, Math.toRadians(180));
+    private final Pose takeBalls_Mid = new Pose(16, 40, Math.toRadians(180));
+    private final Pose takeBalls_Down = new Pose(16, 18, Math.toRadians(180));
 
-    private final Pose curveGate = new Pose(70, 42, Math.toRadians(0));
-    private final Pose frontGatePose = new Pose(110, 42, Math.toRadians(24));
-    private final Pose gatePose = new Pose(120.5, 42, Math.toRadians(24));
-
-    private final Pose takeBallsUp = new Pose(111, 67.5, Math.toRadians(0));
-    private final Pose takeBalls_Mid = new Pose(115, 40.673, Math.toRadians(0));
-    private final Pose takeBalls_Down = new Pose(115, 18.5, Math.toRadians(0));
-
-    private final Pose leave = new Pose(86, 69, Math.toRadians(270));
-    private Path pathOne, pathFive, pathSeven, pathLeave, pathScoreOne, pathScoreTwo, pathGate, pathThree;
+    private Path pathOne, pathThree, pathFive, pathSeven, pathScoreOne, pathScoreTwo, pathGate;
     private PathChain pathGoGate, pathTwo, pathFour, pathSix;
 
     public void buildPaths(Follower follower) {
@@ -64,27 +62,28 @@ public class Eighteen_Balls_Close_Red extends NextFTCOpMode {
                 .addPath(
                         new BezierCurve(
                                 new Pose(PedroComponent.follower().getPose().getX(), PedroComponent.follower().getPose().getY()),
-                                new Pose(60.551, 40.673),
+                                new Pose(65, 40),
                                 takeBalls_Mid
                         )
                 )
-                .setConstantHeadingInterpolation(Math.toRadians(0))
-                .addParametricCallback(0.65, () -> PedroComponent.follower().setMaxPowerScaling(0.8))
+                .setConstantHeadingInterpolation(Math.toRadians(180))
+                .addParametricCallback(0.65, () -> PedroComponent.follower().setMaxPowerScaling(0.7))
                 .addParametricCallback(0.97, ()-> PedroComponent.follower().setMaxPowerScaling(1))
                 .build();
 
         pathThree = new Path(new BezierLine(takeBalls_Mid, scorePose));
         pathThree.setLinearHeadingInterpolation(takeBalls_Mid.getHeading(), scorePose.getHeading());
 
+
         pathFour = PedroComponent.follower().pathBuilder() // Bolas de Cima
                 .addPath(
                         new BezierCurve(
                                 new Pose(follower.getPose().getX(), PedroComponent.follower().getPose().getY()),
-                                new Pose(54.551,67.5),
+                                new Pose(60,67),
                                 takeBallsUp
                         )
                 )
-                .setConstantHeadingInterpolation(Math.toRadians(0))
+                .setConstantHeadingInterpolation(Math.toRadians(180))
                 .addParametricCallback(0.45, ()-> PedroComponent.follower().setMaxPowerScaling(0.7))
                 .addParametricCallback(0.97, ()-> PedroComponent.follower().setMaxPowerScaling(1))
                 .build();
@@ -96,20 +95,17 @@ public class Eighteen_Balls_Close_Red extends NextFTCOpMode {
                 .addPath(
                         new BezierCurve(
                                 new Pose(PedroComponent.follower().getPose().getX(), PedroComponent.follower().getPose().getY()),
-                                new Pose(50.551,18.5),
+                                new Pose(63.551,18),
                                 takeBalls_Down
                         )
                 )
-                .setConstantHeadingInterpolation(Math.toRadians(0))
-                .addParametricCallback(0.7, ()-> PedroComponent.follower().setMaxPowerScaling(0.75))
+                .setConstantHeadingInterpolation(Math.toRadians(180))
+                .addParametricCallback(0.7, ()-> PedroComponent.follower().setMaxPowerScaling(0.8))
                 .addParametricCallback(0.97, ()-> PedroComponent.follower().setMaxPowerScaling(1))
                 .build();
 
         pathSeven = new Path(new BezierLine(takeBalls_Down, scorePose));
-        pathSeven.setConstantHeadingInterpolation(Math.toRadians(300));
-
-        pathLeave = new Path(new BezierLine(scorePose, leave));
-        pathLeave.setLinearHeadingInterpolation(scorePose.getHeading(), leave.getHeading());
+        pathSeven.setConstantHeadingInterpolation(Math.toRadians(240));
 
         pathGoGate = PedroComponent.follower().pathBuilder()
                 .addPath(
@@ -124,10 +120,10 @@ public class Eighteen_Balls_Close_Red extends NextFTCOpMode {
                 .addParametricCallback(0.97, () -> PedroComponent.follower().setMaxPowerScaling(1))
                 .build();
 
-        pathScoreOne = new Path(new BezierLine(new Pose(PedroComponent.follower().getPose().getX(), PedroComponent.follower().getPose().getY()), new Pose(82, 68)));
+        pathScoreOne = new Path(new BezierLine(new Pose(PedroComponent.follower().getPose().getX(), PedroComponent.follower().getPose().getY()), new Pose(47, 71)));
         pathScoreOne.setLinearHeadingInterpolation(PedroComponent.follower().getHeading(), scorePose.getHeading());
 
-        pathScoreTwo = new Path(new BezierLine(new Pose(82, 68), scorePose));
+        pathScoreTwo = new Path(new BezierLine(new Pose(47, 71), scorePose));
         pathScoreTwo.setLinearHeadingInterpolation(scorePose.getHeading(), scorePose.getHeading());
 
         pathGate = new Path(new BezierLine(frontGatePose, gatePose));
@@ -137,28 +133,28 @@ public class Eighteen_Balls_Close_Red extends NextFTCOpMode {
     public Command autonomousRoutine() {
         return new SequentialGroup(
                 new InstantCommand(() -> {
-                    Shooter.INSTANCE.switchHood(0.73); Shooter.INSTANCE.switchVelocity(1220);
+                    Shooter.INSTANCE.switchHood(0.84); Shooter.INSTANCE.switchVelocity(1280);
                 }),
                 new FollowPath(pathOne, true, 1.0).and(Shooter.INSTANCE.shooterAutoOn()),
-                new Delay(0.015), // Torreta se alinhar na primeira vez
+                new Delay(0.05), // Torreta se alinhar na primeira vez
                 Intake.INSTANCE.coletAutoOn(),
                 new Delay(0.4), // Lançamento
                 new FollowPath(pathTwo, true, 1.0).and(Intake.INSTANCE.locked),
-                new Delay(0.015),
+                new Delay(0.02),
                 Intake.INSTANCE.stopAuto(),
-                new Delay(0.025),
+                new Delay(0.03), // Certeza que desligou o intake
                 new FollowPath(pathThree, true, 0.9).and(Intake.INSTANCE.unlocked),
-                new Delay(0.02), // Torreta se alinhar na segunda vez
+                new Delay(0.035), // Torreta se alinhar na segunda vez
                 Intake.INSTANCE.coletAutoOn(),
                 new Delay(0.4), // Lançamento
                 new FollowPath(pathGoGate, true, 1.0).and(Intake.INSTANCE.locked),
                 new FollowPath(pathGate, true, 0.65).and(Intake.INSTANCE.locked),
                 new Delay(1), // Espera no gate
                 Intake.INSTANCE.stopAuto(),
-                new Delay(0.025),
+                new Delay(0.02),
                 new FollowPath(pathScoreOne, true, 1.0).and(Intake.INSTANCE.unlocked),
-                new FollowPath(pathScoreTwo, true, 0.85),
-                new Delay(0.02), // Torreta se alinhar
+                new FollowPath(pathScoreTwo, true, 0.9),
+                new Delay(0.02),
                 Intake.INSTANCE.coletAutoOn(),
                 new Delay(0.4),
                 new FollowPath(pathGoGate, true, 1.0).and(Intake.INSTANCE.locked),
@@ -167,23 +163,23 @@ public class Eighteen_Balls_Close_Red extends NextFTCOpMode {
                 Intake.INSTANCE.stopAuto(),
                 new Delay(0.02),
                 new FollowPath(pathScoreOne, true, 1.0).and(Intake.INSTANCE.unlocked),
-                new FollowPath(pathScoreTwo, true, 0.85),
-                new Delay(0.02), // Torreta se alinhar
+                new FollowPath(pathScoreTwo, true, 0.9),
+                new Delay(0.02),
                 Intake.INSTANCE.coletAutoOn(),
                 new Delay(0.4),
                 new FollowPath(pathFour, true, 1.0).and(Intake.INSTANCE.locked),
                 new Delay(0.1),
                 Intake.INSTANCE.stopAuto(),
-                new Delay(0.02),
-                new FollowPath(pathFive, true, 0.9).and(Intake.INSTANCE.unlocked),
-                new Delay(0.025), // Torreta se alinhar
+                new Delay(0.02), // Certeza que desligou o intake
+                new FollowPath(pathFive, true, 0.8).and(Intake.INSTANCE.unlocked),
+                new Delay(0.08), // Torreta se alinhar
                 Intake.INSTANCE.coletAutoOn(),
                 new Delay(0.4), // Lançamento
                 new FollowPath(pathSix, true, 1.0).and(Intake.INSTANCE.locked),
                 new Delay(0.035),
                 Intake.INSTANCE.stopAuto(),
-                new Delay(0.025),
-                new FollowPath(pathSeven, true, 0.75).and(Intake.INSTANCE.unlocked),
+                new Delay(0.02),
+                new FollowPath(pathSeven, true, 0.7).and(Intake.INSTANCE.unlocked),
                 new Delay(0.15),
                 Intake.INSTANCE.coletAutoOn(),
                 new Delay(0.45)
@@ -223,13 +219,13 @@ public class Eighteen_Balls_Close_Red extends NextFTCOpMode {
         panelsTelemetry.debug("Target Shooter", Shooter.INSTANCE.velocityAuto);
         panelsTelemetry.debug("Current Shooter", Shooter.INSTANCE.currentVelocity);
         panelsTelemetry.update(telemetry);
-        testTurret.INSTANCE.alignTurretAuto(PedroComponent.follower().getPose().getX(), PedroComponent.follower().getPose().getY(), PedroComponent.follower().getPose().getHeading(), testTurret.INSTANCE.currentTicks, false);
+        testTurret.INSTANCE.alignTurretAuto(PedroComponent.follower().getPose().getX(), PedroComponent.follower().getPose().getY(), PedroComponent.follower().getPose().getHeading(), testTurret.INSTANCE.currentTicks, true);
         telemetry.update();
     }
 
     @Override
     public void onStop() {
-        autoEndPoseRed = PedroComponent.follower().getPose();
+        autoEndPoseBlue = PedroComponent.follower().getPose();
     }
 }
 

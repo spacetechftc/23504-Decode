@@ -26,26 +26,6 @@ public class MecanumDrive {
         driverControlled.schedule();
     }
 
-    public Command strafeToBallCommand() {
-        return new LambdaCommand()
-                .setStart(() -> {
-                    // Opcional: zerar algum estado quando começar
-                })
-                .setUpdate(() -> {
-                    if (Math.abs(WebcamSubsystem.INSTANCE.x) < 20) {
-                        goToBalls(0);
-                    } else {
-                        double strafe = WebcamSubsystem.INSTANCE.getPID();
-                        goToBalls(strafe);
-                    }
-                })
-                .setIsDone(() ->
-                        Math.abs(WebcamSubsystem.INSTANCE.x) < 20
-                )
-                .requires(this)
-                .named("StrafeToBall");
-    }
-
     public void goToBalls(double strafe) {
         frontLeftMotor.setPower(0 + strafe + 0);
         backLeftMotor.setPower(0 - strafe + 0);

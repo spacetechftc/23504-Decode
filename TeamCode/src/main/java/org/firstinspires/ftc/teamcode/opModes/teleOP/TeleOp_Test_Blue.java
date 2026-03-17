@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.opModes.teleOP;
 
-import static org.firstinspires.ftc.teamcode.opModes.Autonomous.RoboTech_Auto.autoEndPoseRed;
-
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -18,10 +16,10 @@ import dev.nextftc.extensions.pedro.PedroComponent;
 import dev.nextftc.ftc.NextFTCOpMode;
 import dev.nextftc.ftc.components.BulkReadComponent;
 
-@TeleOp(name = "TeleOp_Red", group = "Official")
-public class TeleOp_Red extends NextFTCOpMode {
+@TeleOp(name = "TeleOp_Test_Blue", group = "TeleOp Tests")
+public class TeleOp_Test_Blue extends NextFTCOpMode {
 
-    public TeleOp_Red() {
+    public TeleOp_Test_Blue() {
         addComponents(
                 new SubsystemComponent(Intake.INSTANCE, Shooter.INSTANCE, testTurret.INSTANCE, Led.INSTANCE),
                 BindingsComponent.INSTANCE,
@@ -31,18 +29,14 @@ public class TeleOp_Red extends NextFTCOpMode {
     }
 
     MecanumDrive mecanumDrive = new MecanumDrive();
-
     private boolean shooterToggle = false;
     private boolean shooterLastButtonState = false;
-
-    private boolean turretToggle = false;
-    private boolean turretLastButtonState = false;
-
-    public static Pose resetPose = new Pose(0,0,Math.toRadians(0));
+    private final Pose startPose = new Pose(128.4, -2.1, Math.toRadians(180));
 
     @Override
     public void onInit() {
-        PedroComponent.follower().setStartingPose(autoEndPoseRed == null ? new Pose() : autoEndPoseRed);
+        testTurret.INSTANCE.resetEncoder();
+        PedroComponent.follower().setStartingPose(startPose);
         PedroComponent.follower().updatePose();
         telemetry.addData("Status:", "inicializado");
         telemetry.update();
@@ -69,42 +63,25 @@ public class TeleOp_Red extends NextFTCOpMode {
         }
         shooterLastButtonState = currentButtonState;
 
-        boolean currentButtonStateSquare = gamepad2.square;
-        if (currentButtonStateSquare && !turretLastButtonState) {
-            turretToggle = !turretToggle; // inverte o estado do toggle
-        }
-        turretLastButtonState = currentButtonStateSquare;
-
         if (gamepad1.left_trigger > 0.1) {
             Intake.INSTANCE.colet().invoke();
         } else {
             Intake.INSTANCE.stop();
         }
-
         if (shooterToggle) {
-            if (turretToggle) {
-                Intake.INSTANCE.unlocked.invoke();
-                Shooter.INSTANCE.fixedVelocity().invoke();
-            } else {
-                Intake.INSTANCE.unlocked.invoke();
-                Shooter.INSTANCE.shooterOn().invoke();
-            }
+            Intake.INSTANCE.unlocked.invoke();
+            Shooter.INSTANCE.shooterOn().invoke();
         } else {
             Intake.INSTANCE.locked.invoke();
             Shooter.INSTANCE.stopTeleOp();
         }
 
-        if (gamepad2.right_stick_button) {
-            PedroComponent.follower().setPose(resetPose);
+        if (gamepad1.right_stick_button) {
+            PedroComponent.follower().setPose(startPose);
         }
 
-        if (turretToggle) {
-            testTurret.INSTANCE.turretToPosition(0);
-            Shooter.INSTANCE.switchHood(0.51);
-        } else {
-            testTurret.INSTANCE.alignTurretTeleOp(x, y, heading,vx,vy, testTurret.INSTANCE.currentTicks, false);
-            Shooter.INSTANCE.initMechanisms(true);
-        }
+        testTurret.INSTANCE.alignTurretTeleOp(x, y, heading, vx, vy, testTurret.INSTANCE.currentTicks, true);
+        Shooter.INSTANCE.initMechanisms(false);
 
         telemetry.addData("Odometria", "------------------");
         telemetry.addData("X", x);

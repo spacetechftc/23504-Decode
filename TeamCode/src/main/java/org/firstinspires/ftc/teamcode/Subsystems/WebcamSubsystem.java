@@ -39,29 +39,6 @@ public class WebcamSubsystem implements Subsystem {
     private double integralSum = 0;
     private double lastError = 0;
 
-    public double getCorrection() {
-        return correction = 0.03448*x+0.118;
-    }
-    public double getPID() {
-        double error = -x;
-
-        double P = kP * error;
-
-        double derivative = (error - lastError);
-        double D = kD * derivative;
-
-        double output = P + D;
-
-        if (Math.abs(error) < 20) {
-            output = 0;
-            integralSum = 0;
-        }
-
-        lastError = error;
-
-        return output;
-    }
-
     @Override
     public void initialize() {
         // Construção dos Artefatos Roxos

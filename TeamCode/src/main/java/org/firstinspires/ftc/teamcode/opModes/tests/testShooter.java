@@ -1,8 +1,11 @@
 package org.firstinspires.ftc.teamcode.opModes.tests;
 
+import com.bylazar.configurables.annotations.Configurable;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.Subsystems.Intake;
+import org.firstinspires.ftc.teamcode.Subsystems.Led;
 import org.firstinspires.ftc.teamcode.Subsystems.Shooter;
 
 import dev.nextftc.bindings.BindingManager;
@@ -12,16 +15,19 @@ import dev.nextftc.ftc.NextFTCOpMode;
 import dev.nextftc.ftc.components.BulkReadComponent;
 
 @TeleOp(name="testShooter", group = "OpModes Tests")
+@Configurable
 public class testShooter extends NextFTCOpMode {
     public testShooter() {
         addComponents(
-                new SubsystemComponent(Intake.INSTANCE, Shooter.INSTANCE),
+                new SubsystemComponent(Intake.INSTANCE, Shooter.INSTANCE, Led.INSTANCE),
                 BulkReadComponent.INSTANCE,
                 BindingsComponent.INSTANCE
         );
     }
     private boolean shooterToggle = false;
     private boolean lastButtonState = false;
+    public static double testHood = 0;
+
     @Override
     public void onInit() {
 
@@ -56,11 +62,14 @@ public class testShooter extends NextFTCOpMode {
         }
 
         if (shooterToggle) {
-            Shooter.INSTANCE.fixedVelocity().invoke();
+            Intake.INSTANCE.unlocked.invoke();
+            Shooter.INSTANCE.shooterOn().invoke();
         } else {
+            Intake.INSTANCE.locked.invoke();
             Shooter.INSTANCE.stopTeleOp();
         }
 
+        Shooter.INSTANCE.testHood(testHood);
         telemetry.addData("Intake", "------------------");
         telemetry.addData("Target Intake", Intake.velocity);
         telemetry.addData("Current Intake", Intake.INSTANCE.currentVelocity);

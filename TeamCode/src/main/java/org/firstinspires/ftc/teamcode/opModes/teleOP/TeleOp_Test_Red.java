@@ -16,7 +16,7 @@ import dev.nextftc.extensions.pedro.PedroComponent;
 import dev.nextftc.ftc.NextFTCOpMode;
 import dev.nextftc.ftc.components.BulkReadComponent;
 
-@TeleOp(name = "TeleOp_Test_Red", group = "teleOp Tests")
+@TeleOp(name = "TeleOp_Test_Red", group = "TeleOp Tests")
 public class TeleOp_Test_Red extends NextFTCOpMode {
 
     public TeleOp_Test_Red() {
@@ -32,6 +32,12 @@ public class TeleOp_Test_Red extends NextFTCOpMode {
 
     private boolean shooterToggle = false;
     private boolean shooterLastButtonState = false;
+
+    private boolean turretToggle = false;
+    private boolean turretLastButtonState = false;
+
+    private boolean limelightToggle = false;
+    private boolean limelightLastButtonState = false;
     private final Pose startPose = new Pose(0, 0, Math.toRadians(0));
 
     @Override
@@ -64,14 +70,31 @@ public class TeleOp_Test_Red extends NextFTCOpMode {
         }
         shooterLastButtonState = currentButtonState;
 
+        boolean currentButtonStateSquare = gamepad1.square;
+        if (currentButtonStateSquare && !turretLastButtonState) {
+            turretToggle = !turretToggle; // inverte o estado do toggle
+        }
+        turretLastButtonState = currentButtonStateSquare;
+
+        boolean currentButtonStateTriangle = gamepad1.triangle;
+        if (currentButtonStateTriangle && !limelightLastButtonState) {
+            limelightToggle = !limelightToggle; // inverte o estado do toggle
+        }
+        limelightLastButtonState = currentButtonStateSquare;
+
         if (gamepad1.left_trigger > 0.1) {
             Intake.INSTANCE.colet().invoke();
         } else {
             Intake.INSTANCE.stop();
         }
         if (shooterToggle) {
-            Intake.INSTANCE.unlocked.invoke();
-            Shooter.INSTANCE.shooterOn().invoke();
+            if (turretToggle) {
+                Intake.INSTANCE.unlocked.invoke();
+                Shooter.INSTANCE.fixedVelocity().invoke();
+            } else {
+                Intake.INSTANCE.unlocked.invoke();
+                Shooter.INSTANCE.shooterOn().invoke();
+            }
         } else {
             Intake.INSTANCE.locked.invoke();
             Shooter.INSTANCE.stopTeleOp();
@@ -81,8 +104,13 @@ public class TeleOp_Test_Red extends NextFTCOpMode {
             PedroComponent.follower().setPose(startPose);
         }
 
-        testTurret.INSTANCE.alignTurretTeleOp(x, y, heading,vx,vy, testTurret.INSTANCE.currentTicks, false);
-        Shooter.INSTANCE.initMechanisms();
+        if (turretToggle) {
+            testTurret.INSTANCE.turretToPosition(0);
+            Shooter.INSTANCE.switchHood(0.51);
+        } else {
+            testTurret.INSTANCE.alignTurretTeleOp(x, y, heading,vx,vy, testTurret.INSTANCE.currentTicks, false);
+            Shooter.INSTANCE.initMechanisms(true);
+        }
 
         telemetry.addData("Odometria", "------------------");
         telemetry.addData("X", x);

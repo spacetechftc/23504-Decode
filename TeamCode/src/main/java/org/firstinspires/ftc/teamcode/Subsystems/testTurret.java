@@ -23,8 +23,8 @@ public class testTurret implements Subsystem {
     PIDFController limelightControl;
 
     // Configuração do PID -- Limelight
-    public static double kP = 0;
-    public static double kD = 0;
+    public static double kP = 0.004;
+    public static double kD = 0.0001;
 
     // Configuração do PID -- Odometria
     public static double KP = 0.00084;
@@ -36,8 +36,8 @@ public class testTurret implements Subsystem {
     private static final double TICKS_PER_TURRET_REV = ENCODER_CPR * GEAR_RATIO;
 
     // GOALS
-    public static double blueGoalX = 0;
-    public static double blueGoalY = 144;
+    public static double blueGoalX = 6;
+    public static double blueGoalY = 120;
     public static double redGoalX  = 128;
     public static double redGoalY  = 120;
     public double power = 0;
@@ -106,15 +106,23 @@ public class testTurret implements Subsystem {
         return power;
     }
 
-    // ----- Controle PID baseado na limelight -----
     public double alignTurretWithLimelight() {
-        double target = 0; // graus
 
+        double tx = LimelightSubsystem.INSTANCE.tx;
+        power = limelightControl.calculate(0, tx);
 
-        double output = limelightControl.calculate(target, LimelightSubsystem.INSTANCE.tx);
-        output = Math.max(-1, Math.min(1, output)); // Clamp power to [-1, 1]
+        return power;
+    }
 
-        return output;
+    // ----- Controle PID baseado na limelight -----
+    public void alignTurretHybrid(double x, double y, double heading, double vx, double vy, int currentTicks, boolean blue) {
+        if (LimelightSubsystem.INSTANCE.track) {
+            power = alignTurretWithLimelight();
+        } else {
+            power = alignTurretWithOdometry(x,y,heading ,currentTicks,blue);
+        }
+
+        turretMotor.setPower(power);
     }
 
 
@@ -170,6 +178,7 @@ public class testTurret implements Subsystem {
         turretMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
 
         odometryTicksControl = new PIDFController(KP, 0, KD, 0);
+        limelightControl = new PIDFController(kP, 0, kD, 0);
     }
 
     @Override
@@ -179,7 +188,7 @@ public class testTurret implements Subsystem {
         ActiveOpMode.telemetry().addData("CurrentTicks", currentTicks);
         ActiveOpMode.telemetry().addData("TargetTicks", targetTicks);
         ActiveOpMode.telemetry().addData("Degrees", ticksToDegrees(currentTicks));
-        ActiveOpMode.telemetry().addData("Distance", distance);
+        ActiveOpMode.telemetry().addData("Distance", movedDistance);
 
     }
 }

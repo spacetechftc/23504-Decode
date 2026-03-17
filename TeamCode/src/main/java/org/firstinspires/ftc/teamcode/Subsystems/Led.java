@@ -12,7 +12,10 @@ public class Led implements Subsystem {
     public Servo led_shooter; // Port 1
     public Servo led_back; // Port 0
 
-    public static double pos = 0;
+    public static double pos;
+    // 0.279 RED
+    // 0.5 GREEN
+    // 0.612 BLIE
 
     public static final Led INSTANCE = new Led();
     private Led() {}
@@ -33,6 +36,5 @@ public class Led implements Subsystem {
 
     @Override
     public void periodic() {
-        led_back.setPosition(0.46);
     }
 }

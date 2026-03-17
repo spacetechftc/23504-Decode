@@ -1,11 +1,9 @@
 package org.firstinspires.ftc.teamcode.Subsystems;
 
 import com.qualcomm.hardware.limelightvision.LLResult;
-import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 
-import java.util.Arrays;
-import java.util.List;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 
 import dev.nextftc.core.commands.Command;
 import dev.nextftc.core.commands.utility.LambdaCommand;
@@ -18,7 +16,6 @@ public class LimelightSubsystem implements Subsystem {
     private LimelightSubsystem() {}
     public double tx, ta, distance;
     public int id;
-    public String verify;
     public boolean track;
 
     // Reset do ID inicial (Usar em autônomo)
@@ -69,6 +66,10 @@ public class LimelightSubsystem implements Subsystem {
         } else {
             track = false;
         }
+
+        Pose3D botPose = result.getBotpose();
+        double poseX = (botPose.getPosition().x * 39.3700787) - 72; // X vai pro Y
+        double poseY = (botPose.getPosition().y * 39.3700787) + 72; // Y vai pro X
     }
 
 

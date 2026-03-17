@@ -37,6 +37,7 @@ public class Constants {
             .translationalPIDFCoefficients(new PIDFCoefficients(0.045, 0, 0.001, 0.025))
             .headingPIDFCoefficients(new PIDFCoefficients(0.9, 0, 0.09, 0.015))
             .drivePIDFCoefficients(new FilteredPIDFCoefficients(1, 0.01, 0.00001, 0.2, 0.03))
+           // .drivePIDFCoefficients(new FilteredPIDFCoefficients(2, 0.1, 0.0000001, 0, 0.02))
             .useSecondaryHeadingPIDF(true)
             .useSecondaryTranslationalPIDF(true)
             .secondaryHeadingPIDFCoefficients(new PIDFCoefficients(1.9, 0, 0.09, 0.005))
@@ -44,7 +45,7 @@ public class Constants {
             .centripetalScaling(0.00065);
 
    // public static PathConstraints pathConstraints = new PathConstraints(0.99, 100, 0.77, 1);
-   public static PathConstraints pathConstraints = new PathConstraints(0.99, 100, 0.77, 1);
+   public static PathConstraints pathConstraints = new PathConstraints(0.99, 100, 0.7, 1);
 
     public static MecanumConstants driveConstants = new MecanumConstants()
             .maxPower(1)

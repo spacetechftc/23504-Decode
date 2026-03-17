@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.opModes.teleOP;
 
-import static org.firstinspires.ftc.teamcode.opModes.Autonomous.RoboTech_Auto.autoEndPoseRed;
+import static org.firstinspires.ftc.teamcode.opModes.Autonomous.Eighteen_Balls_Close_Blue.autoEndPoseBlue;
 
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -18,10 +18,10 @@ import dev.nextftc.extensions.pedro.PedroComponent;
 import dev.nextftc.ftc.NextFTCOpMode;
 import dev.nextftc.ftc.components.BulkReadComponent;
 
-@TeleOp(name = "TeleOp_Red", group = "Official")
-public class TeleOp_Red extends NextFTCOpMode {
+@TeleOp(name = "TeleOp_Blue", group = "Official")
+public class TeleOp_Blue extends NextFTCOpMode {
 
-    public TeleOp_Red() {
+    public TeleOp_Blue() {
         addComponents(
                 new SubsystemComponent(Intake.INSTANCE, Shooter.INSTANCE, testTurret.INSTANCE, Led.INSTANCE),
                 BindingsComponent.INSTANCE,
@@ -38,11 +38,11 @@ public class TeleOp_Red extends NextFTCOpMode {
     private boolean turretToggle = false;
     private boolean turretLastButtonState = false;
 
-    public static Pose resetPose = new Pose(0,0,Math.toRadians(0));
+    public static Pose resetPose = new Pose(128.4,-2.1,Math.toRadians(180));
 
     @Override
     public void onInit() {
-        PedroComponent.follower().setStartingPose(autoEndPoseRed == null ? new Pose() : autoEndPoseRed);
+        PedroComponent.follower().setStartingPose(autoEndPoseBlue == null ? new Pose() : autoEndPoseBlue);
         PedroComponent.follower().updatePose();
         telemetry.addData("Status:", "inicializado");
         telemetry.update();
@@ -102,8 +102,8 @@ public class TeleOp_Red extends NextFTCOpMode {
             testTurret.INSTANCE.turretToPosition(0);
             Shooter.INSTANCE.switchHood(0.51);
         } else {
-            testTurret.INSTANCE.alignTurretTeleOp(x, y, heading,vx,vy, testTurret.INSTANCE.currentTicks, false);
-            Shooter.INSTANCE.initMechanisms(true);
+            testTurret.INSTANCE.alignTurretTeleOp(x, y, heading,vx,vy, testTurret.INSTANCE.currentTicks, true);
+            Shooter.INSTANCE.initMechanisms(false);
         }
 
         telemetry.addData("Odometria", "------------------");

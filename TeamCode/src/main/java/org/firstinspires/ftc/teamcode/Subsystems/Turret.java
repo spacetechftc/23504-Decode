@@ -99,7 +99,7 @@ public class Turret implements Subsystem {
         // ----- Limites Fisicos -----
         // Bloqueia para a esquerda
         if (currentTicks >= LEFT_LIMIT && power < 0) {
-            power = 0;
+            power = 0; 
         }
 
         // Bloqueia para a direita
