@@ -56,6 +56,7 @@ public class TeleOp_Test_Red extends NextFTCOpMode {
 
     @Override
     public void onUpdate() {
+        PedroComponent.follower().update();
         double x = PedroComponent.follower().getPose().getX();
         double y = PedroComponent.follower().getPose().getY();
         double heading = PedroComponent.follower().getPose().getHeading();
@@ -126,7 +127,6 @@ public class TeleOp_Test_Red extends NextFTCOpMode {
         telemetry.addData("Shooter", "------------------");
         telemetry.addData("Target Shooter", Shooter.INSTANCE.velocity);
         telemetry.addData("Current Shooter", Shooter.INSTANCE.currentVelocity);
-        PedroComponent.follower().update();
         telemetry.update();
     }
 }

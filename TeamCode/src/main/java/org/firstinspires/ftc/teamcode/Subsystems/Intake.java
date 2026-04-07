@@ -15,6 +15,7 @@ import dev.nextftc.core.commands.Command;
 import dev.nextftc.core.commands.utility.LambdaCommand;
 import dev.nextftc.core.subsystems.Subsystem;
 import dev.nextftc.ftc.ActiveOpMode;
+import dev.nextftc.hardware.controllable.MotorGroup;
 import dev.nextftc.hardware.controllable.RunToVelocity;
 import dev.nextftc.hardware.impl.MotorEx;
 import dev.nextftc.hardware.impl.ServoEx;
@@ -39,12 +40,15 @@ public class Intake implements Subsystem {
     private boolean enabled = false;
 
     private ServoEx lock = new ServoEx("lock_servo", -1); // Port
-    private MotorEx motor = new MotorEx("intake_motor", -1) // Port
+    private MotorEx motor_left = new MotorEx("intake_motor_left", -1) // Port
             .floatMode();
 
-    private DistanceSensor sensor_up;
+    private MotorEx motor_right = new MotorEx("intake_motor_right", -1) // Port
+            .reversed()
+            .floatMode();
 
-    private Led led = Led.INSTANCE;
+    private MotorGroup intakeMotor = new MotorGroup(motor_left, motor_right);
+
 
     private ControlSystem controlSystem = ControlSystem.builder()
             .basicFF(feedforward)
@@ -90,27 +94,17 @@ public class Intake implements Subsystem {
     @Override
     public void initialize() {
         enabled = false;
-        sensor_up = ActiveOpMode.hardwareMap().get(DistanceSensor.class, "sensor_up");
     }
 
     @Override
     public void periodic() {
         if (enabled) {
-            motor.setPower(controlSystem.calculate(motor.getState()));
+            intakeMotor.setPower(controlSystem.calculate(intakeMotor.getState()));
         } else {
-            motor.setPower(0);
+            intakeMotor.setPower(0);
         }
 
-        double up = sensor_up.getDistance(DistanceUnit.MM);
-        ActiveOpMode.telemetry().addData("Up", up);
-        if (up <= 49.5) {
-            led.setLedBack(0.5);
-        } else {
-            led.setLedBack(0.279);
-        }
-
-
-        currentVelocity = motor.getVelocity();
+        currentVelocity = intakeMotor.getVelocity();
 
     }
 }

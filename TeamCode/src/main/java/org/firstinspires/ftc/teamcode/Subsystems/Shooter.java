@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.Subsystems;
 
 import com.bylazar.configurables.annotations.Configurable;
-import com.qualcomm.robotcore.hardware.Servo;
 
 import dev.nextftc.control.ControlSystem;
 import dev.nextftc.control.KineticState;
@@ -22,7 +21,7 @@ public class Shooter implements Subsystem {
     public static double angulation;
     public static double velocityFix = 1220;
     // Coeficientes do Shooter
-    private static PIDCoefficients coefficientsShooter = new PIDCoefficients(0.0001, 0, 0);
+    private static PIDCoefficients coefficientsShooter = new PIDCoefficients(0.00001, 0, 0);
     private static BasicFeedforwardParameters feedforwardShooter = new BasicFeedforwardParameters(0.00023, 0, 0.1);
 
     // Instância da Limelight
@@ -41,10 +40,11 @@ public class Shooter implements Subsystem {
     private MotorEx shooterMotor_Left = new MotorEx("shooter_motor_left", -1)
             .brakeMode();
     private MotorEx shooterMotor_Right = new MotorEx("shooter_motor_right", -1)
+            .reversed()
             .brakeMode();
-    private MotorGroup shooterMotor = new MotorGroup(shooterMotor_Left, shooterMotor_Right);
+    private MotorGroup shooterMotor = new MotorGroup(shooterMotor_Right, shooterMotor_Left);
 
-    private ServoEx hood = new ServoEx("hood_servo", -1);
+   // private ServoEx hood = new ServoEx("hood_servo", -1);
 
     // Sistemas de Controle (Shooter)
     private ControlSystem controlShooter = ControlSystem.builder()
@@ -70,6 +70,7 @@ public class Shooter implements Subsystem {
 
     public Command fixedVelocity() {
         enabledTeleOp = true;
+        velocity = velocityFix;
         return new RunToVelocity(controlShooter, velocityFix, new KineticState(0, velocityFix, Double.POSITIVE_INFINITY))
                 .requires(this);
     }
@@ -139,21 +140,21 @@ public class Shooter implements Subsystem {
         velocityAuto = velocity;
     }
     public void switchHood(double pos) {
-        hood.setPosition(pos);
+        //hood.setPosition(pos);
     }
     public void initMechanisms(boolean red) {
         if (red) {
             velocity = speedCalculationRed(testTurret.INSTANCE.movedDistance);
-            angulation = setHoodRed(testTurret.INSTANCE.movedDistance);
+            angulation = setHoodRed(testTurret.INSTANCE.distance);
         } else {
             velocity = speedCalculationBlue(testTurret.INSTANCE.movedDistance);
-            angulation = setHoodBlue(testTurret.INSTANCE.movedDistance);
+            angulation = setHoodBlue(testTurret.INSTANCE.distance);
         }
-        hood.setPosition(angulation);
+       // hood.setPosition(angulation);
     }
 
     public void testHood(double angulation) {
-        hood.setPosition(angulation);
+   //     hood.setPosition(angulation);
     }
 
 
@@ -176,7 +177,7 @@ public class Shooter implements Subsystem {
     public void periodic() {
         if (enabledTeleOp || enabledAuto) {
             if (enabledTeleOp) {
-                if (currentVelocity < velocityFix) {
+                if (currentVelocity < velocity) {
                     shooterMotor.setPower(1);
                 } else {
                     shooterMotor.setPower(controlShooter.calculate(shooterMotor.getState()));
@@ -194,11 +195,13 @@ public class Shooter implements Subsystem {
         }
 
         currentVelocity = shooterMotor.getVelocity();
-        if (currentVelocity >= velocity - 20 && currentVelocity <= velocity + 200) {
+       /* if (currentVelocity >= velocity - 20 && currentVelocity <= velocity + 200) {
             Led.INSTANCE.setLed_shooter(0.85);
         } else {
             Led.INSTANCE.setLed_shooter(0);
         }
+
+        */
 
     }
 }

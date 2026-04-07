@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.opModes.teleOP;
 
-import static org.firstinspires.ftc.teamcode.opModes.Autonomous.RoboTech_Auto.autoEndPoseRed;
+import static org.firstinspires.ftc.teamcode.opModes.Autonomous.Eighteen_Balls_Close_Red.autoEndPoseRed;
 
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.Mecanismos.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.Subsystems.Led;
+import org.firstinspires.ftc.teamcode.Subsystems.LimelightSubsystem;
 import org.firstinspires.ftc.teamcode.Subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.Subsystems.testTurret;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
@@ -23,7 +24,7 @@ public class TeleOp_Red extends NextFTCOpMode {
 
     public TeleOp_Red() {
         addComponents(
-                new SubsystemComponent(Intake.INSTANCE, Shooter.INSTANCE, testTurret.INSTANCE, Led.INSTANCE),
+                new SubsystemComponent(Intake.INSTANCE, Shooter.INSTANCE, testTurret.INSTANCE, Led.INSTANCE, LimelightSubsystem.INSTANCE),
                 BindingsComponent.INSTANCE,
                 BulkReadComponent.INSTANCE,
                 new PedroComponent(Constants::createFollower)
@@ -55,6 +56,7 @@ public class TeleOp_Red extends NextFTCOpMode {
 
     @Override
     public void onUpdate() {
+        PedroComponent.follower().update();
         double x = PedroComponent.follower().getPose().getX();
         double y = PedroComponent.follower().getPose().getY();
         double heading = PedroComponent.follower().getPose().getHeading();
@@ -106,6 +108,13 @@ public class TeleOp_Red extends NextFTCOpMode {
             Shooter.INSTANCE.initMechanisms(true);
         }
 
+        if (gamepad2.dpad_up) {
+            Pose recoveryPose = LimelightSubsystem.getRobotPoseMT1();
+            if (recoveryPose != null) {
+                PedroComponent.follower().setPose(recoveryPose);
+            }
+        }
+
         telemetry.addData("Odometria", "------------------");
         telemetry.addData("X", x);
         telemetry.addData("Y", y);
@@ -120,7 +129,6 @@ public class TeleOp_Red extends NextFTCOpMode {
         telemetry.addData("Shooter", "------------------");
         telemetry.addData("Target Shooter", Shooter.INSTANCE.velocity);
         telemetry.addData("Current Shooter", Shooter.INSTANCE.currentVelocity);
-        PedroComponent.follower().update();
         telemetry.update();
     }
 }

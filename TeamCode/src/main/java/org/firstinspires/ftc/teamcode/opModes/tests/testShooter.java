@@ -19,7 +19,7 @@ import dev.nextftc.ftc.components.BulkReadComponent;
 public class testShooter extends NextFTCOpMode {
     public testShooter() {
         addComponents(
-                new SubsystemComponent(Intake.INSTANCE, Shooter.INSTANCE, Led.INSTANCE),
+                new SubsystemComponent(Shooter.INSTANCE),
                 BulkReadComponent.INSTANCE,
                 BindingsComponent.INSTANCE
         );
@@ -55,26 +55,15 @@ public class testShooter extends NextFTCOpMode {
         }
         lastButtonState = currentButtonState;
 
-        if (gamepad1.left_trigger > 0.1) {
-            Intake.INSTANCE.colet().invoke();
-        } else {
-            Intake.INSTANCE.stop();
-        }
-
         if (shooterToggle) {
-            Intake.INSTANCE.unlocked.invoke();
-            Shooter.INSTANCE.shooterOn().invoke();
+            Shooter.INSTANCE.fixedVelocity().invoke();
         } else {
-            Intake.INSTANCE.locked.invoke();
             Shooter.INSTANCE.stopTeleOp();
         }
 
-        Shooter.INSTANCE.testHood(testHood);
-        telemetry.addData("Intake", "------------------");
-        telemetry.addData("Target Intake", Intake.velocity);
-        telemetry.addData("Current Intake", Intake.INSTANCE.currentVelocity);
+      //  Shooter.INSTANCE.testHood(testHood);
 
-        telemetry.addData("Shooter", "------------------");
+        telemetry.addData("Shooter", "-----------7-------");
         telemetry.addData("Target Shooter", Shooter.INSTANCE.velocity);
         telemetry.addData("Current Shooter", Shooter.INSTANCE.currentVelocity);
         telemetry.update();
