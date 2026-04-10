@@ -23,7 +23,7 @@ public class testTurret implements Subsystem {
     public static double KD = 0.000015;
 
     // Ângulo da Torreta
-    public static double GEAR_RATIO = 106.0/30.0; // Your gear ratio
+    public static double GEAR_RATIO = 106.0/37.0; // Your gear ratio
     private static final double ENCODER_CPR = 8192;
     private static final double TICKS_PER_TURRET_REV = ENCODER_CPR * GEAR_RATIO;
 

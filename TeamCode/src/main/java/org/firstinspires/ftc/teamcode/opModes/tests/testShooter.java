@@ -4,13 +4,16 @@ import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.Mecanismos.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.Subsystems.Led;
 import org.firstinspires.ftc.teamcode.Subsystems.Shooter;
+import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 import dev.nextftc.bindings.BindingManager;
 import dev.nextftc.core.components.BindingsComponent;
 import dev.nextftc.core.components.SubsystemComponent;
+import dev.nextftc.extensions.pedro.PedroComponent;
 import dev.nextftc.ftc.NextFTCOpMode;
 import dev.nextftc.ftc.components.BulkReadComponent;
 
@@ -19,14 +22,17 @@ import dev.nextftc.ftc.components.BulkReadComponent;
 public class testShooter extends NextFTCOpMode {
     public testShooter() {
         addComponents(
-                new SubsystemComponent(Shooter.INSTANCE),
+                new SubsystemComponent(Intake.INSTANCE, Shooter.INSTANCE),
                 BulkReadComponent.INSTANCE,
-                BindingsComponent.INSTANCE
+                BindingsComponent.INSTANCE,
+                new PedroComponent(Constants::createFollower)
         );
     }
     private boolean shooterToggle = false;
     private boolean lastButtonState = false;
     public static double testHood = 0;
+
+    MecanumDrive mecanumDrive = new MecanumDrive();
 
     @Override
     public void onInit() {
@@ -41,7 +47,7 @@ public class testShooter extends NextFTCOpMode {
 
     @Override
     public void onStartButtonPressed() {
-
+        mecanumDrive.start();
     }
 
     @Override
@@ -55,6 +61,11 @@ public class testShooter extends NextFTCOpMode {
         }
         lastButtonState = currentButtonState;
 
+        if (gamepad1.left_trigger > 0.1) {
+            Intake.INSTANCE.colet().invoke();
+        } else {
+            Intake.INSTANCE.stop();
+        }
         if (shooterToggle) {
             Shooter.INSTANCE.fixedVelocity().invoke();
         } else {
@@ -62,7 +73,9 @@ public class testShooter extends NextFTCOpMode {
         }
 
       //  Shooter.INSTANCE.testHood(testHood);
-
+        telemetry.addData("Intake", "-----------7-------");
+        telemetry.addData("Target Intke", Intake.INSTANCE.velocity);
+        telemetry.addData("Current Intake", Intake.INSTANCE.currentVelocity);
         telemetry.addData("Shooter", "-----------7-------");
         telemetry.addData("Target Shooter", Shooter.INSTANCE.velocity);
         telemetry.addData("Current Shooter", Shooter.INSTANCE.currentVelocity);

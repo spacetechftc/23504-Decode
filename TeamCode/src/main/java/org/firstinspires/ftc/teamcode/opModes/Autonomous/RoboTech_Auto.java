@@ -11,6 +11,7 @@ import com.pedropathing.paths.Path;
 import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
+import org.firstinspires.ftc.teamcode.Mecanismos.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.Subsystems.Led;
 import org.firstinspires.ftc.teamcode.Subsystems.Shooter;
@@ -57,6 +58,8 @@ public class RoboTech_Auto extends NextFTCOpMode {
     private final Pose leave = new Pose(92, 69, Math.toRadians(270));
     private Path pathOne, pathFive, pathSeven, pathLeave, pathScoreOne, pathScoreTwo, pathGate, pathThree, pathOpenGateOne, pathOpenGateTwo;
     private PathChain pathGoGate, pathTwo, pathFour;
+
+    MecanumDrive mecanumDrive = new MecanumDrive();
 
     public void buildPaths(Follower follower) {
         pathOne = new Path(new BezierLine(startPose, scorePose));
@@ -133,6 +136,7 @@ public class RoboTech_Auto extends NextFTCOpMode {
                 new InstantCommand(() -> {
                     Shooter.INSTANCE.switchHood(0.73); Shooter.INSTANCE.switchVelocity(1220);
                 }),
+                mecanumDrive.alignToBalls,
                 new FollowPath(pathOne, true, 1.0).and(Shooter.INSTANCE.shooterAutoOn()),
                 new Delay(0.15), // Torreta se alinhar na primeira vez
                 Intake.INSTANCE.coletAutoOn(),

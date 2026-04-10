@@ -18,7 +18,7 @@ public class MaxVelocityTest extends LinearOpMode {
         motor = hardwareMap.get(DcMotorEx.class, "shooter_motor_left");
         motor.setDirection(DcMotorSimple.Direction.FORWARD);
         motor2 = hardwareMap.get(DcMotorEx.class, "shooter_motor_right");
-        motor2.setDirection(DcMotorSimple.Direction.REVERSE);
+        motor2.setDirection(DcMotorSimple.Direction.FORWARD);
         waitForStart();
         while (opModeIsActive()) {
             motor.setPower(1);

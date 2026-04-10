@@ -1,13 +1,11 @@
 package org.firstinspires.ftc.teamcode.Mecanismos;
 
 import org.firstinspires.ftc.teamcode.Subsystems.LimelightSubsystem;
-import org.firstinspires.ftc.teamcode.Subsystems.WebcamSubsystem;
 
 import dev.nextftc.core.commands.Command;
 import dev.nextftc.core.commands.utility.LambdaCommand;
 import dev.nextftc.extensions.pedro.PedroDriverControlled;
 import dev.nextftc.ftc.ActiveOpMode;
-import dev.nextftc.ftc.Gamepads;
 import dev.nextftc.hardware.driving.DriverControlledCommand;
 import dev.nextftc.hardware.impl.MotorEx;
 
@@ -18,13 +16,14 @@ public class MecanumDrive {
         this.autoAlignEnabled = enabled;
         this.autoHeading = strafe;
     }
-    private final MotorEx frontLeftMotor = new MotorEx("front_left").brakeMode(); // Port 3
-    private final MotorEx frontRightMotor = new MotorEx("front_right").reversed().brakeMode(); // Port 0
+    private final MotorEx frontLeftMotor = new MotorEx("front_left").reversed().brakeMode(); // Port 3
+    private final MotorEx frontRightMotor = new MotorEx("front_right").brakeMode(); // Port 0
 
     private final MotorEx backLeftMotor = new MotorEx("back_left").reversed().brakeMode(); // Port 2
-    private final MotorEx backRightMotor = new MotorEx("back_right").brakeMode(); // Port 1
+    private final MotorEx backRightMotor = new MotorEx("back_right").reversed().brakeMode(); // Port 1
 
-    public void start() {
+    public void
+    start() {
         DriverControlledCommand driverControlled = new PedroDriverControlled(
                 () -> (double) -ActiveOpMode.gamepad1().left_stick_y, // Forward e Backward
                 () -> (double) -ActiveOpMode.gamepad1().left_stick_x, // Strafe

@@ -21,8 +21,8 @@ public class Shooter implements Subsystem {
     public static double angulation;
     public static double velocityFix = 1220;
     // Coeficientes do Shooter
-    private static PIDCoefficients coefficientsShooter = new PIDCoefficients(0.00001, 0, 0);
-    private static BasicFeedforwardParameters feedforwardShooter = new BasicFeedforwardParameters(0.00023, 0, 0.1);
+    private static PIDCoefficients coefficientsShooter = new PIDCoefficients(0.01, 0, 0);
+    private static BasicFeedforwardParameters feedforwardShooter = new BasicFeedforwardParameters(0.0006, 0, 0.1);
 
     // Instância da Limelight
     private LimelightSubsystem limelight = LimelightSubsystem.INSTANCE;
@@ -40,7 +40,6 @@ public class Shooter implements Subsystem {
     private MotorEx shooterMotor_Left = new MotorEx("shooter_motor_left", -1)
             .brakeMode();
     private MotorEx shooterMotor_Right = new MotorEx("shooter_motor_right", -1)
-            .reversed()
             .brakeMode();
     private MotorGroup shooterMotor = new MotorGroup(shooterMotor_Right, shooterMotor_Left);
 
@@ -175,16 +174,23 @@ public class Shooter implements Subsystem {
     // Rodando em looping assim que a programação iniciar
     @Override
     public void periodic() {
+        currentVelocity = shooterMotor.getVelocity();
+
         if (enabledTeleOp || enabledAuto) {
             if (enabledTeleOp) {
-                if (currentVelocity < velocity) {
+                double error = velocity - currentVelocity;
+
+                if (error > 200) {
                     shooterMotor.setPower(1);
                 } else {
                     shooterMotor.setPower(controlShooter.calculate(shooterMotor.getState()));
                 }
             }
+
             if (enabledAuto) {
-                if (currentVelocity < velocityAuto) {
+                double error = velocityAuto - currentVelocity;
+
+                if (error > 200) {
                     shooterMotor.setPower(1);
                 } else {
                     shooterMotor.setPower(controlShooter.calculate(shooterMotor.getState()));
@@ -193,8 +199,6 @@ public class Shooter implements Subsystem {
         } else {
             shooterMotor.setPower(0);
         }
-
-        currentVelocity = shooterMotor.getVelocity();
        /* if (currentVelocity >= velocity - 20 && currentVelocity <= velocity + 200) {
             Led.INSTANCE.setLed_shooter(0.85);
         } else {

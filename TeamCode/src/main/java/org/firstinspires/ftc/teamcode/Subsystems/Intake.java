@@ -40,15 +40,9 @@ public class Intake implements Subsystem {
     private boolean enabled = false;
 
     private ServoEx lock = new ServoEx("lock_servo", -1); // Port
-    private MotorEx motor_left = new MotorEx("intake_motor_left", -1) // Port
-            .floatMode();
-
-    private MotorEx motor_right = new MotorEx("intake_motor_right", -1) // Port
+    private MotorEx motor = new MotorEx("intake_motor", -1)// Port
             .reversed()
             .floatMode();
-
-    private MotorGroup intakeMotor = new MotorGroup(motor_left, motor_right);
-
 
     private ControlSystem controlSystem = ControlSystem.builder()
             .basicFF(feedforward)
@@ -83,7 +77,6 @@ public class Intake implements Subsystem {
     }
 
     public Command locked = new SetPosition(lock, 0).requires(this);
-
     public Command unlocked = new SetPosition(lock, 0.5);
 
     public void stop() {
@@ -99,12 +92,12 @@ public class Intake implements Subsystem {
     @Override
     public void periodic() {
         if (enabled) {
-            intakeMotor.setPower(controlSystem.calculate(intakeMotor.getState()));
+            motor.setPower(controlSystem.calculate(motor.getState()));
         } else {
-            intakeMotor.setPower(0);
+            motor.setPower(0);
         }
 
-        currentVelocity = intakeMotor.getVelocity();
+        currentVelocity = motor.getVelocity();
 
     }
 }

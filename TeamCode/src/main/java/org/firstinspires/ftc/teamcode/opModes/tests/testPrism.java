@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.opModes.tests;
 
 import static org.firstinspires.ftc.teamcode.Prism.GoBildaPrismDriver.Artboard;
 import static org.firstinspires.ftc.teamcode.Prism.GoBildaPrismDriver.LayerHeight;
@@ -10,7 +10,7 @@ import org.firstinspires.ftc.teamcode.Prism.Color;
 import org.firstinspires.ftc.teamcode.Prism.GoBildaPrismDriver;
 import org.firstinspires.ftc.teamcode.Prism.PrismAnimations;
 
-@TeleOp(name = "Prism Status Config", group = "Test")
+@TeleOp(name = "Prism Status Config", group = "OpModes Tests")
 public class testPrism extends LinearOpMode {
 
     GoBildaPrismDriver prism;
