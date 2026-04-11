@@ -68,8 +68,10 @@ public class testShooter extends NextFTCOpMode {
         }
         if (shooterToggle) {
             Shooter.INSTANCE.fixedVelocity().invoke();
+            Intake.INSTANCE.unlocked.invoke();
         } else {
             Shooter.INSTANCE.stopTeleOp();
+            Intake.INSTANCE.locked.invoke();
         }
 
       //  Shooter.INSTANCE.testHood(testHood);

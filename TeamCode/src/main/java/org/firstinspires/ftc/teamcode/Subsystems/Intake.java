@@ -77,7 +77,7 @@ public class Intake implements Subsystem {
     }
 
     public Command locked = new SetPosition(lock, 0).requires(this);
-    public Command unlocked = new SetPosition(lock, 0.5);
+    public Command unlocked = new SetPosition(lock, 1);
 
     public void stop() {
         enabled = false;

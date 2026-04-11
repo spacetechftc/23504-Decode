@@ -10,6 +10,8 @@ import org.firstinspires.ftc.teamcode.Prism.Color;
 import org.firstinspires.ftc.teamcode.Prism.GoBildaPrismDriver;
 import org.firstinspires.ftc.teamcode.Prism.PrismAnimations;
 
+import java.util.concurrent.TimeUnit;
+
 @TeleOp(name = "Prism Status Config", group = "OpModes Tests")
 public class testPrism extends LinearOpMode {
 
@@ -23,7 +25,7 @@ public class testPrism extends LinearOpMode {
         PrismAnimations.Solid greenSolid = new PrismAnimations.Solid(Color.GREEN);
         greenSolid.setBrightness(100);
         greenSolid.setStartIndex(0);
-        greenSolid.setStopIndex(12);
+        greenSolid.setStopIndex(24);
 
         // Verde piscando
         PrismAnimations.Blink greenBlink = new PrismAnimations.Blink();
@@ -31,15 +33,15 @@ public class testPrism extends LinearOpMode {
         greenBlink.setSecondaryColor(Color.TRANSPARENT); // apagado entre piscadas
         greenBlink.setBrightness(100);
         greenBlink.setStartIndex(0);
-        greenBlink.setStopIndex(12);
-        greenBlink.setPeriod(600);
-        greenBlink.setPrimaryColorPeriod(300);
+        greenBlink.setStopIndex(24);
+        greenBlink.setPeriod(200);
+        greenBlink.setPrimaryColorPeriod(100);
 
         // Vermelho sólido
         PrismAnimations.Solid redSolid = new PrismAnimations.Solid(Color.RED);
         redSolid.setBrightness(100);
         redSolid.setStartIndex(0);
-        redSolid.setStopIndex(12);
+        redSolid.setStopIndex(24);
 
         // Vermelho piscando
         PrismAnimations.Blink redBlink = new PrismAnimations.Blink();
@@ -47,9 +49,9 @@ public class testPrism extends LinearOpMode {
         redBlink.setSecondaryColor(Color.TRANSPARENT);
         redBlink.setBrightness(100);
         redBlink.setStartIndex(0);
-        redBlink.setStopIndex(12);
-        redBlink.setPeriod(600);
-        redBlink.setPrimaryColorPeriod(300);
+        redBlink.setStopIndex(24);
+        redBlink.setPeriod(200);
+        redBlink.setPrimaryColorPeriod(100);
 
         // Azul piscando
         PrismAnimations.Blink blueBlink = new PrismAnimations.Blink();
@@ -57,9 +59,9 @@ public class testPrism extends LinearOpMode {
         blueBlink.setSecondaryColor(Color.TRANSPARENT);
         blueBlink.setBrightness(100);
         blueBlink.setStartIndex(0);
-        blueBlink.setStopIndex(12);
-        blueBlink.setPeriod(600);
-        blueBlink.setPrimaryColorPeriod(300);
+        blueBlink.setStopIndex(24);
+        blueBlink.setPeriod(200);
+        blueBlink.setPrimaryColorPeriod(100);
 
         waitForStart();
 

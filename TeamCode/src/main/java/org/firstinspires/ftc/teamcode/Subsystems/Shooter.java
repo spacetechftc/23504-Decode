@@ -37,11 +37,12 @@ public class Shooter implements Subsystem {
     // Configurações
     public boolean enabledTeleOp, enabledAuto = false;
 
-    private MotorEx shooterMotor_Left = new MotorEx("shooter_motor_left", -1)
+    private MotorEx shooterMotor_Up = new MotorEx("shooter_motor_up", -1)
             .brakeMode();
-    private MotorEx shooterMotor_Right = new MotorEx("shooter_motor_right", -1)
+    private MotorEx shooterMotor_Down = new MotorEx("shooter_motor_down", -1)
+            .reversed()
             .brakeMode();
-    private MotorGroup shooterMotor = new MotorGroup(shooterMotor_Right, shooterMotor_Left);
+    private MotorGroup shooterMotor = new MotorGroup(shooterMotor_Up, shooterMotor_Down);
 
    // private ServoEx hood = new ServoEx("hood_servo", -1);
 

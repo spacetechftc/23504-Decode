@@ -19,7 +19,7 @@ public class MecanumDrive {
     private final MotorEx frontLeftMotor = new MotorEx("front_left").reversed().brakeMode(); // Port 3
     private final MotorEx frontRightMotor = new MotorEx("front_right").brakeMode(); // Port 0
 
-    private final MotorEx backLeftMotor = new MotorEx("back_left").reversed().brakeMode(); // Port 2
+    private final MotorEx backLeftMotor = new MotorEx("back_left").brakeMode(); // Port 2
     private final MotorEx backRightMotor = new MotorEx("back_right").reversed().brakeMode(); // Port 1
 
     public void
