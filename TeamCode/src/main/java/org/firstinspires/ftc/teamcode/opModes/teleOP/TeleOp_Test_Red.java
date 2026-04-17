@@ -109,7 +109,7 @@ public class TeleOp_Test_Red extends NextFTCOpMode {
             testTurret.INSTANCE.turretToPosition(0);
             Shooter.INSTANCE.switchHood(0.51);
         } else {
-            testTurret.INSTANCE.alignTurretTeleOp(x, y, heading,vx,vy, testTurret.INSTANCE.currentTicks, false);
+            testTurret.INSTANCE.alignTurretTeleOp(x, y, heading, vx, vy, testTurret.INSTANCE.currentTicks, false);
             Shooter.INSTANCE.initMechanisms(true);
         }
 

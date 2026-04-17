@@ -1,8 +1,8 @@
 package org.firstinspires.ftc.teamcode.Subsystems;
 
+import static org.firstinspires.ftc.teamcode.opModes.tests.testGraph.telemetryMa;
+
 import com.bylazar.configurables.annotations.Configurable;
-import com.qualcomm.robotcore.hardware.ColorRangeSensor;
-import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
@@ -15,7 +15,6 @@ import dev.nextftc.core.commands.Command;
 import dev.nextftc.core.commands.utility.LambdaCommand;
 import dev.nextftc.core.subsystems.Subsystem;
 import dev.nextftc.ftc.ActiveOpMode;
-import dev.nextftc.hardware.controllable.MotorGroup;
 import dev.nextftc.hardware.controllable.RunToVelocity;
 import dev.nextftc.hardware.impl.MotorEx;
 import dev.nextftc.hardware.impl.ServoEx;
@@ -38,11 +37,15 @@ public class Intake implements Subsystem {
 
     // Configurações
     private boolean enabled = false;
+    private Led led = Led.INSTANCE;
 
     private ServoEx lock = new ServoEx("lock_servo", -1); // Port
     private MotorEx motor = new MotorEx("intake_motor", -1)// Port
             .reversed()
             .floatMode();
+    private DistanceSensor sensor_up;
+    private DistanceSensor sensor_mid;
+    private DistanceSensor sensor_down;
 
     private ControlSystem controlSystem = ControlSystem.builder()
             .basicFF(feedforward)
@@ -50,6 +53,29 @@ public class Intake implements Subsystem {
             .build();
 
     // Comandos do Subsistema
+
+    public void updateArtifactLed(boolean sensor1Detected, boolean sensor2Detected, boolean sensor3Detected) {
+        int count = 0;
+
+        if (sensor1Detected) count++;
+        if (sensor2Detected) count++;
+        if (sensor3Detected) count++;
+
+        switch (count) {
+            case 0:
+                led.setBackOff();
+                break;
+            case 1:
+                led.setBackRed();
+                break;
+            case 2:
+                led.setBackYellow();
+                break;
+            case 3:
+                led.setBackGreen();
+                break;
+        }
+    }
     // Comandos Autonomo
     public Command coletAutoOn() {
         enabled = true;
@@ -75,9 +101,8 @@ public class Intake implements Subsystem {
         enabled = true;
         return new RunToVelocity(controlSystem, -2000).requires(this);
     }
-
-    public Command locked = new SetPosition(lock, 0).requires(this);
-    public Command unlocked = new SetPosition(lock, 1);
+    public Command locked = new SetPosition(lock, 1.0).requires(this);
+    public Command unlocked = new SetPosition(lock, 0);
 
     public void stop() {
         enabled = false;
@@ -87,17 +112,26 @@ public class Intake implements Subsystem {
     @Override
     public void initialize() {
         enabled = false;
+
+        sensor_up = ActiveOpMode.hardwareMap().get(DistanceSensor.class, "sensor_up");
+        sensor_mid = ActiveOpMode.hardwareMap().get(DistanceSensor.class, "sensor_mid");
+        sensor_down = ActiveOpMode.hardwareMap().get(DistanceSensor.class, "sensor_down");
+
     }
 
     @Override
     public void periodic() {
+        currentVelocity = motor.getVelocity();
+
         if (enabled) {
             motor.setPower(controlSystem.calculate(motor.getState()));
         } else {
             motor.setPower(0);
         }
 
-        currentVelocity = motor.getVelocity();
-
+        boolean sensor1Detected = sensor_up.getDistance(DistanceUnit.CM) < 4.5;
+        boolean sensor2Detected = sensor_mid.getDistance(DistanceUnit.CM) < 2.95;
+        boolean sensor3Detected = sensor_down.getDistance(DistanceUnit.CM) < 7.9;
+        updateArtifactLed(sensor1Detected, sensor2Detected, sensor3Detected);
     }
 }

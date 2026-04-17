@@ -11,7 +11,9 @@ import com.qualcomm.robotcore.hardware.Servo;
 @TeleOp(name = "ServoTestDashboard", group = "OpModes Tests")
 public class testServo extends OpMode {
 
-    public static double servoPos = 0;
+    public static double servoPosLeft = 0;
+    public static double servoPosRight = 0;
+
     Servo servo;
     Servo servox;
 
@@ -24,8 +26,10 @@ public class testServo extends OpMode {
 
     @Override
     public void loop() {
-        servo.setPosition(servoPos);
-        servox.setPosition(servoPos);
-        telemetry.addData("Servo position", servoPos);
+        servo.setPosition(servoPosLeft);
+        servox.setPosition(servoPosRight);
+        telemetry.addData("Servo position Left", servoPosLeft);
+        telemetry.addData("Servo position Right", servoPosRight);
+        telemetry.update();
     }
 }

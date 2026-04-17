@@ -5,7 +5,6 @@ import static org.firstinspires.ftc.teamcode.Subsystems.Led.PrismState.GREEN_SOL
 import static org.firstinspires.ftc.teamcode.Subsystems.Led.PrismState.RED_FILL;
 import static org.firstinspires.ftc.teamcode.Subsystems.Led.PrismState.RED_SNAKE;
 import static org.firstinspires.ftc.teamcode.Subsystems.Led.PrismState.RED_SOLID;
-import static org.firstinspires.ftc.teamcode.opModes.Autonomous.Eighteen_Balls_Close_Red.autoEndPoseRed;
 
 import com.bylazar.telemetry.PanelsTelemetry;
 import com.bylazar.telemetry.TelemetryManager;
@@ -30,10 +29,10 @@ import dev.nextftc.extensions.pedro.PedroComponent;
 import dev.nextftc.ftc.NextFTCOpMode;
 import dev.nextftc.ftc.components.BulkReadComponent;
 
-@TeleOp(name = "TeleOp_Red", group = "Official")
-public class TeleOp_Red extends NextFTCOpMode {
+@TeleOp(name = "TeleOp_Test_Red_Worlds", group = "TeleOp Tests")
+public class TeleOp_Test_RedW extends NextFTCOpMode {
 
-    public TeleOp_Red() {
+    public TeleOp_Test_RedW() {
         addComponents(
                 new SubsystemComponent(Intake.INSTANCE, Shooter.INSTANCE, testTurret.INSTANCE, LimelightSubsystem.INSTANCE, EndGame.INSTANCE, Led.INSTANCE),
                 BindingsComponent.INSTANCE,
@@ -47,7 +46,9 @@ public class TeleOp_Red extends NextFTCOpMode {
     private final PolygonZone robotZone = new PolygonZone(16, 14);
     private final PolygonZone farLaunchZone = new PolygonZone(new Point(48.5, 0), new Point(63, 14), new Point(77, 0));
     MecanumDrive mecanumDrive = new MecanumDrive();
+    private final Pose startPose = new Pose(0, 0, Math.toRadians(0));
     private final Pose resetPose = new Pose(0, 0, Math.toRadians(0));
+
     public static TelemetryManager telemetryMa;
 
     private boolean turretToggle = false;
@@ -66,7 +67,7 @@ public class TeleOp_Red extends NextFTCOpMode {
         testTurret.INSTANCE.resetEncoder();
         LimelightSubsystem.INSTANCE.switchPipeline(1);
         LimelightSubsystem.INSTANCE.setTeleOp(true);
-        PedroComponent.follower().setStartingPose(autoEndPoseRed == null ? new Pose() : autoEndPoseRed);
+        PedroComponent.follower().setStartingPose(startPose);
         PedroComponent.follower().updatePose();
         telemetryMa.addData("Status:", "inicializado");
         telemetryMa.update(telemetry);
@@ -106,7 +107,6 @@ public class TeleOp_Red extends NextFTCOpMode {
             );
         }
 
-        //Toggle Shooter
         boolean currentButtonState = gamepad1.right_bumper;
         if (currentButtonState && !turretLastButtonState) {
             turretToggle = !turretToggle;
@@ -165,7 +165,7 @@ public class TeleOp_Red extends NextFTCOpMode {
         telemetryMa.addData("Heading", Math.toDegrees(heading));
         telemetryMa.addData("Target Shooter", Shooter.INSTANCE.velocity);
         telemetryMa.addData("Current Shooter", Shooter.INSTANCE.currentVelocity);
-        telemetryMa.addData("Time", teleOpTime.getRemaining());
+        telemetryMa.addData("current Intake", Intake.INSTANCE.currentVelocity);
         telemetryMa.update(telemetry);
         PedroComponent.follower().update();
     }

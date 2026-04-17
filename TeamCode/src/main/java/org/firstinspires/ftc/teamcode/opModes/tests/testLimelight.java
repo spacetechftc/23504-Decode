@@ -40,27 +40,24 @@ public class testLimelight extends NextFTCOpMode {
 
     @Override
     public void onInit() {
+        LimelightSubsystem.INSTANCE.setTeleOp(true);
     }
 
     @Override
     public void onStartButtonPressed() {
         mecanumDrive.start();
-        LimelightSubsystem.INSTANCE.switchPipeline(4);
+        LimelightSubsystem.INSTANCE.switchPipeline(1);
     }
 
     @Override
     public void onUpdate() {
         boolean currentButtonStateSquare = gamepad1.square;
         if (currentButtonStateSquare && !turretLastButtonState) {
-            turretToggle = !turretToggle; // inverte o estado do toggle
+            turretToggle = !turretToggle;
         }
         turretLastButtonState = currentButtonStateSquare;
 
-        if (turretToggle) {
-            mecanumDrive.setAutoAlign(true, LimelightSubsystem.INSTANCE.getP());
-        } else {
-            mecanumDrive.setAutoAlign(false, 0);
-        }
+
         }
     }
 

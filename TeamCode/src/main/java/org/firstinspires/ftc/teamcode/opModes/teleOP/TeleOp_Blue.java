@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.opModes.teleOP;
 
-import static org.firstinspires.ftc.teamcode.opModes.Autonomous.Eighteen_Balls_Close_Blue.autoEndPoseBlue;
 
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -42,8 +41,6 @@ public class TeleOp_Blue extends NextFTCOpMode {
 
     @Override
     public void onInit() {
-        PedroComponent.follower().setStartingPose(autoEndPoseBlue == null ? new Pose() : autoEndPoseBlue);
-        PedroComponent.follower().updatePose();
         telemetry.addData("Status:", "inicializado");
         telemetry.update();
     }

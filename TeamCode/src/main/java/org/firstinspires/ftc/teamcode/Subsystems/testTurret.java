@@ -3,7 +3,9 @@ package org.firstinspires.ftc.teamcode.Subsystems;
 import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
+import org.firstinspires.ftc.teamcode.Mecanismos.GoBildaPinpointDriver;
 import org.firstinspires.ftc.teamcode.Mecanismos.PIDFController;
+import org.firstinspires.ftc.teamcode.Mecanismos.PinpointBlocks;
 
 import dev.nextftc.core.subsystems.Subsystem;
 import dev.nextftc.ftc.ActiveOpMode;
@@ -11,28 +13,44 @@ import dev.nextftc.ftc.ActiveOpMode;
 @Configurable
 public class testTurret implements Subsystem {
 
+    GoBildaPinpointDriver pinpoint_turret;
+
     DcMotorEx turretMotor;
     public int currentTicks, targetTicks;
     public double distance, movedDistance, flightTime;
-
     PIDFController odometryTicksControl;
-    PIDFController limelightControl;
 
     // Configuração do PID -- Odometria
-    public static double KP = 0.00084;
-    public static double KD = 0.000015;
+    public static double KP = 0.000425;
+    public static double KD = 0.0000015;
+
+    // Feedforward da velocidade do target da turret
+    public static double kV = 0.00026;
+    public static double kS = 0.01;
+
+    // Estado do velFF
+    private int previousTargetTicks = 0;
+    private double lastTargetTime = 0;
 
     // Ângulo da Torreta
-    public static double GEAR_RATIO = 106.0/37.0; // Your gear ratio
+    public static double GEAR_RATIO = 106.0 / 37.0;
     private static final double ENCODER_CPR = 8192;
     private static final double TICKS_PER_TURRET_REV = ENCODER_CPR * GEAR_RATIO;
 
     // GOALS
     public static double blueGoalX = 6;
     public static double blueGoalY = 120;
-    public static double redGoalX  = 128;
-    public static double redGoalY  = 120;
+    public static double redGoalX = 125;
+    public static double redGoalY = 128;
+
+    public static double distanceOffset = 5.5;
+
     public double power = 0;
+
+    // Debug velFF
+    public double targetVelDegPerSec = 0;
+    public double velFFPower = 0;
+
     // Instância da Torreta
     public static final testTurret INSTANCE = new testTurret();
     private testTurret() {}
@@ -41,6 +59,7 @@ public class testTurret implements Subsystem {
     private int degreesToTicks(double degrees) {
         return (int) Math.round((degrees / 360.0) * TICKS_PER_TURRET_REV);
     }
+
     private double ticksToDegrees(int ticks) {
         return (ticks / TICKS_PER_TURRET_REV) * 360.0;
     }
@@ -71,6 +90,30 @@ public class testTurret implements Subsystem {
     public void resetEncoder() {
         turretMotor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         turretMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+        previousTargetTicks = 0;
+        lastTargetTime = 0;
+    }
+
+    private double calculateTurretPowerWithVelFF(int targetTicks, int currentTicks) {
+        double currentTime = System.nanoTime() / 1e9;
+        double deltaTime = (lastTargetTime == 0) ? 0 : (currentTime - lastTargetTime);
+
+        double error = targetTicks - currentTicks;
+        targetVelDegPerSec = 0;
+        if (deltaTime > 0) {
+            double deltaDegrees = ticksToDegrees(targetTicks - previousTargetTicks);
+            targetVelDegPerSec = deltaDegrees / deltaTime;
+        }
+
+        double ff = kS * Math.signum(error);
+        velFFPower = kV * targetVelDegPerSec + ff;
+        double pidPower = odometryTicksControl.calculate(targetTicks, currentTicks);
+        double finalPower = pidPower + velFFPower;
+
+        previousTargetTicks = targetTicks;
+        lastTargetTime = currentTime;
+
+        return Math.max(-1, Math.min(1, finalPower));
     }
 
     public double alignTurretWithMotion(double x, double y, double heading, double vx, double vy, int currentTicks, boolean blue) {
@@ -79,21 +122,19 @@ public class testTurret implements Subsystem {
         double goalX = blue ? blueGoalX : redGoalX;
         double goalY = blue ? blueGoalY : redGoalY;
 
-        distance = Math.hypot(goalX - x, goalY - y);
-        flightTime = 0.6;
+        distance = (Math.hypot(goalX - x, goalY - y)) - distanceOffset;
+        flightTime = 0.7;
 
         double movedGoalX = goalX - vx * flightTime;
         double movedGoalY = goalY - vy * flightTime;
 
-        movedDistance = Math.hypot(movedGoalX - x, movedGoalY - y);
+        movedDistance = (Math.hypot(movedGoalX - x, movedGoalY - y)) - distanceOffset;
 
         double angleToGoal = Math.toDegrees(Math.atan2(movedGoalY - y, movedGoalX - x));
-
         double turretAngle = normalizeAngle(headingDeg - angleToGoal);
 
         targetTicks = degreesToTicks(turretAngle);
-        power = odometryTicksControl.calculate(targetTicks, currentTicks);
-        power = Math.max(-1, Math.min(1, power));
+        power = calculateTurretPowerWithVelFF(targetTicks, currentTicks);
 
         return power;
     }
@@ -103,41 +144,26 @@ public class testTurret implements Subsystem {
 
         double goalX = blue ? blueGoalX : redGoalX;
         double goalY = blue ? blueGoalY : redGoalY;
-        distance = Math.hypot(goalX - x, goalY - y);
+        movedDistance = (Math.hypot(goalX - x, goalY - y)) - distanceOffset;
 
         double angleToGoal = Math.toDegrees(Math.atan2(goalY - y, goalX - x));
-
         double turretAngle = normalizeAngle(headingDeg - angleToGoal);
 
         targetTicks = degreesToTicks(turretAngle);
-        power = odometryTicksControl.calculate(targetTicks, currentTicks);
-        power = Math.max(-1, Math.min(1, power));
+        power = calculateTurretPowerWithVelFF(targetTicks, currentTicks);
 
         return power;
     }
 
-
     public void alignTurretTeleOp(double x, double y, double heading, double vx, double vy, int currentTicks, boolean blue) {
-        power = alignTurretWithMotion(x,y,heading,vx,vy,currentTicks,blue);
-
+        power = alignTurretWithMotion(x, y, heading, vx, vy, currentTicks, blue);
         turretMotor.setPower(power);
     }
 
     public void alignTurretAuto(double x, double y, double heading, int currentTicks, boolean blue) {
         power = alignTurretWithOdometry(x, y, heading, currentTicks, blue);
-
         turretMotor.setPower(power);
     }
-
-
-    /*
-    public void alignTurret(double x, double y, double heading, int currentTicks, boolean blue) {
-        power = alignTurretWithOdometry(x,y,heading,currentTicks, false);
-
-        turretMotor.setPower(power);
-    }
-
-     */
 
     public void manualTurret(boolean left, boolean right) {
         if (left) {
@@ -151,8 +177,7 @@ public class testTurret implements Subsystem {
 
     public void turretToPosition(int pos) {
         targetTicks = pos;
-        power = odometryTicksControl.calculate(targetTicks, currentTicks);
-        power = Math.max(-1, Math.min(1, power));
+        power = calculateTurretPowerWithVelFF(targetTicks, currentTicks);
         turretMotor.setPower(power);
     }
 
@@ -168,17 +193,20 @@ public class testTurret implements Subsystem {
         turretMotor = ActiveOpMode.hardwareMap().get(DcMotorEx.class, "turret_motor");
         turretMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
 
+       // pinpoint_turret = ActiveOpMode.hardwareMap().get(GoBildaPinpointDriver.class, "pinpoint_turret");
+
         odometryTicksControl = new PIDFController(KP, 0, KD, 0);
+
+        previousTargetTicks = 0;
+        lastTargetTime = 0;
     }
 
     @Override
     public void periodic() {
         currentTicks = turretMotor.getCurrentPosition();
-        ActiveOpMode.telemetry().addData("Turret", "------------------");
+        //pinpoint_turret.update(GoBildaPinpointDriver.readData.ONLY_UPDATE_HEADING);
+
         ActiveOpMode.telemetry().addData("CurrentTicks", currentTicks);
         ActiveOpMode.telemetry().addData("TargetTicks", targetTicks);
-        ActiveOpMode.telemetry().addData("Degrees", ticksToDegrees(currentTicks));
-        ActiveOpMode.telemetry().addData("Distance", movedDistance);
-
     }
 }

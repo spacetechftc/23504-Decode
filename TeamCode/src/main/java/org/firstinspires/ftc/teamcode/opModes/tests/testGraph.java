@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.opModes.tests;
 
 import com.bylazar.configurables.annotations.Configurable;
+import com.bylazar.telemetry.PanelsTelemetry;
 import com.bylazar.telemetry.TelemetryManager;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
@@ -20,10 +21,10 @@ import dev.nextftc.extensions.pedro.PedroComponent;
 import dev.nextftc.ftc.NextFTCOpMode;
 import dev.nextftc.ftc.components.BulkReadComponent;
 
-@TeleOp(name="testShooter", group = "OpModes Tests")
+@TeleOp(name="testGraph", group = "OpModes Tests")
 @Configurable
-public class testShooter extends NextFTCOpMode {
-    public testShooter() {
+public class testGraph extends NextFTCOpMode {
+    public testGraph() {
         addComponents(
                 new SubsystemComponent(Intake.INSTANCE, testTurret.INSTANCE, Shooter.INSTANCE, Led.INSTANCE),
                 BulkReadComponent.INSTANCE,
@@ -36,12 +37,14 @@ public class testShooter extends NextFTCOpMode {
     public static double testHood = 0.51;
 
     MecanumDrive mecanumDrive = new MecanumDrive();
-    public static TelemetryManager telemetryMa;
 
     private final Pose startPose = new Pose(0, 0, Math.toRadians(0));
 
+    public static TelemetryManager telemetryMa;
+
     @Override
     public void onInit() {
+        telemetryMa = PanelsTelemetry.INSTANCE.getTelemetry();
         testTurret.INSTANCE.resetEncoder();
         PedroComponent.follower().setStartingPose(startPose);
         PedroComponent.follower().updatePose();
@@ -52,7 +55,7 @@ public class testShooter extends NextFTCOpMode {
     @Override
     public void onWaitForStart() {
         telemetryMa.addData("READY", "LET'S GO SPACETECH!");
-        telemetryMa.update();
+        telemetryMa.update(telemetry);
     }
 
     @Override
@@ -93,10 +96,16 @@ public class testShooter extends NextFTCOpMode {
         Shooter.INSTANCE.testHood(testHood);
 
         testTurret.INSTANCE.alignTurretTeleOp(x, y, heading,vx,vy, testTurret.INSTANCE.currentTicks, false);
-        telemetryMa.addData("Intake", "-----------7-------");
+        telemetryMa.addData("Odometria", "------------------");
+        telemetryMa.addData("X", x);
+        telemetryMa.addData("Y", y);
+        telemetryMa.addData("vX", vx);
+        telemetryMa.addData("vY", vy);
+        telemetryMa.addData("Heading", Math.toDegrees(heading));
+        telemetryMa.addData("Intake", "------------------");
         telemetryMa.addData("Target Intke", Intake.INSTANCE.velocity);
         telemetryMa.addData("Current Intake", Intake.INSTANCE.currentVelocity);
-        telemetryMa.addData("Shooter", "-----------7-------");
+        telemetryMa.addData("Shooter", "------------------");
         telemetryMa.addData("Target Shooter", Shooter.INSTANCE.velocity);
         telemetryMa.addData("Current Shooter", Shooter.INSTANCE.currentVelocity);
         telemetryMa.update(telemetry);

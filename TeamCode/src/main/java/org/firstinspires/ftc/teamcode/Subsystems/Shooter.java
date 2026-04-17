@@ -18,15 +18,11 @@ import dev.nextftc.hardware.impl.ServoEx;
 @Configurable
 public class Shooter implements Subsystem {
     public double velocity, currentVelocity, velocityAuto;
-    public static double angulation;
+    public static double angulation = 0.51;
     public static double velocityFix = 1220;
     // Coeficientes do Shooter
     private static PIDCoefficients coefficientsShooter = new PIDCoefficients(0.01, 0, 0);
     private static BasicFeedforwardParameters feedforwardShooter = new BasicFeedforwardParameters(0.0006, 0, 0.1);
-
-    // Instância da Limelight
-    private LimelightSubsystem limelight = LimelightSubsystem.INSTANCE;
-    private Led led = Led.INSTANCE;
 
     // Instância do Shooter
     public static final Shooter INSTANCE = new Shooter();
@@ -37,14 +33,15 @@ public class Shooter implements Subsystem {
     // Configurações
     public boolean enabledTeleOp, enabledAuto = false;
 
-    private MotorEx shooterMotor_Up = new MotorEx("shooter_motor_up", -1)
+    private MotorEx shooterMotor_Left = new MotorEx("shooter_motor_left", -1)
+            .reversed()
             .brakeMode();
     private MotorEx shooterMotor_Down = new MotorEx("shooter_motor_down", -1)
             .reversed()
             .brakeMode();
-    private MotorGroup shooterMotor = new MotorGroup(shooterMotor_Up, shooterMotor_Down);
+    private MotorGroup shooterMotor = new MotorGroup(shooterMotor_Left, shooterMotor_Down);
 
-   // private ServoEx hood = new ServoEx("hood_servo", -1);
+    private ServoEx hood = new ServoEx("hood_servo", -1);
 
     // Sistemas de Controle (Shooter)
     private ControlSystem controlShooter = ControlSystem.builder()
@@ -75,34 +72,16 @@ public class Shooter implements Subsystem {
                 .requires(this);
     }
 
-    private double speedCalculationRed(double x) {
-        double rpm = (((-2.86778e-6 * x + 5.02307e-4) * x
-                + 0.0513528) * x
-                - 6.02487) * x
-                + 1280.38268;
+    public double speedCalculationRed(double x) {
+        double y = (((-9.17191e-7 * x + 0.00026299) * x - 0.0236938) * x + 5.77226) * x + 592.89448;
 
-        if (rpm > 1800.0) {
-            rpm = 1800.0;
-        } else if (rpm < 1150.0) {
-            rpm = 1150.0;
-        }
-
-        return rpm;
+        return Math.max(800, Math.min(1350, y));
     }
 
-    private double setHoodRed(double x) {
-        double pos = (((2.23363e-8 * x - 8.28222e-6) * x
-                + 0.00106726) * x
-                - 0.0506413) * x
-                + 1.28864;
+    public double setHoodRed(double x) {
+        double y = (((1.36499e-8 * x - 0.00000535535) * x + 0.000706212) * x - 0.0328648) * x + 1.00362;
 
-        if (pos > 1.0) {
-            pos = 1.0;
-        } else if (pos < 0.51) {
-            pos = 0.51;
-        }
-
-        return pos;
+        return Math.max(0.51, Math.min(0.8, y));
     }
 
     private double setHoodBlue(double x) {
@@ -140,7 +119,7 @@ public class Shooter implements Subsystem {
         velocityAuto = velocity;
     }
     public void switchHood(double pos) {
-        //hood.setPosition(pos);
+        hood.setPosition(pos);
     }
     public void initMechanisms(boolean red) {
         if (red) {
@@ -150,13 +129,12 @@ public class Shooter implements Subsystem {
             velocity = speedCalculationBlue(testTurret.INSTANCE.movedDistance);
             angulation = setHoodBlue(testTurret.INSTANCE.distance);
         }
-       // hood.setPosition(angulation);
+        hood.setPosition(angulation);
     }
 
     public void testHood(double angulation) {
-   //     hood.setPosition(angulation);
+         hood.setPosition(angulation);
     }
-
 
     public void stopTeleOp() {
         enabledTeleOp = false;
@@ -181,7 +159,7 @@ public class Shooter implements Subsystem {
             if (enabledTeleOp) {
                 double error = velocity - currentVelocity;
 
-                if (error > 200) {
+                if (error > 80) {
                     shooterMotor.setPower(1);
                 } else {
                     shooterMotor.setPower(controlShooter.calculate(shooterMotor.getState()));
@@ -189,9 +167,7 @@ public class Shooter implements Subsystem {
             }
 
             if (enabledAuto) {
-                double error = velocityAuto - currentVelocity;
-
-                if (error > 200) {
+                if (currentVelocity < velocity) {
                     shooterMotor.setPower(1);
                 } else {
                     shooterMotor.setPower(controlShooter.calculate(shooterMotor.getState()));
@@ -200,13 +176,11 @@ public class Shooter implements Subsystem {
         } else {
             shooterMotor.setPower(0);
         }
-       /* if (currentVelocity >= velocity - 20 && currentVelocity <= velocity + 200) {
-            Led.INSTANCE.setLed_shooter(0.85);
+
+        if (currentVelocity >= velocity - 25 && currentVelocity <= velocity + 25) {
+            Led.INSTANCE.setShooterOn();
         } else {
-            Led.INSTANCE.setLed_shooter(0);
+            Led.INSTANCE.setShooterOff();
         }
-
-        */
-
     }
 }

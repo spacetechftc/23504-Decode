@@ -8,8 +8,13 @@ import com.qualcomm.hardware.limelightvision.Limelight3A;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 
+import dev.nextftc.core.commands.Command;
 import dev.nextftc.core.subsystems.Subsystem;
 import dev.nextftc.ftc.ActiveOpMode;
+import dev.nextftc.hardware.impl.ServoEx;
+import dev.nextftc.hardware.positionable.SetPosition;
+import dev.nextftc.hardware.positionable.SetPositions;
+import kotlinx.coroutines.channels.ActorKt;
 
 @Configurable
 public class LimelightSubsystem implements Subsystem {
@@ -18,13 +23,20 @@ public class LimelightSubsystem implements Subsystem {
     private LimelightSubsystem() {}
     public double tx, ta;
     public double INCHES_PER_METER = 39.3700787;
-    public static double FIELD_CENTER = 72;
-    public static double xOffset = 0;
-    public static double yOffset = 0;
+    public static double FIELD_CENTER = 63;
+    public static double xOffset = -4;
+    public static double yOffset = 5;
+
+    public static double headingOffset = -20;
 
     public boolean autonomous, teleOp;
     public double pedroX, pedroY, headingRadians;
 
+    private ServoEx limelight_servo = new ServoEx("limelight_servo", -1);
+
+    public Command relocalization = new SetPosition(limelight_servo, 0.9).requires(this);
+
+    public Command artifact = new SetPosition(limelight_servo, 0).requires(this);
 
     public void switchPipeline(int id) {
         limelight.pipelineSwitch(id);
@@ -83,9 +95,7 @@ public class LimelightSubsystem implements Subsystem {
             limelight.setPollRateHz(100);
             limelight.start();
         }
-
-        setTeleOp(false);
-        setAutonomous(false);
+        tx = 0;
     }
 
     // Roda em looping inifinito assim que a programação iniciar.
@@ -101,8 +111,6 @@ public class LimelightSubsystem implements Subsystem {
                 ActiveOpMode.telemetry().addData("Alvo X", tx);
             } else {
                 ActiveOpMode.telemetry().addData("Limelight", "Sem Alvos");
-                tx = 0;
-                ta = 0;
             }
 
         } else if (teleOp) {
@@ -112,16 +120,16 @@ public class LimelightSubsystem implements Subsystem {
             if (result == null || !result.isValid() || result.getBotpose() == null) {
                 return;
             }
-
             Pose3D botPose = result.getBotpose();
 
             double xInches = botPose.getPosition().x * INSTANCE.INCHES_PER_METER;
             double yInches = botPose.getPosition().y * INSTANCE.INCHES_PER_METER;
 
-            headingRadians = Math.toRadians(botPose.getOrientation().getYaw(AngleUnit.DEGREES) - 90);
+            headingRadians = Math.toRadians(botPose.getOrientation().getYaw(AngleUnit.DEGREES) - 90 - headingOffset);
 
-            pedroX = -xInches + FIELD_CENTER - xOffset;
-            pedroY = yInches + FIELD_CENTER - yOffset;
+            pedroY = -xInches + FIELD_CENTER - yOffset;
+            pedroX = yInches + FIELD_CENTER - xOffset;
+
         }
     }
 }
