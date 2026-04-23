@@ -21,12 +21,12 @@ public class testTurret implements Subsystem {
     PIDFController odometryTicksControl;
 
     // Configuração do PID -- Odometria
-    public static double KP = 0.000425;
-    public static double KD = 0.0000015;
+    public static double KP = 0.00035;
+    public static double KD = 0.000005;
 
     // Feedforward da velocidade do target da turret
-    public static double kV = 0.00026;
-    public static double kS = 0.01;
+    public static double kV = 0;
+    public static double kS = 0.176;
 
     // Estado do velFF
     private int previousTargetTicks = 0;
@@ -38,8 +38,8 @@ public class testTurret implements Subsystem {
     private static final double TICKS_PER_TURRET_REV = ENCODER_CPR * GEAR_RATIO;
 
     // GOALS
-    public static double blueGoalX = 6;
-    public static double blueGoalY = 120;
+    public static double blueGoalX = 0;
+    public static double blueGoalY = 128;
     public static double redGoalX = 125;
     public static double redGoalY = 128;
 
@@ -106,9 +106,9 @@ public class testTurret implements Subsystem {
         }
 
         double ff = kS * Math.signum(error);
-        velFFPower = kV * targetVelDegPerSec + ff;
+        velFFPower = kV * targetVelDegPerSec;
         double pidPower = odometryTicksControl.calculate(targetTicks, currentTicks);
-        double finalPower = pidPower + velFFPower;
+        double finalPower = pidPower + velFFPower + ff;
 
         previousTargetTicks = targetTicks;
         lastTargetTime = currentTime;
@@ -123,7 +123,7 @@ public class testTurret implements Subsystem {
         double goalY = blue ? blueGoalY : redGoalY;
 
         distance = (Math.hypot(goalX - x, goalY - y)) - distanceOffset;
-        flightTime = 0.7;
+        flightTime = 0.63;
 
         double movedGoalX = goalX - vx * flightTime;
         double movedGoalY = goalY - vy * flightTime;

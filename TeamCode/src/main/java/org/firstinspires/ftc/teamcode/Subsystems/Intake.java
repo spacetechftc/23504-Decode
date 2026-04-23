@@ -129,9 +129,10 @@ public class Intake implements Subsystem {
             motor.setPower(0);
         }
 
-        boolean sensor1Detected = sensor_up.getDistance(DistanceUnit.CM) < 4.5;
-        boolean sensor2Detected = sensor_mid.getDistance(DistanceUnit.CM) < 2.95;
-        boolean sensor3Detected = sensor_down.getDistance(DistanceUnit.CM) < 7.9;
+        boolean sensor1Detected = sensor_up.getDistance(DistanceUnit.CM) < 3.7;
+        boolean sensor2Detected = sensor_mid.getDistance(DistanceUnit.CM) < 3.2;
+        boolean sensor3Detected = sensor_down.getDistance(DistanceUnit.CM) < 7.3;
+
         updateArtifactLed(sensor1Detected, sensor2Detected, sensor3Detected);
     }
 }

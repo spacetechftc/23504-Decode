@@ -31,13 +31,13 @@ import dev.nextftc.extensions.pedro.PedroComponent;
 import dev.nextftc.ftc.NextFTCOpMode;
 import dev.nextftc.ftc.components.BulkReadComponent;
 
-import static org.firstinspires.ftc.teamcode.opModes.Autonomous.Eighteen_Balls_Close_Red.autoEndPoseRed;
+import static org.firstinspires.ftc.teamcode.opModes.Autonomous.Eighteen_Balls_Close_Blue.autoEndPoseBlue;
 
-@Autonomous(name="Far_Zone_Red_Limelight", group = "Auto Far Red", preselectTeleOp = "TeleOp_Red")
+@Autonomous(name="Far_Zone_Blue_Limelight", group = "Auto Far Blue", preselectTeleOp = "TeleOp_Blue")
 @Configurable
-public class Far_Zone_Red_Limelight extends NextFTCOpMode {
+public class Far_Zone_Blue_Limelight extends NextFTCOpMode {
 
-    public Far_Zone_Red_Limelight() {
+    public Far_Zone_Blue_Limelight() {
         addComponents(
                 new SubsystemComponent(Intake.INSTANCE, Shooter.INSTANCE, testTurret.INSTANCE, Led.INSTANCE, LimelightSubsystem.INSTANCE),
                 new PedroComponent(Constants::createFollower),
@@ -46,19 +46,24 @@ public class Far_Zone_Red_Limelight extends NextFTCOpMode {
     }
 
     private TelemetryManager panelsTelemetry;
-    private final Pose startPose = new Pose(81, 0, Math.toRadians(0));
-    private final Pose scorePose = new Pose(74, 15, Math.toRadians(0));
-    private final Pose leavePose = new Pose(83, 13, Math.toRadians(0));
+    private final Pose startPose = new Pose(46, -0.1, Math.toRadians(180));
+    private final Pose scorePose = new Pose(50, 11, Math.toRadians(180));
+    private final Pose leavePose = new Pose(30, 13, Math.toRadians(180));
 
-    private PathChain pathOne, pathTwo, pathThree, pathFour, pathFive, pathSix, pathLeave;
+    public int pos;
+
+    private PathChain pathOne, pathTwo, pathThree, pathFour, pathFive, pathSeven, pathSix, pathLeave;
 
     // Fileira de Baixo
-    private final Pose prepareDownBalls = new Pose(88, 27, Math.toRadians(0));
-    private final Pose takeDownBalls = new Pose(128, 27, Math.toRadians(0));
+    private final Pose prepareDownBalls = new Pose(35, 27, Math.toRadians(180));
+    private final Pose takeDownBalls = new Pose(-3, 27, Math.toRadians(180));
     // Three Balls
-    private final Pose firstThreeBalls = new Pose(128, 10, Math.toRadians(0));
-    private final Pose backThreeBalls = new Pose(102, 5, Math.toRadians(0));
-    private final Pose secondThreeBalls = new Pose(128, 0, Math.toRadians(0));
+    private final Pose firstThreeBalls = new Pose(1.2, 10, Math.toRadians(180));
+    private final Pose backThreeBalls = new Pose(32, 5, Math.toRadians(180));
+    private final Pose secondThreeBalls = new Pose(1.2, 0.5, Math.toRadians(180));
+
+    private final Pose secondTrajectory = new Pose(0, 30, Math.toRadians(180));
+
 
 
     // Variáveis do closed loop
@@ -81,9 +86,11 @@ public class Far_Zone_Red_Limelight extends NextFTCOpMode {
                 .build();
 
         pathTwo = PedroComponent.follower().pathBuilder()
-                .addPath(new BezierCurve(scorePose, prepareDownBalls, takeDownBalls))
-                .setTangentHeadingInterpolation()
+                .addPath(new BezierLine(scorePose, prepareDownBalls))
+                .setLinearHeadingInterpolation(scorePose.getHeading(), prepareDownBalls.getHeading())
                 .addParametricCallback(0.01, Intake.INSTANCE.locked)
+                .addPath(new BezierLine(prepareDownBalls, takeDownBalls))
+                .setLinearHeadingInterpolation(prepareDownBalls.getHeading(), takeDownBalls.getHeading())
                 .build();
 
         pathThree = PedroComponent.follower().pathBuilder()
@@ -94,17 +101,26 @@ public class Far_Zone_Red_Limelight extends NextFTCOpMode {
         pathFour = PedroComponent.follower().pathBuilder()
                 .addPath(new BezierLine(scorePose, firstThreeBalls))
                 .setLinearHeadingInterpolation(scorePose.getHeading(), firstThreeBalls.getHeading())
+                .setConstraints(new PathConstraints(0.5, 100))
                 .addParametricCallback(0.01, Intake.INSTANCE.locked)
                 .build();
 
         pathFive = PedroComponent.follower().pathBuilder()
                 .addPath(new BezierLine(firstThreeBalls, backThreeBalls))
                 .setLinearHeadingInterpolation(firstThreeBalls.getHeading(), backThreeBalls.getHeading())
+                .setConstraints(new PathConstraints(0.5, 100))
                 .build();
 
         pathSix = PedroComponent.follower().pathBuilder()
                 .addPath(new BezierLine(backThreeBalls, secondThreeBalls))
                 .setLinearHeadingInterpolation(backThreeBalls.getHeading(), secondThreeBalls.getHeading())
+                .build();
+
+        pathSeven = PedroComponent.follower().pathBuilder()
+                .addPath(new BezierLine(scorePose, secondTrajectory))
+                .setConstraints(new PathConstraints(0.5, 100))
+                .setLinearHeadingInterpolation(scorePose.getHeading(), secondTrajectory.getHeading())
+                .addParametricCallback(0.01, Intake.INSTANCE.locked)
                 .build();
 
         pathLeave = PedroComponent.follower().pathBuilder()
@@ -148,8 +164,8 @@ public class Far_Zone_Red_Limelight extends NextFTCOpMode {
                     Pose current = PedroComponent.follower().getPose();
                     double tx = LimelightSubsystem.INSTANCE.tx;
 
-                    double lateralOffset = -tx * 1.1;
-                    lateralOffset = Math.max(-40, Math.min(40, lateralOffset));
+                    double lateralOffset = tx * 1.05;
+                    lateralOffset = Math.max(-50, Math.min(50, lateralOffset));
 
                     if (Math.abs(lateralOffset) < 4.5) {
                         lateralOffset = 4.5 * Math.signum(lateralOffset);
@@ -159,14 +175,16 @@ public class Far_Zone_Red_Limelight extends NextFTCOpMode {
                     if (targetY < 0) targetY = 0;
 
                     Pose target = new Pose(
-                            128,
+                            -1.5,
                             targetY,
                             current.getHeading()
                     );
 
                     PathChain correction = PedroComponent.follower().pathBuilder()
                             .addPath(new BezierLine(current, target))
-                            .setConstantHeadingInterpolation(Math.toRadians(0))
+                            .setConstantHeadingInterpolation(Math.toRadians(180))
+                            .setConstraints(new PathConstraints(0.3, 100))
+                            .setTValueConstraint(0.3)
                             .addParametricCallback(0.01, Intake.INSTANCE.locked)
                             .build();
 
@@ -187,7 +205,7 @@ public class Far_Zone_Red_Limelight extends NextFTCOpMode {
                     PathChain correction = PedroComponent.follower().pathBuilder()
                             .addPath(new BezierLine(current, scorePose))
                             .setConstraints(new PathConstraints(0.9, 100))
-                            .setConstantHeadingInterpolation(Math.toRadians(0))
+                            .setConstantHeadingInterpolation(Math.toRadians(180))
                             .build();
 
                     PedroComponent.follower().followPath(correction, true);
@@ -210,26 +228,33 @@ public class Far_Zone_Red_Limelight extends NextFTCOpMode {
                     PedroComponent.follower().followPath(correction, true);
                 })
                 .setIsDone(() -> !PedroComponent.follower().isBusy());
-        }
+    }
 
     public Command autonomousRoutine() {
         return new SequentialGroup(
                 new InstantCommand(() -> {
-                    LimelightSubsystem.INSTANCE.artifact.invoke(); Shooter.INSTANCE.switchVelocity(1220); Shooter.INSTANCE.switchHood(0.8);
+                    LimelightSubsystem.INSTANCE.artifact.invoke(); Shooter.INSTANCE.switchVelocity(1220); Shooter.INSTANCE.switchHood(0.86); pos = 4450;
                 }),
                 new FollowPath(pathOne, true).and(Intake.INSTANCE.unlocked),
-                new Delay(0.3), Intake.INSTANCE.coletAutoOn(), new Delay(0.29),
+                new Delay(0.26), Intake.INSTANCE.coletAutoOn(), new Delay(0.29),
                 new FollowPath(pathTwo, true), new FollowPath(pathThree, true),
-                new Delay(0.0015), Intake.INSTANCE.unlocked, new Delay(0.3),
+                new Delay(0.001), Intake.INSTANCE.unlocked, new Delay(0.29),
                 new FollowPath(pathFour, true), new FollowPath(pathFive, true), new FollowPath(pathSix, true),
-                backScore(), new Delay(0.002), Intake.INSTANCE.unlocked, new Delay(0.3),
+                backScore(), new Delay(0.002), Intake.INSTANCE.unlocked, new Delay(0.29),
                 alignToBallsSingleCorrection(),
-                new Delay(0.1), backScore(), Intake.INSTANCE.unlocked, new Delay(0.3),
+                new Delay(0.1), backScore(), new Delay(0.002), Intake.INSTANCE.unlocked, new Delay(0.29),
                 alignToBallsSingleCorrection(),
-                new Delay(0.1), backScore(), Intake.INSTANCE.unlocked, new Delay(0.3),
+                new Delay(0.1), backScore(), new Delay(0.002), Intake.INSTANCE.unlocked, new Delay(0.29),
                 alignToBallsSingleCorrection(),
-                new Delay(0.1), backScore(), Intake.INSTANCE.unlocked, new Delay(0.3),
+                new Delay(0.1), backScore(), new Delay(0.002), Intake.INSTANCE.unlocked, new Delay(0.29),
+                alignToBallsSingleCorrection(),
+                new Delay(0.1), backScore(), new Delay(0.002), Intake.INSTANCE.unlocked, new Delay(0.29),
+                alignToBallsSingleCorrection(),
+                new Delay(0.1), backScore(), new Delay(0.002), Intake.INSTANCE.unlocked, new Delay(0.29),
                 new FollowPath(pathLeave, true)
+
+
+
         );
     }
 
@@ -265,7 +290,7 @@ public class Far_Zone_Red_Limelight extends NextFTCOpMode {
     public void onUpdate() {
         double timeLeft = 30.0 - autoTimer.seconds();
 
-        if (!forcedLeave && timeLeft <= 5.0) {
+        if (!forcedLeave && timeLeft <= 1.0) {
             forcedLeave = true;
             abortToLeave = true;
             leavePathStarted = false;
@@ -291,15 +316,12 @@ public class Far_Zone_Red_Limelight extends NextFTCOpMode {
         panelsTelemetry.debug("Target Shooter", Shooter.INSTANCE.velocityAuto);
         panelsTelemetry.debug("Current Shooter", Shooter.INSTANCE.currentVelocity);
         panelsTelemetry.debug("tx", LimelightSubsystem.INSTANCE.tx);
-        panelsTelemetry.debug("Has Target", LimelightSubsystem.INSTANCE.hasTarget());
-        panelsTelemetry.debug("Pedro Busy", PedroComponent.follower().isBusy());
-        panelsTelemetry.debug("Time Left", timeLeft);
-        panelsTelemetry.debug("Leave Started", leavePathStarted);
+        panelsTelemetry.debug("Current Ticks", testTurret.INSTANCE.currentTicks);
 
         if (abortToLeave) {
             panelsTelemetry.debug("AUTO", "FORCING LEAVE");
         }
-        testTurret.INSTANCE.turretToPosition(-4450);
+        testTurret.INSTANCE.turretToPosition(pos);
 
         panelsTelemetry.update(telemetry);
 
@@ -308,6 +330,6 @@ public class Far_Zone_Red_Limelight extends NextFTCOpMode {
 
     @Override
     public void onStop() {
-        autoEndPoseRed = PedroComponent.follower().getPose();
+        autoEndPoseBlue = PedroComponent.follower().getPose();
     }
 }

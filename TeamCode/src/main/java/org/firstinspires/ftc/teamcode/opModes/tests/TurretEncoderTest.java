@@ -23,6 +23,7 @@ public class TurretEncoderTest extends LinearOpMode {
 
         while (opModeIsActive()) {
             int position = turretEncoder.getCurrentPosition();
+
             telemetry.addData("Encoder Position", position);
             telemetry.update();
         }

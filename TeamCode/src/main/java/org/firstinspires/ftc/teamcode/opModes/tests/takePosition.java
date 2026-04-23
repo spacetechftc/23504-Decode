@@ -12,6 +12,7 @@ import com.skeletonarmy.marrow.zones.PolygonZone;
 
 import org.firstinspires.ftc.teamcode.Mecanismos.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Subsystems.EndGame;
+import org.firstinspires.ftc.teamcode.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.Subsystems.Led;
 import org.firstinspires.ftc.teamcode.Subsystems.LimelightSubsystem;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
@@ -27,7 +28,7 @@ public class takePosition extends NextFTCOpMode {
 
     public takePosition() {
         addComponents(
-                new SubsystemComponent(LimelightSubsystem.INSTANCE, Led.INSTANCE),
+                new SubsystemComponent(LimelightSubsystem.INSTANCE, Led.INSTANCE, Intake.INSTANCE),
                 BulkReadComponent.INSTANCE,
                 BindingsComponent.INSTANCE,
                 new PedroComponent(Constants::createFollower)

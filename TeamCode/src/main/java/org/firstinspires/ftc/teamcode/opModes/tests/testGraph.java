@@ -38,7 +38,7 @@ public class testGraph extends NextFTCOpMode {
 
     MecanumDrive mecanumDrive = new MecanumDrive();
 
-    private final Pose startPose = new Pose(0, 0, Math.toRadians(0));
+    private final Pose startPose = new Pose(127, -1.45, Math.toRadians(180));
 
     public static TelemetryManager telemetryMa;
 
@@ -95,7 +95,7 @@ public class testGraph extends NextFTCOpMode {
 
         Shooter.INSTANCE.testHood(testHood);
 
-        testTurret.INSTANCE.alignTurretTeleOp(x, y, heading,vx,vy, testTurret.INSTANCE.currentTicks, false);
+        testTurret.INSTANCE.alignTurretTeleOp(x, y, heading,vx,vy, testTurret.INSTANCE.currentTicks, true);
         telemetryMa.addData("Odometria", "------------------");
         telemetryMa.addData("X", x);
         telemetryMa.addData("Y", y);
@@ -108,6 +108,7 @@ public class testGraph extends NextFTCOpMode {
         telemetryMa.addData("Shooter", "------------------");
         telemetryMa.addData("Target Shooter", Shooter.INSTANCE.velocity);
         telemetryMa.addData("Current Shooter", Shooter.INSTANCE.currentVelocity);
+        telemetryMa.addData("Distance", testTurret.INSTANCE.movedDistance);
         telemetryMa.update(telemetry);
         BindingManager.update();
     }

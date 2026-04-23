@@ -28,10 +28,10 @@ import dev.nextftc.core.components.SubsystemComponent;
 import dev.nextftc.extensions.pedro.PedroComponent;
 import dev.nextftc.ftc.NextFTCOpMode;
 import dev.nextftc.ftc.components.BulkReadComponent;
-@TeleOp(name = "TeleOp_Test_Red_Worlds", group = "TeleOp Tests")
-public class TeleOp_Test_RedW extends NextFTCOpMode {
+@TeleOp(name = "TeleOp_Test_Blue_Worlds", group = "TeleOp Tests")
+public class TeleOp_Test_BlueW extends NextFTCOpMode {
 
-    public TeleOp_Test_RedW() {
+    public TeleOp_Test_BlueW() {
         addComponents(
                 new SubsystemComponent(Intake.INSTANCE, Shooter.INSTANCE, testTurret.INSTANCE, LimelightSubsystem.INSTANCE, Led.INSTANCE),
                 BindingsComponent.INSTANCE,
@@ -41,12 +41,12 @@ public class TeleOp_Test_RedW extends NextFTCOpMode {
     }
 
     private final PolygonZone closeLaunchZone = new PolygonZone(new Point(134, 134), new Point(68, 68), new Point(0, 134));
-    private final PolygonZone redBase = new PolygonZone(new Point(33.5, 30), 20, 20);
+    private final PolygonZone blueBase = new PolygonZone(new Point(95.5, 23.5), 20, 20);
     private final PolygonZone robotZone = new PolygonZone(16, 14);
     private final PolygonZone farLaunchZone = new PolygonZone(new Point(48.5, 0), new Point(63, 14), new Point(77, 0));
     MecanumDrive mecanumDrive = new MecanumDrive();
-    private final Pose startPose = new Pose(0, 0, Math.toRadians(0));
-    private final Pose resetPose = new Pose(0, 0, Math.toRadians(0));
+    private final Pose startPose = new Pose(127, -1.45, Math.toRadians(180));
+    private final Pose resetPose = new Pose(127, -1.45, Math.toRadians(180));
 
     public static TelemetryManager telemetryMa;
 
@@ -89,12 +89,12 @@ public class TeleOp_Test_RedW extends NextFTCOpMode {
 
         if (teleOpTime.isLessThan(11)) {
             Led.INSTANCE.setPrismState(
-                    robotZone.isInside(redBase) ? RED_SNAKE : RED_FILL
+                    robotZone.isInside(blueBase) ? RED_SNAKE : RED_FILL
             );
 
         } else if (teleOpTime.isLessThan(21)) {
             Led.INSTANCE.setPrismState(
-                    robotZone.isInside(redBase) ? RED_SNAKE : RED_SOLID
+                    robotZone.isInside(blueBase) ? RED_SNAKE : RED_SOLID
             );
 
         } else {
@@ -145,7 +145,7 @@ public class TeleOp_Test_RedW extends NextFTCOpMode {
         if (turretToggle) {
             testTurret.INSTANCE.turretToPosition(0);
         } else {
-            testTurret.INSTANCE.alignTurretTeleOp(x, y, heading,vx,vy, testTurret.INSTANCE.currentTicks, false);
+            testTurret.INSTANCE.alignTurretTeleOp(x, y, heading,vx,vy, testTurret.INSTANCE.currentTicks, true);
         }
 /*
         if (endGameToggle) {

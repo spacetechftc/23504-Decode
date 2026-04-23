@@ -34,7 +34,7 @@ public class LimelightSubsystem implements Subsystem {
 
     private ServoEx limelight_servo = new ServoEx("limelight_servo", -1);
 
-    public Command relocalization = new SetPosition(limelight_servo, 0.9).requires(this);
+    public Command relocalization = new SetPosition(limelight_servo, 0.45).requires(this);
 
     public Command artifact = new SetPosition(limelight_servo, 0).requires(this);
 

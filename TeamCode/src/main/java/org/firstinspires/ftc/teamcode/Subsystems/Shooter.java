@@ -21,8 +21,8 @@ public class Shooter implements Subsystem {
     public static double angulation = 0.51;
     public static double velocityFix = 1220;
     // Coeficientes do Shooter
-    private static PIDCoefficients coefficientsShooter = new PIDCoefficients(0.01, 0, 0);
-    private static BasicFeedforwardParameters feedforwardShooter = new BasicFeedforwardParameters(0.0006, 0, 0.1);
+    private static PIDCoefficients coefficientsShooter = new PIDCoefficients(0.005, 0, 0);
+    private static BasicFeedforwardParameters feedforwardShooter = new BasicFeedforwardParameters(0.00041, 0, 0.1);
 
     // Instância do Shooter
     public static final Shooter INSTANCE = new Shooter();
@@ -39,7 +39,7 @@ public class Shooter implements Subsystem {
     private MotorEx shooterMotor_Down = new MotorEx("shooter_motor_down", -1)
             .reversed()
             .brakeMode();
-    private MotorGroup shooterMotor = new MotorGroup(shooterMotor_Left, shooterMotor_Down);
+    private MotorGroup shooterMotor = new MotorGroup(shooterMotor_Down, shooterMotor_Left);
 
     private ServoEx hood = new ServoEx("hood_servo", -1);
 
@@ -124,10 +124,10 @@ public class Shooter implements Subsystem {
     public void initMechanisms(boolean red) {
         if (red) {
             velocity = speedCalculationRed(testTurret.INSTANCE.movedDistance);
-            angulation = setHoodRed(testTurret.INSTANCE.distance);
+            angulation = setHoodRed(testTurret.INSTANCE.movedDistance);
         } else {
             velocity = speedCalculationBlue(testTurret.INSTANCE.movedDistance);
-            angulation = setHoodBlue(testTurret.INSTANCE.distance);
+            angulation = setHoodBlue(testTurret.INSTANCE.movedDistance);
         }
         hood.setPosition(angulation);
     }

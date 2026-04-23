@@ -63,7 +63,6 @@ public class TeleOp_Red extends NextFTCOpMode {
     @Override
     public void onInit() {
         telemetryMa = PanelsTelemetry.INSTANCE.getTelemetry();
-        testTurret.INSTANCE.resetEncoder();
         LimelightSubsystem.INSTANCE.switchPipeline(1);
         LimelightSubsystem.INSTANCE.setTeleOp(true);
         PedroComponent.follower().setStartingPose(autoEndPoseRed == null ? new Pose() : autoEndPoseRed);

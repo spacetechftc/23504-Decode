@@ -7,6 +7,7 @@ import com.pedropathing.geometry.BezierCurve;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
+import com.pedropathing.paths.PathConstraints;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.Subsystems.Intake;
@@ -20,16 +21,19 @@ import dev.nextftc.core.commands.Command;
 import dev.nextftc.core.commands.delays.Delay;
 import dev.nextftc.core.commands.groups.SequentialGroup;
 import dev.nextftc.core.commands.utility.InstantCommand;
+import dev.nextftc.core.commands.utility.LambdaCommand;
 import dev.nextftc.core.components.SubsystemComponent;
 import dev.nextftc.extensions.pedro.FollowPath;
 import dev.nextftc.extensions.pedro.PedroComponent;
 import dev.nextftc.ftc.NextFTCOpMode;
 import dev.nextftc.ftc.components.BulkReadComponent;
 
-@Autonomous(name="18-Eighteen_Balls_Close_Red", group = "Auto Closes Red", preselectTeleOp = "TeleOp_Red")
-public class Eighteen_Balls_Close_Red extends NextFTCOpMode {
+import static org.firstinspires.ftc.teamcode.opModes.Autonomous.Eighteen_Balls_Close_Blue.autoEndPoseBlue;
 
-    public Eighteen_Balls_Close_Red() {
+@Autonomous(name="21_TwentyOne_Balls_Close_Blue", group = "Auto Closes Blue", preselectTeleOp = "TeleOp_Blue")
+public class TwentyOne_Balls_Close_Blue extends NextFTCOpMode {
+
+    public TwentyOne_Balls_Close_Blue() {
         addComponents(
                 new SubsystemComponent(Intake.INSTANCE, Shooter.INSTANCE, testTurret.INSTANCE, Led.INSTANCE, LimelightSubsystem.INSTANCE),
                 new PedroComponent(Constants::createFollower),
@@ -38,42 +42,61 @@ public class Eighteen_Balls_Close_Red extends NextFTCOpMode {
     }
 
     private TelemetryManager panelsTelemetry;
-    public static Pose autoEndPoseRed;
 
 
-    // Definição das coordenadas
-    private final Pose startPose = new Pose(111, 119, Math.toRadians(39.5));
-    private final Pose scorePose = new Pose(74, 71, Math.toRadians(340));
+    // Definição das coordenadas 20 121
+    private final Pose startPose = new Pose(22, 121.5, Math.toRadians(142));
+    private final Pose scorePose = new Pose(55, 71, Math.toRadians(210));
 
     // Fileira do Meio
-    private final Pose prepareMidBalls = new Pose(88, 52, Math.toRadians(0));
-    private final Pose takeMidBalls = new Pose(123, 52, Math.toRadians(0));
+    private final Pose prepareMidBalls = new Pose(45, 55, Math.toRadians(180));
+    private final Pose takeMidBalls = new Pose(9, 55, Math.toRadians(180));
 
     // Fileira de Cima
-    private final Pose prepareUpBalls = new Pose(80, 74, Math.toRadians(0));
-    private final Pose takeUpBalls = new Pose(113, 74, Math.toRadians(0));
+    private final Pose prepareUpBalls = new Pose(24, 77, Math.toRadians(180));
+    private final Pose takeUpBalls = new Pose(23, 77, Math.toRadians(180));
 
     // Gate -- open and colet One
-    private final Pose prepareOpenGate = new Pose(114, 49.8, Math.toRadians(38));
-    private final Pose openGate = new Pose(125.5, 49.8, Math.toRadians(38));
+    private final Pose prepareOpenGate = new Pose(15, 52.5, Math.toRadians(139));
+    private final Pose openGate = new Pose(4, 52.5, Math.toRadians(139));
 
     // Gate -- open and colet Two
-    private final Pose prepareOpenGateTwo = new Pose(114, 50, Math.toRadians(38));
-    private final Pose openGateTwo = new Pose(125.5, 50, Math.toRadians(38));
+    private final Pose prepareOpenGateTwo = new Pose(15, 53.6, Math.toRadians(139));
+    private final Pose openGateTwo = new Pose(4, 53.6, Math.toRadians(139));
 
     // Leave
-    private final Pose leavePose = new Pose(86, 67, Math.toRadians(330));
+    private final Pose leavePose = new Pose(84, 67, Math.toRadians(310));
 
     private PathChain pathOne, pathTwo, pathThree, pathFour, pathFive;
 
-    private PathChain  pathLeave;
+    private PathChain pathLeave;
 
     private PathChain pathGoGate, pathGoBack, pathGoGateTwo, pathGoBackTwo;
+
+    public Command backScore() {
+        return new LambdaCommand()
+                .setStart(() -> {
+                    LimelightSubsystem.INSTANCE.artifact.invoke();
+
+                    Pose current = PedroComponent.follower().getPose();
+
+                    PathChain correction = PedroComponent.follower().pathBuilder()
+                            .addPath(new BezierLine(current, scorePose))
+                            .setConstraints(new PathConstraints(0.9, 100))
+                            .addParametricCallback(0.9, Intake.INSTANCE.unlocked)
+                            .setTangentHeadingInterpolation()
+                            .setReversed()
+                            .build();
+
+                    PedroComponent.follower().followPath(correction, true);
+                })
+                .setIsDone(() -> !PedroComponent.follower().isBusy());
+    }
 
     public void buildPaths(Follower follower) {
         pathOne = PedroComponent.follower().pathBuilder()
                 .addPath(new BezierLine(startPose, scorePose))
-                .setConstantHeadingInterpolation(Math.toRadians(42))
+                .setConstantHeadingInterpolation(Math.toRadians(139))
                 .build();
 
         pathTwo = PedroComponent.follower().pathBuilder()
@@ -101,7 +124,7 @@ public class Eighteen_Balls_Close_Red extends NextFTCOpMode {
 
         pathGoGateTwo = PedroComponent.follower().pathBuilder()
                 .addPath(new BezierCurve(scorePose, prepareOpenGateTwo, openGateTwo))
-                .setLinearHeadingInterpolation(scorePose.getHeading(), openGate.getHeading())
+                .setLinearHeadingInterpolation(scorePose.getHeading(), openGateTwo.getHeading())
                 .addParametricCallback(0.01, Intake.INSTANCE.locked)
                 .build();
 
@@ -135,15 +158,13 @@ public class Eighteen_Balls_Close_Red extends NextFTCOpMode {
                     LimelightSubsystem.INSTANCE.artifact.invoke(); Shooter.INSTANCE.switchVelocity(940); Shooter.INSTANCE.switchHood(0.7);
                 }),
                 new FollowPath(pathOne, true).and(Intake.INSTANCE.unlocked),
-                Intake.INSTANCE.coletAutoOn(), new Delay(0.3), // Lançamento
-                new FollowPath(pathTwo, true), new Delay(0.3),
-                new FollowPath(pathGoGate, true), new Delay(1.5), new FollowPath(pathGoBack, true), new Delay(0.3),
-                new FollowPath(pathGoGate, true), new Delay(1.5), new FollowPath(pathGoBack, true), new Delay(0.3),
-                new FollowPath(pathThree, true), new Delay(0.3),
-                new FollowPath(pathGoGateTwo, true), new Delay(1.5), new FollowPath(pathGoBackTwo, true), new Delay(0.3),
-                new FollowPath(pathLeave, true)
-
-
+                Intake.INSTANCE.coletAutoOn(), new Delay(0.29), // Lançamento
+                new FollowPath(pathTwo, true), new Delay(0.29),
+                new FollowPath(pathGoGate, true), new Delay(0.6), backScore(), new Delay(0.29),
+                new FollowPath(pathGoGate, true), new Delay(0.7), backScore(), new Delay(0.29),
+                new FollowPath(pathThree, true), new Delay(0.29),
+                new FollowPath(pathGoGateTwo, true), new Delay(0.7), backScore(), new Delay(0.29),
+                new FollowPath(pathGoGateTwo, true), new Delay(0.8), backScore(), new Delay(0.29)
         );
     }
 
@@ -182,14 +203,14 @@ public class Eighteen_Balls_Close_Red extends NextFTCOpMode {
         panelsTelemetry.debug("Current Shooter", Shooter.INSTANCE.currentVelocity);
         panelsTelemetry.update(telemetry);
         Shooter.INSTANCE.shooterAutoOn().invoke();
-        testTurret.INSTANCE.alignTurretTeleOp(PedroComponent.follower().getPose().getX(), PedroComponent.follower().getPose().getY(), PedroComponent.follower().getPose().getHeading(),PedroComponent.follower().getVelocity().getXComponent(),PedroComponent.follower().getVelocity().getYComponent(), testTurret.INSTANCE.currentTicks, false);
-        // testTurret.INSTANCE.alignTurretAuto(PedroComponent.follower().getPose().getX(), PedroComponent.follower().getPose().getY(), PedroComponent.follower().getPose().getHeading(), testTurret.INSTANCE.currentTicks, false);
+        //testTurret.INSTANCE.alignTurretTeleOp(PedroComponent.follower().getPose().getX(), PedroComponent.follower().getPose().getY(), PedroComponent.follower().getPose().getHeading(),PedroComponent.follower().getVelocity().getXComponent(),PedroComponent.follower().getVelocity().getYComponent(), testTurret.INSTANCE.currentTicks, true);
+        testTurret.INSTANCE.alignTurretAuto(PedroComponent.follower().getPose().getX(), PedroComponent.follower().getPose().getY(), PedroComponent.follower().getPose().getHeading(), testTurret.INSTANCE.currentTicks, true);
         PedroComponent.follower().update();
     }
 
     @Override
     public void onStop() {
-        autoEndPoseRed = PedroComponent.follower().getPose();
+        autoEndPoseBlue = PedroComponent.follower().getPose();
     }
 }
 
