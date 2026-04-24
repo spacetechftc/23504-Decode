@@ -41,7 +41,7 @@ public class TeleOp_Test_BlueW extends NextFTCOpMode {
     }
 
     private final PolygonZone closeLaunchZone = new PolygonZone(new Point(134, 134), new Point(68, 68), new Point(0, 134));
-    private final PolygonZone blueBase = new PolygonZone(new Point(95.5, 23.5), 20, 20);
+    private final PolygonZone blueBase = new PolygonZone(new Point(98, 26), 20, 20);
     private final PolygonZone robotZone = new PolygonZone(16, 14);
     private final PolygonZone farLaunchZone = new PolygonZone(new Point(48.5, 0), new Point(63, 14), new Point(77, 0));
     MecanumDrive mecanumDrive = new MecanumDrive();

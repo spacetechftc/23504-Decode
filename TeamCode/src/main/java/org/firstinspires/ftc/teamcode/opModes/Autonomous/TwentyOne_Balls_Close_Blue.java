@@ -45,7 +45,7 @@ public class TwentyOne_Balls_Close_Blue extends NextFTCOpMode {
 
 
     // Definição das coordenadas 20 121
-    private final Pose startPose = new Pose(22, 121.5, Math.toRadians(142));
+    private final Pose startPose = new Pose(22, 120, Math.toRadians(140));
     private final Pose scorePose = new Pose(55, 71, Math.toRadians(210));
 
     // Fileira do Meio
@@ -57,12 +57,8 @@ public class TwentyOne_Balls_Close_Blue extends NextFTCOpMode {
     private final Pose takeUpBalls = new Pose(23, 77, Math.toRadians(180));
 
     // Gate -- open and colet One
-    private final Pose prepareOpenGate = new Pose(15, 52.5, Math.toRadians(139));
-    private final Pose openGate = new Pose(4, 52.5, Math.toRadians(139));
-
-    // Gate -- open and colet Two
-    private final Pose prepareOpenGateTwo = new Pose(15, 53.6, Math.toRadians(139));
-    private final Pose openGateTwo = new Pose(4, 53.6, Math.toRadians(139));
+    private final Pose prepareOpenGate = new Pose(15, 53.6, Math.toRadians(139));
+    private final Pose openGate = new Pose(4, 53.6, Math.toRadians(139));
 
     // Leave
     private final Pose leavePose = new Pose(84, 67, Math.toRadians(310));
@@ -122,19 +118,6 @@ public class TwentyOne_Balls_Close_Blue extends NextFTCOpMode {
                 .addParametricCallback(0.9, Intake.INSTANCE.unlocked)
                 .build();
 
-        pathGoGateTwo = PedroComponent.follower().pathBuilder()
-                .addPath(new BezierCurve(scorePose, prepareOpenGateTwo, openGateTwo))
-                .setLinearHeadingInterpolation(scorePose.getHeading(), openGateTwo.getHeading())
-                .addParametricCallback(0.01, Intake.INSTANCE.locked)
-                .build();
-
-        pathGoBackTwo = PedroComponent.follower().pathBuilder()
-                .addPath(new BezierLine(openGateTwo, scorePose))
-                .setTangentHeadingInterpolation()
-                .setReversed()
-                .addParametricCallback(0.9, Intake.INSTANCE.unlocked)
-                .build();
-
         pathThree = PedroComponent.follower().pathBuilder()
                 .addPath(new BezierCurve(scorePose, prepareUpBalls, takeUpBalls))
                 .setTangentHeadingInterpolation()
@@ -160,11 +143,11 @@ public class TwentyOne_Balls_Close_Blue extends NextFTCOpMode {
                 new FollowPath(pathOne, true).and(Intake.INSTANCE.unlocked),
                 Intake.INSTANCE.coletAutoOn(), new Delay(0.29), // Lançamento
                 new FollowPath(pathTwo, true), new Delay(0.29),
-                new FollowPath(pathGoGate, true), new Delay(0.6), backScore(), new Delay(0.29),
-                new FollowPath(pathGoGate, true), new Delay(0.7), backScore(), new Delay(0.29),
+                new FollowPath(pathGoGate, true), new Delay(0.6), new FollowPath(pathGoBack, true), new Delay(0.29),
+                new FollowPath(pathGoGate, true), new Delay(0.7), new FollowPath(pathGoBack, true), new Delay(0.29),
                 new FollowPath(pathThree, true), new Delay(0.29),
-                new FollowPath(pathGoGateTwo, true), new Delay(0.7), backScore(), new Delay(0.29),
-                new FollowPath(pathGoGateTwo, true), new Delay(0.8), backScore(), new Delay(0.29)
+                new FollowPath(pathGoGate, true), new Delay(0.7), new FollowPath(pathGoBack, true), new Delay(0.29),
+                new FollowPath(pathGoGate, true), new Delay(0.8), new FollowPath(pathGoBack, true), new Delay(0.29)
         );
     }
 

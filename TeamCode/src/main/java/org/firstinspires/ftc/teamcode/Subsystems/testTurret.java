@@ -21,12 +21,13 @@ public class testTurret implements Subsystem {
     PIDFController odometryTicksControl;
 
     // Configuração do PID -- Odometria
-    public static double KP = 0.00035;
-    public static double KD = 0.000005;
+    public static double KP = 0.0003;
+    public static double KI = 0;
+    public static double KD = 0.000028;
 
     // Feedforward da velocidade do target da turret
     public static double kV = 0;
-    public static double kS = 0.176;
+    public static double kS = 0;
 
     // Estado do velFF
     private int previousTargetTicks = 0;
@@ -123,7 +124,7 @@ public class testTurret implements Subsystem {
         double goalY = blue ? blueGoalY : redGoalY;
 
         distance = (Math.hypot(goalX - x, goalY - y)) - distanceOffset;
-        flightTime = 0.63;
+        flightTime = 0.66;
 
         double movedGoalX = goalX - vx * flightTime;
         double movedGoalY = goalY - vy * flightTime;
@@ -195,7 +196,7 @@ public class testTurret implements Subsystem {
 
        // pinpoint_turret = ActiveOpMode.hardwareMap().get(GoBildaPinpointDriver.class, "pinpoint_turret");
 
-        odometryTicksControl = new PIDFController(KP, 0, KD, 0);
+        odometryTicksControl = new PIDFController(KP, KI, KD, 0);
 
         previousTargetTicks = 0;
         lastTargetTime = 0;
@@ -205,6 +206,7 @@ public class testTurret implements Subsystem {
     public void periodic() {
         currentTicks = turretMotor.getCurrentPosition();
         //pinpoint_turret.update(GoBildaPinpointDriver.readData.ONLY_UPDATE_HEADING);
+        odometryTicksControl.setPIDF(KP, KI, KD, 0);
 
         ActiveOpMode.telemetry().addData("CurrentTicks", currentTicks);
         ActiveOpMode.telemetry().addData("TargetTicks", targetTicks);

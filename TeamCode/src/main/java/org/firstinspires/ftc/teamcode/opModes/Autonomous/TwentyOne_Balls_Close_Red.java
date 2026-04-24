@@ -43,7 +43,7 @@ public class TwentyOne_Balls_Close_Red extends NextFTCOpMode {
 
 
     // Definição das coordenadas
-    private final Pose startPose = new Pose(111, 119, Math.toRadians(39.5));
+    private final Pose startPose = new Pose(110, 118, Math.toRadians(39.5));
     private final Pose scorePose = new Pose(74, 71, Math.toRadians(340));
 
     // Fileira do Meio
@@ -56,11 +56,11 @@ public class TwentyOne_Balls_Close_Red extends NextFTCOpMode {
 
     // Gate -- open and colet One
     private final Pose prepareOpenGate = new Pose(114, 49.8, Math.toRadians(38));
-    private final Pose openGate = new Pose(127, 49.8, Math.toRadians(38));
+    private final Pose openGate = new Pose(125.5, 49.8, Math.toRadians(38));
 
-    // Gate -- open and colet Two
-    private final Pose prepareOpenGateTwo = new Pose(114, 50, Math.toRadians(38));
-    private final Pose openGateTwo = new Pose(127, 50, Math.toRadians(38));
+    private final Pose prepareOpenGateTwo = new Pose(114, 51.5, Math.toRadians(42));
+    private final Pose openGateTwo = new Pose(124, 51.5, Math.toRadians(42));
+
 
     // Leave
     private final Pose leavePose = new Pose(84, 67, Math.toRadians(330));
@@ -100,24 +100,24 @@ public class TwentyOne_Balls_Close_Red extends NextFTCOpMode {
                 .addParametricCallback(0.9, Intake.INSTANCE.unlocked)
                 .build();
 
-        pathGoGateTwo = PedroComponent.follower().pathBuilder()
-                .addPath(new BezierCurve(scorePose, prepareOpenGateTwo, openGateTwo))
-                .setLinearHeadingInterpolation(scorePose.getHeading(), openGate.getHeading())
-                .addParametricCallback(0.01, Intake.INSTANCE.locked)
-                .build();
-
-        pathGoBackTwo = PedroComponent.follower().pathBuilder()
-                .addPath(new BezierLine(openGateTwo, scorePose))
-                .setTangentHeadingInterpolation()
-                .setReversed()
-                .addParametricCallback(0.9, Intake.INSTANCE.unlocked)
-                .build();
-
         pathThree = PedroComponent.follower().pathBuilder()
                 .addPath(new BezierCurve(scorePose, prepareUpBalls, takeUpBalls))
                 .setTangentHeadingInterpolation()
                 .addParametricCallback(0.01, Intake.INSTANCE.locked)
                 .addPath(new BezierLine(takeUpBalls, scorePose))
+                .setTangentHeadingInterpolation()
+                .setReversed()
+                .addParametricCallback(0.9, Intake.INSTANCE.unlocked)
+                .build();
+
+        pathGoGateTwo = PedroComponent.follower().pathBuilder()
+                .addPath(new BezierCurve(scorePose, prepareOpenGateTwo, openGateTwo))
+                .setLinearHeadingInterpolation(scorePose.getHeading(), openGateTwo.getHeading())
+                .addParametricCallback(0.01, Intake.INSTANCE.locked)
+                .build();
+
+        pathGoBackTwo = PedroComponent.follower().pathBuilder()
+                .addPath(new BezierLine(openGateTwo, scorePose))
                 .setTangentHeadingInterpolation()
                 .setReversed()
                 .addParametricCallback(0.9, Intake.INSTANCE.unlocked)
@@ -138,13 +138,11 @@ public class TwentyOne_Balls_Close_Red extends NextFTCOpMode {
                 new FollowPath(pathOne, true).and(Intake.INSTANCE.unlocked),
                 Intake.INSTANCE.coletAutoOn(), new Delay(0.29), // Lançamento
                 new FollowPath(pathTwo, true), new Delay(0.29),
-                new FollowPath(pathGoGate, true), new Delay(1), new FollowPath(pathGoBack, true), new Delay(0.29),
-                new FollowPath(pathGoGate, true), new Delay(1), new FollowPath(pathGoBack, true), new Delay(0.29),
+                new FollowPath(pathGoGate, true), new Delay(0.6), new FollowPath(pathGoBack, true), new Delay(0.29),
+                new FollowPath(pathGoGate, true), new Delay(0.7), new FollowPath(pathGoBack, true), new Delay(0.29),
                 new FollowPath(pathThree, true), new Delay(0.29),
-                new FollowPath(pathGoGateTwo, true), new Delay(1), new FollowPath(pathGoBackTwo, true), new Delay(0.29),
-                new FollowPath(pathGoGateTwo, true), new Delay(1), new FollowPath(pathGoBackTwo, true), new Delay(0.29)
-
-
+                new FollowPath(pathGoGateTwo, true), new Delay(0.7), new FollowPath(pathGoBackTwo, true), new Delay(0.29),
+                new FollowPath(pathGoGateTwo, true), new Delay(0.8), new FollowPath(pathGoBackTwo, true), new Delay(0.29)
         );
     }
 

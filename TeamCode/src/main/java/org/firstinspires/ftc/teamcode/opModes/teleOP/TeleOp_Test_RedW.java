@@ -166,6 +166,8 @@ public class TeleOp_Test_RedW extends NextFTCOpMode {
         telemetryMa.addData("Target Shooter", Shooter.INSTANCE.velocity);
         telemetryMa.addData("Current Shooter", Shooter.INSTANCE.currentVelocity);
         telemetryMa.addData("current Intake", Intake.INSTANCE.currentVelocity);
+        telemetryMa.addData("Current Ticks", testTurret.INSTANCE.currentTicks);
+        telemetryMa.addData("Target Ticks", testTurret.INSTANCE.targetTicks);
         telemetryMa.update(telemetry);
         PedroComponent.follower().update();
     }

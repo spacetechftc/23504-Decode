@@ -44,7 +44,7 @@ public class TeleOp_Blue extends NextFTCOpMode {
     }
 
     private final PolygonZone closeLaunchZone = new PolygonZone(new Point(134, 134), new Point(68, 68), new Point(0, 134));
-    private final PolygonZone redBase = new PolygonZone(new Point(32.5, 30), 20, 20);
+    private final PolygonZone blueBase = new PolygonZone(new Point(98, 26), 20, 20);
     private final PolygonZone robotZone = new PolygonZone(16, 14);
     private final PolygonZone farLaunchZone = new PolygonZone(new Point(48.5, 0), new Point(63, 14), new Point(77, 0));
     MecanumDrive mecanumDrive = new MecanumDrive();
@@ -88,14 +88,14 @@ public class TeleOp_Blue extends NextFTCOpMode {
         robotZone.setPosition(PedroComponent.follower().getPose().getX(), PedroComponent.follower().getPose().getY());
         robotZone.setRotation(PedroComponent.follower().getPose().getHeading());
 
-        if (teleOpTime.isLessThan(11)) {
+        if (teleOpTime.isLessThan(10)) {
             Led.INSTANCE.setPrismState(
-                    robotZone.isInside(redBase) ? RED_SNAKE : RED_FILL
+                    robotZone.isInside(blueBase) ? RED_SNAKE : RED_FILL
             );
 
-        } else if (teleOpTime.isLessThan(21)) {
+        } else if (teleOpTime.isLessThan(20)) {
             Led.INSTANCE.setPrismState(
-                    robotZone.isInside(redBase) ? RED_SNAKE : RED_SOLID
+                    robotZone.isInside(blueBase) ? RED_SNAKE : RED_SOLID
             );
 
         } else {
@@ -172,6 +172,6 @@ public class TeleOp_Blue extends NextFTCOpMode {
 
     @Override
     public void onStop() {
-        EndGame.INSTANCE.endGameOff();
+
     }
 }

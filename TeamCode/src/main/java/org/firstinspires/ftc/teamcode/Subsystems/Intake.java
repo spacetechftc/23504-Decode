@@ -117,6 +117,8 @@ public class Intake implements Subsystem {
         sensor_mid = ActiveOpMode.hardwareMap().get(DistanceSensor.class, "sensor_mid");
         sensor_down = ActiveOpMode.hardwareMap().get(DistanceSensor.class, "sensor_down");
 
+
+
     }
 
     @Override
@@ -134,5 +136,7 @@ public class Intake implements Subsystem {
         boolean sensor3Detected = sensor_down.getDistance(DistanceUnit.CM) < 7.3;
 
         updateArtifactLed(sensor1Detected, sensor2Detected, sensor3Detected);
+
+
     }
 }
