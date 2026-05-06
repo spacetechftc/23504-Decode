@@ -110,6 +110,7 @@ public class Far_Zone_Red_Limelight extends NextFTCOpMode {
         pathLeave = PedroComponent.follower().pathBuilder()
                 .addPath(new BezierLine(scorePose, leavePose))
                 .setLinearHeadingInterpolation(scorePose.getHeading(), leavePose.getHeading())
+                .addParametricCallback(0.01, Intake.INSTANCE.locked)
                 .build();
     }
 
@@ -218,17 +219,21 @@ public class Far_Zone_Red_Limelight extends NextFTCOpMode {
                     LimelightSubsystem.INSTANCE.artifact.invoke(); Shooter.INSTANCE.switchVelocity(1220); Shooter.INSTANCE.switchHood(0.8);
                 }),
                 new FollowPath(pathOne, true).and(Intake.INSTANCE.unlocked),
-                new Delay(0.3), Intake.INSTANCE.coletAutoOn(), new Delay(0.29),
+                new Delay(0.26), Intake.INSTANCE.coletAutoOn(), new Delay(0.29),
                 new FollowPath(pathTwo, true), new FollowPath(pathThree, true),
-                new Delay(0.0015), Intake.INSTANCE.unlocked, new Delay(0.3),
+                new Delay(0.001), Intake.INSTANCE.unlocked, new Delay(0.29),
                 new FollowPath(pathFour, true), new FollowPath(pathFive, true), new FollowPath(pathSix, true),
-                backScore(), new Delay(0.002), Intake.INSTANCE.unlocked, new Delay(0.3),
+                backScore(), new Delay(0.002), Intake.INSTANCE.unlocked, new Delay(0.29),
                 alignToBallsSingleCorrection(),
-                new Delay(0.1), backScore(), Intake.INSTANCE.unlocked, new Delay(0.3),
+                new Delay(0.1), backScore(), new Delay(0.002), Intake.INSTANCE.unlocked, new Delay(0.29),
                 alignToBallsSingleCorrection(),
-                new Delay(0.1), backScore(), Intake.INSTANCE.unlocked, new Delay(0.3),
+                new Delay(0.1), backScore(), new Delay(0.002), Intake.INSTANCE.unlocked, new Delay(0.29),
                 alignToBallsSingleCorrection(),
-                new Delay(0.1), backScore(), Intake.INSTANCE.unlocked, new Delay(0.3),
+                new Delay(0.1), backScore(), new Delay(0.002), Intake.INSTANCE.unlocked, new Delay(0.29),
+                alignToBallsSingleCorrection(),
+                new Delay(0.1), backScore(), new Delay(0.002), Intake.INSTANCE.unlocked, new Delay(0.29),
+                alignToBallsSingleCorrection(),
+                new Delay(0.1), backScore(), new Delay(0.002), Intake.INSTANCE.unlocked, new Delay(0.29),
                 new FollowPath(pathLeave, true)
         );
     }
@@ -299,7 +304,7 @@ public class Far_Zone_Red_Limelight extends NextFTCOpMode {
         if (abortToLeave) {
             panelsTelemetry.debug("AUTO", "FORCING LEAVE");
         }
-        testTurret.INSTANCE.turretToPosition(-4450);
+        testTurret.INSTANCE.turretToPosition(-4425);
 
         panelsTelemetry.update(telemetry);
 

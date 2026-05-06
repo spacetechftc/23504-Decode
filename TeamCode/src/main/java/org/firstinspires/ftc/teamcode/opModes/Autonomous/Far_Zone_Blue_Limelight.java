@@ -101,8 +101,8 @@ public class Far_Zone_Blue_Limelight extends NextFTCOpMode {
         pathFour = PedroComponent.follower().pathBuilder()
                 .addPath(new BezierLine(scorePose, firstThreeBalls))
                 .setLinearHeadingInterpolation(scorePose.getHeading(), firstThreeBalls.getHeading())
-                .setConstraints(new PathConstraints(0.5, 100))
                 .addParametricCallback(0.01, Intake.INSTANCE.locked)
+                .setConstraints(new PathConstraints(0.5, 100))
                 .build();
 
         pathFive = PedroComponent.follower().pathBuilder()
@@ -116,16 +116,10 @@ public class Far_Zone_Blue_Limelight extends NextFTCOpMode {
                 .setLinearHeadingInterpolation(backThreeBalls.getHeading(), secondThreeBalls.getHeading())
                 .build();
 
-        pathSeven = PedroComponent.follower().pathBuilder()
-                .addPath(new BezierLine(scorePose, secondTrajectory))
-                .setConstraints(new PathConstraints(0.5, 100))
-                .setLinearHeadingInterpolation(scorePose.getHeading(), secondTrajectory.getHeading())
-                .addParametricCallback(0.01, Intake.INSTANCE.locked)
-                .build();
-
         pathLeave = PedroComponent.follower().pathBuilder()
                 .addPath(new BezierLine(scorePose, leavePose))
                 .setLinearHeadingInterpolation(scorePose.getHeading(), leavePose.getHeading())
+                .addParametricCallback(0.01, Intake.INSTANCE.locked)
                 .build();
     }
 
@@ -233,7 +227,7 @@ public class Far_Zone_Blue_Limelight extends NextFTCOpMode {
     public Command autonomousRoutine() {
         return new SequentialGroup(
                 new InstantCommand(() -> {
-                    LimelightSubsystem.INSTANCE.artifact.invoke(); Shooter.INSTANCE.switchVelocity(1220); Shooter.INSTANCE.switchHood(0.86); pos = 4450;
+                    LimelightSubsystem.INSTANCE.artifact.invoke(); Shooter.INSTANCE.switchVelocity(1220); Shooter.INSTANCE.switchHood(0.86); pos = 4480;
                 }),
                 new FollowPath(pathOne, true).and(Intake.INSTANCE.unlocked),
                 new Delay(0.26), Intake.INSTANCE.coletAutoOn(), new Delay(0.29),

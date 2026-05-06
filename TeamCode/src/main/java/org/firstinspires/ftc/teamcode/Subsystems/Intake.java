@@ -101,7 +101,7 @@ public class Intake implements Subsystem {
         enabled = true;
         return new RunToVelocity(controlSystem, -2000).requires(this);
     }
-    public Command locked = new SetPosition(lock, 1.0).requires(this);
+    public Command locked = new SetPosition(lock, 0.89).requires(this);
     public Command unlocked = new SetPosition(lock, 0);
 
     public void stop() {
@@ -116,9 +116,6 @@ public class Intake implements Subsystem {
         sensor_up = ActiveOpMode.hardwareMap().get(DistanceSensor.class, "sensor_up");
         sensor_mid = ActiveOpMode.hardwareMap().get(DistanceSensor.class, "sensor_mid");
         sensor_down = ActiveOpMode.hardwareMap().get(DistanceSensor.class, "sensor_down");
-
-
-
     }
 
     @Override
@@ -131,8 +128,11 @@ public class Intake implements Subsystem {
             motor.setPower(0);
         }
 
-        boolean sensor1Detected = sensor_up.getDistance(DistanceUnit.CM) < 3.7;
-        boolean sensor2Detected = sensor_mid.getDistance(DistanceUnit.CM) < 3.2;
+        ActiveOpMode.telemetry().addData("Sensor Up", sensor_up.getDistance(DistanceUnit.CM));
+        ActiveOpMode.telemetry().addData("Sensor Mid", sensor_mid.getDistance(DistanceUnit.CM));
+        ActiveOpMode.telemetry().addData("Sensor Down", sensor_down.getDistance(DistanceUnit.CM));
+        boolean sensor1Detected = sensor_up.getDistance(DistanceUnit.CM) < 2.99;
+        boolean sensor2Detected = sensor_mid.getDistance(DistanceUnit.CM) < 2.94;
         boolean sensor3Detected = sensor_down.getDistance(DistanceUnit.CM) < 7.3;
 
         updateArtifactLed(sensor1Detected, sensor2Detected, sensor3Detected);

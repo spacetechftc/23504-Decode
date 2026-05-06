@@ -80,22 +80,11 @@ public class testGraph extends NextFTCOpMode {
         }
         lastButtonState = currentButtonState;
 
-        if (gamepad1.left_trigger > 0.1) {
-            Intake.INSTANCE.colet().invoke();
-        } else {
-            Intake.INSTANCE.stop();
-        }
         if (shooterToggle) {
             Shooter.INSTANCE.fixedVelocity().invoke();
-            Intake.INSTANCE.unlocked.invoke();
         } else {
             Shooter.INSTANCE.stopTeleOp();
-            Intake.INSTANCE.locked.invoke();
         }
-
-        Shooter.INSTANCE.testHood(testHood);
-
-        testTurret.INSTANCE.alignTurretTeleOp(x, y, heading,vx,vy, testTurret.INSTANCE.currentTicks, true);
         telemetryMa.addData("Odometria", "------------------");
         telemetryMa.addData("X", x);
         telemetryMa.addData("Y", y);

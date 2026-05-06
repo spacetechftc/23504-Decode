@@ -92,7 +92,7 @@ public class LimelightSubsystem implements Subsystem {
         if (limelight == null) {
             limelight = ActiveOpMode.hardwareMap()
                     .get(Limelight3A.class, "limelight");
-            limelight.setPollRateHz(100);
+            limelight.setPollRateHz(25);
             limelight.start();
         }
         tx = 0;
@@ -107,12 +107,7 @@ public class LimelightSubsystem implements Subsystem {
             if (result != null && result.isValid()) {
                 tx = result.getTx(); // Quão longe à esquerda ou direita o alvo está (graus)
                 ta = result.getTa();
-
-                ActiveOpMode.telemetry().addData("Alvo X", tx);
-            } else {
-                ActiveOpMode.telemetry().addData("Limelight", "Sem Alvos");
             }
-
         } else if (teleOp) {
             // Irá rodar no teleop o tempo todo
             LLResult result = limelight.getLatestResult();

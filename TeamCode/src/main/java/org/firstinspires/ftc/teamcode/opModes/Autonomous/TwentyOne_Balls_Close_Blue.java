@@ -69,26 +69,6 @@ public class TwentyOne_Balls_Close_Blue extends NextFTCOpMode {
 
     private PathChain pathGoGate, pathGoBack, pathGoGateTwo, pathGoBackTwo;
 
-    public Command backScore() {
-        return new LambdaCommand()
-                .setStart(() -> {
-                    LimelightSubsystem.INSTANCE.artifact.invoke();
-
-                    Pose current = PedroComponent.follower().getPose();
-
-                    PathChain correction = PedroComponent.follower().pathBuilder()
-                            .addPath(new BezierLine(current, scorePose))
-                            .setConstraints(new PathConstraints(0.9, 100))
-                            .addParametricCallback(0.9, Intake.INSTANCE.unlocked)
-                            .setTangentHeadingInterpolation()
-                            .setReversed()
-                            .build();
-
-                    PedroComponent.follower().followPath(correction, true);
-                })
-                .setIsDone(() -> !PedroComponent.follower().isBusy());
-    }
-
     public void buildPaths(Follower follower) {
         pathOne = PedroComponent.follower().pathBuilder()
                 .addPath(new BezierLine(startPose, scorePose))
@@ -153,8 +133,6 @@ public class TwentyOne_Balls_Close_Blue extends NextFTCOpMode {
 
     @Override
     public void onInit() {
-        LimelightSubsystem.INSTANCE.switchPipeline(4);
-        LimelightSubsystem.INSTANCE.setAutonomous(true);
         panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
         PedroComponent.follower().setStartingPose(startPose);
 

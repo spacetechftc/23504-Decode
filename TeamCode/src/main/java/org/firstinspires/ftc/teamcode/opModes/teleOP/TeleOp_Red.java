@@ -86,6 +86,13 @@ public class TeleOp_Red extends NextFTCOpMode {
         double vx = PedroComponent.follower().getVelocity().getXComponent();
         double vy = PedroComponent.follower().getVelocity().getYComponent();
         robotZone.setPosition(PedroComponent.follower().getPose().getX(), PedroComponent.follower().getPose().getY());
+
+        if (turretToggle) {
+            testTurret.INSTANCE.turretToPosition(0);
+        } else {
+            testTurret.INSTANCE.alignTurretTeleOp(x, y, heading,vx,vy, testTurret.INSTANCE.currentTicks, false);
+        }
+
         robotZone.setRotation(PedroComponent.follower().getPose().getHeading());
 
         if (teleOpTime.isLessThan(11)) {
@@ -130,6 +137,7 @@ public class TeleOp_Red extends NextFTCOpMode {
 
         if (count == 0) {
             LimelightSubsystem.INSTANCE.relocalization.invoke();
+            count = 1;
         }
 
         if (gamepad1.left_trigger > 0.1 || gamepad1.right_trigger > 0.1) {
@@ -144,12 +152,6 @@ public class TeleOp_Red extends NextFTCOpMode {
             Intake.INSTANCE.locked.invoke();
         }
 
-        if (turretToggle) {
-            testTurret.INSTANCE.turretToPosition(0);
-        } else {
-            testTurret.INSTANCE.alignTurretTeleOp(x, y, heading,vx,vy, testTurret.INSTANCE.currentTicks, false);
-        }
-
         if (endGameToggle) {
             EndGame.INSTANCE.endGameOn();
         } else {
@@ -159,13 +161,11 @@ public class TeleOp_Red extends NextFTCOpMode {
         Shooter.INSTANCE.initMechanisms(true);
         Shooter.INSTANCE.shooterOn().invoke();
 
-        telemetryMa.addData("Odometria", "------------------");
         telemetryMa.addData("X", x);
         telemetryMa.addData("Y", y);
         telemetryMa.addData("Heading", Math.toDegrees(heading));
         telemetryMa.addData("Target Shooter", Shooter.INSTANCE.velocity);
         telemetryMa.addData("Current Shooter", Shooter.INSTANCE.currentVelocity);
-        telemetryMa.addData("Time", teleOpTime.getRemaining());
         telemetryMa.update(telemetry);
     }
 

@@ -21,13 +21,14 @@ public class testTurret implements Subsystem {
     PIDFController odometryTicksControl;
 
     // Configuração do PID -- Odometria
-    public static double KP = 0.0003;
+    public static double KP = 0.0002;
     public static double KI = 0;
-    public static double KD = 0.000028;
+    public static double KD = 0.00001;
 
     // Feedforward da velocidade do target da turret
     public static double kV = 0;
-    public static double kS = 0;
+    public static double kS = 0.04;
+    public static double motion = 0.62;
 
     // Estado do velFF
     private int previousTargetTicks = 0;
@@ -124,10 +125,9 @@ public class testTurret implements Subsystem {
         double goalY = blue ? blueGoalY : redGoalY;
 
         distance = (Math.hypot(goalX - x, goalY - y)) - distanceOffset;
-        flightTime = 0.66;
 
-        double movedGoalX = goalX - vx * flightTime;
-        double movedGoalY = goalY - vy * flightTime;
+        double movedGoalX = goalX - vx * motion;
+        double movedGoalY = goalY - vy * motion;
 
         movedDistance = (Math.hypot(movedGoalX - x, movedGoalY - y)) - distanceOffset;
 
@@ -194,7 +194,7 @@ public class testTurret implements Subsystem {
         turretMotor = ActiveOpMode.hardwareMap().get(DcMotorEx.class, "turret_motor");
         turretMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
 
-       // pinpoint_turret = ActiveOpMode.hardwareMap().get(GoBildaPinpointDriver.class, "pinpoint_turret");
+      //  pinpoint_turret = ActiveOpMode.hardwareMap().get(GoBildaPinpointDriver.class, "pinpoint_turret");
 
         odometryTicksControl = new PIDFController(KP, KI, KD, 0);
 
@@ -205,9 +205,10 @@ public class testTurret implements Subsystem {
     @Override
     public void periodic() {
         currentTicks = turretMotor.getCurrentPosition();
-        //pinpoint_turret.update(GoBildaPinpointDriver.readData.ONLY_UPDATE_HEADING);
+       // pinpoint_turret.update(GoBildaPinpointDriver.readData.ONLY_UPDATE_HEADING);
         odometryTicksControl.setPIDF(KP, KI, KD, 0);
 
+      //  ActiveOpMode.telemetry().addData("Current Pinpoint", Math.toDegrees(pinpoint_turret.getHeading()));
         ActiveOpMode.telemetry().addData("CurrentTicks", currentTicks);
         ActiveOpMode.telemetry().addData("TargetTicks", targetTicks);
     }

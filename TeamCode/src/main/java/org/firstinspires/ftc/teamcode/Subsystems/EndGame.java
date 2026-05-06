@@ -19,8 +19,8 @@ public class EndGame implements Subsystem {
     private Servo endgame_left;
     private Servo endgame_right;
 
-    public static double pos_left = 0.47;
-    public static double pos_right = 0.37;
+    public static double pos_left = 0.41;
+    public static double pos_right = 0.32;
 
     public void endGameOn() {
         endgame_left.setPosition(pos_left);

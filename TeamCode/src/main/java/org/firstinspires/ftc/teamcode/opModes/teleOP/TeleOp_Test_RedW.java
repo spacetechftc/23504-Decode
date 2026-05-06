@@ -79,6 +79,7 @@ public class TeleOp_Test_RedW extends NextFTCOpMode {
 
     @Override
     public void onUpdate() {
+        PedroComponent.follower().update();
         double x = PedroComponent.follower().getPose().getX();
         double y = PedroComponent.follower().getPose().getY();
         double heading = PedroComponent.follower().getPose().getHeading();
@@ -128,6 +129,7 @@ public class TeleOp_Test_RedW extends NextFTCOpMode {
 
         if (count == 0) {
             LimelightSubsystem.INSTANCE.relocalization.invoke();
+            count = 1;
         }
 
         if (gamepad1.left_trigger > 0.1 || gamepad1.right_trigger > 0.1) {
@@ -159,7 +161,6 @@ public class TeleOp_Test_RedW extends NextFTCOpMode {
         Shooter.INSTANCE.initMechanisms(true);
         Shooter.INSTANCE.shooterOn().invoke();
 
-        telemetryMa.addData("Odometria", "------------------");
         telemetryMa.addData("X", x);
         telemetryMa.addData("Y", y);
         telemetryMa.addData("Heading", Math.toDegrees(heading));
@@ -169,7 +170,6 @@ public class TeleOp_Test_RedW extends NextFTCOpMode {
         telemetryMa.addData("Current Ticks", testTurret.INSTANCE.currentTicks);
         telemetryMa.addData("Target Ticks", testTurret.INSTANCE.targetTicks);
         telemetryMa.update(telemetry);
-        PedroComponent.follower().update();
     }
     @Override
     public void onStop() {

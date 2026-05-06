@@ -71,26 +71,6 @@ public class Eighteen_Balls_Close_Blue extends NextFTCOpMode {
 
     private PathChain pathGoGate, pathGoBack, pathGoGateTwo, pathGoBackTwo;
 
-    public Command backScore() {
-        return new LambdaCommand()
-                .setStart(() -> {
-                    LimelightSubsystem.INSTANCE.artifact.invoke();
-
-                    Pose current = PedroComponent.follower().getPose();
-
-                    PathChain correction = PedroComponent.follower().pathBuilder()
-                            .addPath(new BezierLine(current, scorePose))
-                            .setConstraints(new PathConstraints(0.9, 100))
-                            .addParametricCallback(0.9, Intake.INSTANCE.unlocked)
-                            .setTangentHeadingInterpolation()
-                            .setReversed()
-                            .build();
-
-                    PedroComponent.follower().followPath(correction, true);
-                })
-                .setIsDone(() -> !PedroComponent.follower().isBusy());
-    }
-
     public void buildPaths(Follower follower) {
         pathOne = PedroComponent.follower().pathBuilder()
                 .addPath(new BezierLine(startPose, scorePose))
@@ -153,19 +133,17 @@ public class Eighteen_Balls_Close_Blue extends NextFTCOpMode {
                 }),
                 new FollowPath(pathOne, true).and(Intake.INSTANCE.unlocked),
                 Intake.INSTANCE.coletAutoOn(), new Delay(0.3), // Lançamento
-                new FollowPath(pathTwo, true), new Delay(0.05), Intake.INSTANCE.unlocked, new Delay(0.3),
-                new FollowPath(pathGoGate, true), new Delay(1.5), new FollowPath(pathGoBack, true), new Delay(0.05), Intake.INSTANCE.unlocked, new Delay(0.3),
-                new FollowPath(pathGoGate, true), new Delay(1.5), new FollowPath(pathGoBack, true), new Delay(0.05), Intake.INSTANCE.unlocked, new Delay(0.3),
-                new FollowPath(pathThree, true), new Delay(0.05), Intake.INSTANCE.unlocked, new Delay(0.3),
-                new FollowPath(pathGoGateTwo, true), new Delay(1.5), new FollowPath(pathGoBackTwo, true), new Delay(0.05), Intake.INSTANCE.unlocked, new Delay(0.3),
+                new FollowPath(pathTwo, true), new Delay(0.12), Intake.INSTANCE.unlocked, new Delay(0.3),
+                new FollowPath(pathGoGate, true), new Delay(0.32), new FollowPath(pathGoBack, true), new Delay(0.12), Intake.INSTANCE.unlocked, new Delay(0.3),
+                new FollowPath(pathGoGate, true), new Delay(0.32), new FollowPath(pathGoBack, true), new Delay(0.12), Intake.INSTANCE.unlocked, new Delay(0.3),
+                new FollowPath(pathThree, true), new Delay(0.12), Intake.INSTANCE.unlocked, new Delay(0.3),
+                new FollowPath(pathGoGateTwo, true), new Delay(0.32), new FollowPath(pathGoBackTwo, true), new Delay(0.12), Intake.INSTANCE.unlocked, new Delay(0.3),
                 new FollowPath(pathLeave, true)
         );
     }
 
     @Override
     public void onInit() {
-        LimelightSubsystem.INSTANCE.switchPipeline(4);
-        LimelightSubsystem.INSTANCE.setAutonomous(true);
         panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
         PedroComponent.follower().setStartingPose(startPose);
 
@@ -197,8 +175,8 @@ public class Eighteen_Balls_Close_Blue extends NextFTCOpMode {
         panelsTelemetry.debug("Current Shooter", Shooter.INSTANCE.currentVelocity);
         panelsTelemetry.update(telemetry);
         Shooter.INSTANCE.shooterAutoOn().invoke();
-        testTurret.INSTANCE.alignTurretTeleOp(PedroComponent.follower().getPose().getX(), PedroComponent.follower().getPose().getY(), PedroComponent.follower().getPose().getHeading(),PedroComponent.follower().getVelocity().getXComponent(),PedroComponent.follower().getVelocity().getYComponent(), testTurret.INSTANCE.currentTicks, true);
-        // testTurret.INSTANCE.alignTurretAuto(PedroComponent.follower().getPose().getX(), PedroComponent.follower().getPose().getY(), PedroComponent.follower().getPose().getHeading(), testTurret.INSTANCE.currentTicks, true);
+        // testTurret.INSTANCE.alignTurretTeleOp(PedroComponent.follower().getPose().getX(), PedroComponent.follower().getPose().getY(), PedroComponent.follower().getPose().getHeading(),PedroComponent.follower().getVelocity().getXComponent(),PedroComponent.follower().getVelocity().getYComponent(), testTurret.INSTANCE.currentTicks, true);
+        testTurret.INSTANCE.alignTurretAuto(PedroComponent.follower().getPose().getX(), PedroComponent.follower().getPose().getY(), PedroComponent.follower().getPose().getHeading(), testTurret.INSTANCE.currentTicks, true);
         PedroComponent.follower().update();
     }
 
