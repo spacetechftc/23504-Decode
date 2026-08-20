@@ -25,7 +25,7 @@ public class PIDFController {
         lastTime = 0;
     }
 
-    public double calculate(double target, double current) {
+    public double calculate(double taget, double current) {
         double currentTime = System.nanoTime() / 1e9;
 
         double dt = 0;
